@@ -1,69 +1,91 @@
-import Image from "next/image";
+import Link from "next/link";
+import { CheckSquare, ArrowRight, Sparkles, Clock } from "lucide-react";
+import { PageShell } from "@/components/layout/PageShell";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <PageShell
+      eyebrow="Personal Workspace"
+      title="Good morning"
+      description="A quiet, focused environment for your daily intentions, active work, and reflection."
+      actions={
+        <Link href="/tasks" prefetch={false}>
+          <Button variant="default" size="sm" className="gap-2">
+            <CheckSquare className="h-4 w-4" />
+            <span>Open Tasks</span>
+          </Button>
+        </Link>
+      }
+    >
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+        {/* Foundation Card: Daily Orientation */}
+        <Card className="md:col-span-2">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <Badge variant="accent">App Foundation</Badge>
+              <span className="text-xs font-mono text-[var(--muted-foreground)]">
+                M0 Active
+              </span>
+            </div>
+            <CardTitle className="pt-2 text-xl font-serif">
+              Personal OS Foundation Established
+            </CardTitle>
+            <CardDescription>
+              The core application shell, responsive navigation, and warm editorial design system are initialized and operational.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-[var(--foreground)] leading-relaxed">
+              In accordance with the specification hierarchy, the Next.js App Router workspace is configured with strict TypeScript, pnpm package management, Vitest testing, and the canonical terracotta and warm neutral palette.
+            </p>
+            <div className="flex flex-wrap gap-3 pt-2">
+              <Link href="/tasks" prefetch={false}>
+                <Button variant="outline" size="sm" className="gap-2">
+                  <span>Explore Tasks Milestone</span>
+                  <ArrowRight className="h-3.5 w-3.5 text-[var(--primary)]" />
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Status / Quick Metrics Card */}
+        <Card className="flex flex-col justify-between">
+          <div>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <Badge variant="success">System Ready</Badge>
+                <Sparkles className="h-3.5 w-3.5 text-[var(--primary)]" />
+              </div>
+              <CardTitle className="pt-2">Architecture Integrity</CardTitle>
+              <CardDescription>Verified system standards</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3 text-xs text-[var(--muted-foreground)]">
+              <div className="flex items-center justify-between py-1 border-b border-[var(--border)]">
+                <span>Tailwind CSS</span>
+                <span className="font-mono text-[var(--foreground)]">v4 Theme Inline</span>
+              </div>
+              <div className="flex items-center justify-between py-1 border-b border-[var(--border)]">
+                <span>Responsive Target</span>
+                <span className="font-mono text-[var(--foreground)]">375px — 1440px+</span>
+              </div>
+              <div className="flex items-center justify-between py-1 border-b border-[var(--border)]">
+                <span>Test Suite</span>
+                <span className="font-mono text-[var(--foreground)]">Vitest + RTL</span>
+              </div>
+            </CardContent>
+          </div>
+          <div className="p-6 pt-0">
+            <div className="rounded-[var(--radius-control)] bg-[var(--muted)] p-3 text-xs text-[var(--secondary-foreground)] flex items-center gap-2">
+              <Clock className="h-3.5 w-3.5 text-[var(--primary)] shrink-0" />
+              <span>Next up: Milestone 1 — Task Management</span>
+            </div>
+          </div>
+        </Card>
+      </div>
+    </PageShell>
   );
 }
