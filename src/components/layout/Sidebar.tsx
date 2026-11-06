@@ -16,6 +16,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 export interface NavItem {
   title: string;
@@ -49,8 +50,15 @@ export function Sidebar({ className }: { className?: string }) {
         {/* Workspace Brand / Header */}
         <div className="flex items-center justify-between px-2 pt-2 pb-1">
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="h-7 w-7 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] flex items-center justify-center font-serif font-bold text-sm shadow-xs transition-transform group-hover:scale-105">
-              P
+            <div className="h-8 w-8 rounded-full overflow-hidden shrink-0 shadow-xs border border-[var(--border)] transition-transform group-hover:scale-105">
+              <Image
+                src="/logo.png"
+                alt="Personal OS Logo"
+                width={32}
+                height={32}
+                className="object-cover"
+                priority
+              />
             </div>
             <div className="flex flex-col">
               <span className="font-serif font-medium text-base text-[var(--foreground)] tracking-tight leading-none">

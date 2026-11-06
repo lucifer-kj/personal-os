@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none" fill="none">
+  <defs>
+    <linearGradient id="dusk-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3D1D2B" stop-opacity="0.95"/>
+      <stop offset="35%" stop-color="#8C3A27" stop-opacity="0.85"/>
+      <stop offset="70%" stop-color="#D96B27" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#F8F5F0" stop-opacity="1"/>
+    </linearGradient>
+    <radialGradient id="setting-sun" cx="78%" cy="48%" r="22%">
+      <stop offset="0%" stop-color="#FFDD99" stop-opacity="1"/>
+      <stop offset="40%" stop-color="#FF8833" stop-opacity="0.9"/>
+      <stop offset="80%" stop-color="#C83818" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#C83818" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="dusk-ridge-back" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4F1E28" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#F8F5F0" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="dusk-ridge-mid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#35121E" stop-opacity="0.65"/>
+      <stop offset="100%" stop-color="#F8F5F0" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="dusk-ridge-front" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1E0B13" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#F8F5F0" stop-opacity="1"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky Canvas -->
+  <rect width="1440" height="320" fill="url(#dusk-sky)" />
+
+  <!-- Setting Sunset Glow -->
+  <circle cx="1120" cy="130" r="60" fill="url(#setting-sun)" />
+
+  <!-- Distant Mountain Ridge -->
+  <path d="M0 190 Q 220 130 480 170 T 920 145 T 1440 150 L 1440 320 L 0 320 Z" fill="url(#dusk-ridge-back)" />
+
+  <!-- Middle Ridge -->
+  <path d="M0 230 Q 280 175 600 210 T 1140 185 T 1440 205 L 1440 320 L 0 320 Z" fill="url(#dusk-ridge-mid)" />
+
+  <!-- Foreground Twilight Silhouette -->
+  <path d="M0 260 Q 180 220 440 250 T 890 230 T 1310 245 T 1440 235 L 1440 320 L 0 320 Z" fill="url(#dusk-ridge-front)" />
+</svg>

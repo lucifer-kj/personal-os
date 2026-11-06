@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none" fill="none">
+  <defs>
+    <linearGradient id="dawn-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFECD2" stop-opacity="0.95"/>
+      <stop offset="45%" stop-color="#FCB69F" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#F8F5F0" stop-opacity="1"/>
+    </linearGradient>
+    <radialGradient id="morning-sun" cx="72%" cy="42%" r="28%">
+      <stop offset="0%" stop-color="#FFFDF9" stop-opacity="1"/>
+      <stop offset="35%" stop-color="#FFDAAB" stop-opacity="0.8"/>
+      <stop offset="70%" stop-color="#FF9E7D" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#FF9E7D" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ridge-back" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#C48972" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#F8F5F0" stop-opacity="0.85"/>
+    </linearGradient>
+    <linearGradient id="ridge-mid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#A45538" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#F8F5F0" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="ridge-front" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6F321E" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#F8F5F0" stop-opacity="1"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky Canvas -->
+  <rect width="1440" height="320" fill="url(#dawn-sky)" />
+
+  <!-- Rising Morning Sun -->
+  <circle cx="1060" cy="115" r="70" fill="url(#morning-sun)" />
+
+  <!-- Distant Mountain Ridge -->
+  <path d="M0 210 Q 180 150 360 185 T 720 160 T 1080 170 T 1440 145 L 1440 320 L 0 320 Z" fill="url(#ridge-back)" />
+
+  <!-- Middle Mountain Ridge -->
+  <path d="M0 240 Q 240 180 520 215 T 980 190 T 1440 210 L 1440 320 L 0 320 Z" fill="url(#ridge-mid)" />
+
+  <!-- Foreground Pine Silhouette Ridge -->
+  <path d="M0 270 Q 160 235 380 260 T 820 240 T 1200 255 T 1440 245 L 1440 320 L 0 320 Z" fill="url(#ridge-front)" />
+</svg>

@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none" fill="none">
+  <defs>
+    <linearGradient id="night-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0F1117" stop-opacity="0.98"/>
+      <stop offset="60%" stop-color="#181B26" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#F8F5F0" stop-opacity="1"/>
+    </linearGradient>
+    <linearGradient id="night-ridge-back" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1E2333" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#F8F5F0" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="night-ridge-mid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#141724" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#F8F5F0" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="night-ridge-front" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0B0D14" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#F8F5F0" stop-opacity="1"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky Canvas -->
+  <rect width="1440" height="320" fill="url(#night-sky)" />
+
+  <!-- Stars -->
+  <circle cx="210" cy="50" r="1.5" fill="#FFFFFF" fill-opacity="0.8" />
+  <circle cx="340" cy="85" r="1.2" fill="#FFFFFF" fill-opacity="0.6" />
+  <circle cx="580" cy="40" r="2" fill="#FFFFFF" fill-opacity="0.9" />
+  <circle cx="790" cy="95" r="1.5" fill="#FFFFFF" fill-opacity="0.7" />
+  <circle cx="940" cy="60" r="1.8" fill="#FFFFFF" fill-opacity="0.85" />
+  <circle cx="1180" cy="45" r="2.2" fill="#FFF8E7" fill-opacity="0.95" />
+  <circle cx="1320" cy="80" r="1.3" fill="#FFFFFF" fill-opacity="0.75" />
+
+  <!-- Distant Ridge -->
+  <path d="M0 195 Q 240 145 500 180 T 960 160 T 1440 165 L 1440 320 L 0 320 Z" fill="url(#night-ridge-back)" />
+
+  <!-- Middle Ridge -->
+  <path d="M0 235 Q 290 185 620 220 T 1160 195 T 1440 215 L 1440 320 L 0 320 Z" fill="url(#night-ridge-mid)" />
+
+  <!-- Foreground Midnight Ridge -->
+  <path d="M0 265 Q 180 230 460 260 T 920 240 T 1340 255 T 1440 245 L 1440 320 L 0 320 Z" fill="url(#night-ridge-front)" />
+</svg>

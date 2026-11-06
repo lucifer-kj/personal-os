@@ -13,9 +13,9 @@ describe("DashboardHeader component", () => {
       />
     );
 
-    expect(screen.getByText("Good afternoon")).toBeDefined();
+    expect(screen.getByText(/Good afternoon/i)).toBeDefined();
     expect(screen.getByText(/“Ship M3”/)).toBeDefined();
-    expect(screen.getByText(/November 6, 2026/)).toBeDefined();
+    expect(screen.getByText(/FRI, NOV 6/i)).toBeDefined();
   });
 
   it("allows toggling edit mode and saving intention", async () => {
