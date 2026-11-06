@@ -49,6 +49,8 @@ export interface CreateTaskDTO {
   actual_minutes?: number | null;
   scheduled_start_at?: string | null;
   scheduled_end_at?: string | null;
+  source_type?: "manual" | "inbox" | "meeting" | "automation" | "ai" | null;
+  source_id?: string | null;
 }
 
 export interface UpdateTaskDTO {
@@ -65,6 +67,8 @@ export interface UpdateTaskDTO {
   actual_minutes?: number | null;
   scheduled_start_at?: string | null;
   scheduled_end_at?: string | null;
+  source_type?: "manual" | "inbox" | "meeting" | "automation" | "ai" | null;
+  source_id?: string | null;
   sort_order?: number;
 }
 

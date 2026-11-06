@@ -2,7 +2,7 @@
 
 ## Overview
 - **Product Name:** Personal OS
-- **Status:** M4 Focus Sessions & Time Tracking Completed & Verified. Ready for M5 (Inbox & Quick Capture).
+- **Status:** M5 Inbox & Quick Capture Completed & Verified. Ready for M6 (Calendar & Time Blocking).
 - **Architecture Baseline:** Modular monolith with Next.js App Router (React 19, TypeScript strict mode, Tailwind CSS v4), Supabase PostgreSQL, and explicit domain module boundaries.
 - **Visual Direction:** Warm, editorial, quiet, spacious, functional. Design tokens active in `src/app/globals.css`.
 
@@ -12,14 +12,15 @@
 - **M2 — Projects & Milestones:** COMPLETED & VERIFIED
 - **M3 — Day Planner & Today Dashboard:** COMPLETED & VERIFIED
 - **M4 — Focus Sessions & Time Tracking:** COMPLETED & VERIFIED
-- **M5 — Inbox & Quick Capture:** READY TO START
+- **M5 — Inbox & Quick Capture:** COMPLETED & VERIFIED
+- **M6 — Calendar & Time Blocking:** READY TO START
 
 ## Key Verification Status
 - Lint: PASSED (`pnpm lint` — 0 errors, 0 warnings)
 - Typecheck: PASSED (`pnpm typecheck` — 0 errors)
-- Tests: PASSED (`pnpm test` — 105/105 unit, domain, API, and component tests passing across 26 test files)
-- Build: PASSED (`pnpm build` — Clean production build with Partial Prerendering on `/`, `/focus`, `/projects/[id]`, and static `/projects` & `/tasks`)
-- Viewport Inspection: VERIFIED (Desktop 1440px and Mobile 375px verified with Playwright; live session starting, pause/resume, countdown, and completion reflection verified)
+- Tests: PASSED (`pnpm test` — 116/116 unit, domain, API, and component tests passing across 30 test files)
+- Build: PASSED (`pnpm build` — Clean production build with Partial Prerendering on `/`, `/focus`, `/inbox`, `/projects/[id]`, and static `/projects` & `/tasks`)
+- Viewport Inspection: VERIFIED (Desktop 1440px and Mobile 375px verified with Playwright; live rapid capture, quick capture modal, tab filtering, and task triage conversion verified)
 
 ## Architecture Decisions Record (ADR) Summary
 - **ADR-001 (Tooling & Package Manager):** `pnpm` exclusively used. Next.js 16 App Router with React 19, TypeScript in strict mode, ESLint 9, and Vitest for testing.
@@ -31,3 +32,4 @@
 - **ADR-007 (Day Planner & Today Dashboard Composition):** Daily plan persisted with user-isolated `daily_plans` table (`0003_daily_plans.sql`). Dashboard synthesizes today's scheduled agenda, overdue warning callouts, active project deliverables, and real-time focus metrics. Server components leverage `await connection()` inside `<React.Suspense>` streaming boundaries to handle per-request dynamic rendering under Next.js 16 Partial Prerendering.
 - **ADR-008 (Orb & Dynamic Scenery System):** Installed `thinking-orbs` for an interactive, canvas-driven animated state orb (`AppOrb`) embedded into the hero dashboard card and brand elements. Integrated SVG dynamic scenery (`DynamicScenery`) that transitions through dawn, day, dusk, and night based on real-time client hour with soft warm gradient blend. Client mounting handled via `useSyncExternalStore` for React 19 / Next.js 16 hydration safety.
 - **ADR-009 (Focus Sessions & Time Tracking Engine):** Server-authoritative timer tracking in `time_entries` and `focus_sessions` tables (`0004_focus_sessions.sql`). Clock-drift and tab-sleep resilience implemented by computing elapsed time from server UTC timestamps and accumulated pause duration. Automatic duration rollup commits tracked focus minutes into linked task `actual_minutes` upon session completion. Dedicated `/focus` view synchronizes dynamic `AppOrb` states (`working`, `breathing`, `composing`).
+- **ADR-010 (Inbox & Quick Capture Architecture):** Unprocessed information captured first into `inbox_items` (`0005_inbox_items.sql`) with capture types (`task`, `note`, `idea`, `link`, `reminder`, `other`). Rapid capture modal with auto-focused inputs supports single-keystroke entry (< 3s capture latency). Atomic triage conversion converts inbox records into domain tasks (`source_type: "inbox"`, `source_id: item.id`) and marks the inbox item processed in a single transaction-like workflow.
