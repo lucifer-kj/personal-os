@@ -1,49 +1,44 @@
-# Personal OS — Current Sprint (Sprint 2)
+# Personal OS — Current Sprint (Sprint 3)
 
-## Sprint Focus: M2 — Projects & Milestones
-- **Objective:** Implement complete end-to-end projects and milestones slice with dynamic progress computation, milestone lifecycle management, task linkage, REST Route Handlers, and responsive UI.
-- **Status:** M2 Completed & Verified. Next Focus: M3 (Day Planner & Today Dashboard).
+## Sprint Focus: M3 — Day Planner & Today Dashboard
+- **Objective:** Implement complete end-to-end Day Planner and Today Dashboard with real-time agenda aggregation, overdue task alerts, daily focus intentions, summary metrics, quick capture, balanced 2-column desktop & single-column mobile layout, REST Route Handlers, and responsive UI.
+- **Status:** M3 Completed & Verified. Next Focus: M4 (Focus Sessions & Time Tracking).
 
-## Sprint 2 Completed Deliverables
+## Sprint 3 Completed Deliverables
 
-- [x] **Task 2.1: Database Schema & Migration**
-  - Created `db/migrations/0002_projects.sql` defining `projects` and `project_milestones` tables.
-  - Linked `tasks(project_id)` foreign key to `projects(id)`.
-  - Configured PostgreSQL Row-Level Security (RLS) with owner-isolated policies for SELECT, INSERT, UPDATE, DELETE on both projects and project_milestones.
+- [x] **Task 3.1: Database Schema & Migration**
+  - Created `db/migrations/0003_daily_plans.sql` defining `daily_plans` table with `user_id`, `plan_date`, `intention`, and `shutdown_notes`.
+  - Configured PostgreSQL Row-Level Security (RLS) with owner-isolated policies for SELECT, INSERT, UPDATE, DELETE.
+  - Enforced unique constraint on `(user_id, plan_date)`.
 
-- [x] **Task 2.2: Projects Domain Module**
-  - Created `src/modules/projects/types.ts` for entities, milestones, and DTOs.
-  - Created `src/modules/projects/schemas.ts` with strict Zod boundary validation.
-  - Created `src/modules/projects/project.repository.ts` with in-memory and Supabase repository implementations.
-  - Created `src/modules/projects/project.service.ts` with dynamic stats calculation (`completed_tasks / total_tasks * 100`, milestone stats, status management).
+- [x] **Task 3.2: Day & Dashboard Domain Modules**
+  - Created `src/modules/day/types.ts` and `src/modules/day/schemas.ts` with strict Zod boundary validation.
+  - Created `src/modules/day/day.repository.ts` with in-memory and Supabase database repository implementations.
+  - Created `src/modules/day/day.service.ts` aggregating today's scheduled tasks, identifying overdue tasks, and computing time/completion metrics.
+  - Created `src/modules/dashboard/types.ts` and `src/modules/dashboard/dashboard.service.ts` orchestrating dynamic greeting, agenda sorting (pending urgent/high first), metrics, and active projects.
 
-- [x] **Task 2.3: REST API Endpoints (`/api/v1/projects`)**
-  - `GET /api/v1/projects`: list and filter projects with calculated progress and task counts.
-  - `POST /api/v1/projects`: create project.
-  - `GET /api/v1/projects/:id`: get project details with milestones and stats.
-  - `PATCH /api/v1/projects/:id`: partial update (status, priority, dates).
-  - `DELETE /api/v1/projects/:id`: delete project.
-  - `GET /api/v1/projects/:id/tasks`: list tasks associated with project.
-  - `GET /api/v1/projects/:id/milestones`: list milestones.
-  - `POST /api/v1/projects/:id/milestones`: create milestone.
-  - `PATCH /api/v1/projects/:id/milestones/:milestoneId`: toggle milestone completion.
-  - `DELETE /api/v1/projects/:id/milestones/:milestoneId`: delete milestone.
+- [x] **Task 3.3: REST API Endpoints (`/api/v1/dashboard` & `/api/v1/day`)**
+  - `GET /api/v1/dashboard`: Returns aggregate today metrics, sorted agenda flow, overdue tasks, and active projects summary.
+  - `GET /api/v1/day?date=YYYY-MM-DD`: Returns specific date overview with scheduled tasks and daily intention.
+  - `PATCH /api/v1/day/intention`: Updates and persists the daily focus intention.
 
-- [x] **Task 2.4: UI Layer & Pages**
-  - Created `src/components/projects/ProjectCard.tsx` with dynamic progress bar, task completion indicators, and priority badges.
-  - Created `src/components/projects/ProjectFilterBar.tsx` with status tabs, search, and priority filter.
-  - Created `src/components/projects/ProjectCreateDialog.tsx` modal for new project creation.
-  - Created `src/components/projects/ProjectList.tsx` with responsive grid and empty state handling.
-  - Created `src/components/projects/ProjectDetailView.tsx` with milestone timeline checklist, add milestone input, and linked tasks list.
-  - Created `src/app/projects/page.tsx` and `src/app/projects/[id]/page.tsx` with Next.js Partial Prerendering and streaming Suspense boundaries.
+- [x] **Task 3.4: UI Layer & Master Dashboard Page**
+  - Created `src/components/dashboard/DashboardHeader.tsx` with greeting, date formatting, and inline daily intention editor.
+  - Created `src/components/dashboard/DashboardMetrics.tsx` with 3 calm metric cards (Completed Today, Planned Focus Time, Active Projects).
+  - Created `src/components/dashboard/TodayAgenda.tsx` with overdue task alert callout, task completion checkbox, priority badges, and empty state.
+  - Created `src/components/dashboard/ActiveProjectsWidget.tsx` displaying active projects with true progress bars and task counts.
+  - Created `src/components/dashboard/QuickCaptureCard.tsx` with rapid single-line capture input directly into today's agenda.
+  - Created `src/components/dashboard/DashboardView.tsx` coordinating optimistic updates and API synchronization.
+  - Connected `src/app/page.tsx` with Next.js Partial Prerendering and streaming Suspense boundary via `await connection()`.
 
-- [x] **Task 2.5: Verification & Test Suite**
-  - Schema boundary tests: `src/modules/projects/schemas.test.ts` (10 tests).
-  - Service logic & isolation tests: `src/modules/projects/project.service.test.ts` (4 tests).
-  - API Route Handler integration tests: `src/app/api/v1/projects/projects.api.test.ts` (7 tests).
-  - UI component tests: `ProjectCard.test.tsx` (1 test) & `ProjectList.test.tsx` (4 tests).
-  - Vitest test suite: **69/69 tests passing** across 15 test files.
+- [x] **Task 3.5: Verification & Test Suite**
+  - Schema boundary tests: `src/modules/day/schemas.test.ts` (8 tests).
+  - Day service unit tests: `src/modules/day/day.service.test.ts` (4 tests).
+  - Dashboard service unit tests: `src/modules/dashboard/dashboard.service.test.ts` (1 test).
+  - API Route Handler tests: `src/app/api/v1/dashboard/dashboard.api.test.ts` (4 tests).
+  - Component tests: `DashboardHeader.test.tsx` (2 tests), `DashboardMetrics.test.tsx` (1 test), `TodayAgenda.test.tsx` (2 tests).
+  - Vitest test suite: **91/91 tests passing** across 22 test files.
   - ESLint: **0 errors, 0 warnings**.
   - TypeScript: **0 errors**.
   - Next.js Production Build: **Exit code 0** (`next build`).
-  - Playwright live UI inspection: Desktop (1440px) and Mobile (375px) verified with clean layouts and accessible dialogs.
+  - Playwright live UI inspection: Desktop (1440px) and Mobile (375px) verified with live intention saving, quick capture task addition, and optimistic completion toggling.

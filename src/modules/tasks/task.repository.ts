@@ -95,7 +95,7 @@ class InMemoryTaskRepository implements ITaskRepository {
       task_list_id: data.task_list_id || null,
       parent_task_id: data.parent_task_id || null,
       estimated_minutes: data.estimated_minutes || null,
-      actual_minutes: null,
+      actual_minutes: data.actual_minutes || null,
       scheduled_start_at: data.scheduled_start_at || null,
       scheduled_end_at: data.scheduled_end_at || null,
       completed_at: data.status === "completed" ? now : null,

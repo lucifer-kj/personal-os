@@ -9,20 +9,30 @@ import { Input } from "@/components/ui/input";
 interface TaskCreateDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (dto: CreateTaskDTO) => Promise<boolean>;
+  onSubmit?: (dto: CreateTaskDTO) => Promise<boolean>;
+  onCreateTask?: (dto: CreateTaskDTO) => Promise<void | boolean>;
+  initialDueDate?: string;
 }
 
 export function TaskCreateDialog({
   isOpen,
   onClose,
   onSubmit,
+  onCreateTask,
+  initialDueDate,
 }: TaskCreateDialogProps) {
   const [title, setTitle] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [priority, setPriority] = React.useState<TaskPriority>("medium");
-  const [dueDate, setDueDate] = React.useState("");
+  const [dueDate, setDueDate] = React.useState(initialDueDate || "");
+  const [prevInitialDueDate, setPrevInitialDueDate] = React.useState(initialDueDate);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+
+  if (initialDueDate !== prevInitialDueDate) {
+    setPrevInitialDueDate(initialDueDate);
+    setDueDate(initialDueDate || "");
+  }
 
   if (!isOpen) return null;
 
@@ -37,13 +47,21 @@ export function TaskCreateDialog({
     setErrorMessage(null);
 
     try {
-      const success = await onSubmit({
+      const payload: CreateTaskDTO = {
         title: title.trim(),
         description: description.trim() || undefined,
         priority,
         due_date: dueDate || undefined,
         status: "todo",
-      });
+      };
+
+      let success = true;
+      if (onSubmit) {
+        success = await onSubmit(payload);
+      } else if (onCreateTask) {
+        const res = await onCreateTask(payload);
+        success = res !== false;
+      }
 
       if (success) {
         setTitle("");

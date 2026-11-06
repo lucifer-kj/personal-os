@@ -71,3 +71,25 @@ export function apiError(
     { status }
   );
 }
+
+export function apiUnauthorized(
+  message = "Unauthorized",
+  requestId = generateRequestId()
+): NextResponse<ApiErrorEnvelope> {
+  return apiError("UNAUTHORIZED", message, undefined, 401, requestId);
+}
+
+export function apiBadRequest(
+  message = "Bad request",
+  details?: ApiErrorDetail[],
+  requestId = generateRequestId()
+): NextResponse<ApiErrorEnvelope> {
+  return apiError("BAD_REQUEST", message, details, 400, requestId);
+}
+
+export function apiNotFound(
+  message = "Resource not found",
+  requestId = generateRequestId()
+): NextResponse<ApiErrorEnvelope> {
+  return apiError("NOT_FOUND", message, undefined, 404, requestId);
+}

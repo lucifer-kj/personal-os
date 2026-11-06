@@ -46,6 +46,7 @@ export interface CreateTaskDTO {
   task_list_id?: string | null;
   parent_task_id?: string | null;
   estimated_minutes?: number | null;
+  actual_minutes?: number | null;
   scheduled_start_at?: string | null;
   scheduled_end_at?: string | null;
 }
@@ -61,6 +62,7 @@ export interface UpdateTaskDTO {
   task_list_id?: string | null;
   parent_task_id?: string | null;
   estimated_minutes?: number | null;
+  actual_minutes?: number | null;
   scheduled_start_at?: string | null;
   scheduled_end_at?: string | null;
   sort_order?: number;
