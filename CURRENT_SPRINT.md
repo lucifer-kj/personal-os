@@ -1,47 +1,49 @@
-# Personal OS — Current Sprint (Sprint 1)
+# Personal OS — Current Sprint (Sprint 2)
 
-## Sprint Focus: M1 — Task Management (First Vertical Slice)
-- **Objective:** Implement complete end-to-end task slice with database migration, RLS policies, Zod validation, service layer, REST Route Handlers, and responsive UI.
-- **Status:** M1 Completed & Verified.
+## Sprint Focus: M2 — Projects & Milestones
+- **Objective:** Implement complete end-to-end projects and milestones slice with dynamic progress computation, milestone lifecycle management, task linkage, REST Route Handlers, and responsive UI.
+- **Status:** M2 Completed & Verified. Next Focus: M3 (Day Planner & Today Dashboard).
 
-## Sprint Backlog & Task Status
+## Sprint 2 Completed Deliverables
 
-- [x] **Task 1.1: Database Schema & Migration**
-  - Created `db/migrations/0001_tasks.sql` defining `tasks` table with check constraints, foreign keys, and indexes.
-  - Configured PostgreSQL Row-Level Security (RLS) with owner-isolated policies for SELECT, INSERT, UPDATE, DELETE.
+- [x] **Task 2.1: Database Schema & Migration**
+  - Created `db/migrations/0002_projects.sql` defining `projects` and `project_milestones` tables.
+  - Linked `tasks(project_id)` foreign key to `projects(id)`.
+  - Configured PostgreSQL Row-Level Security (RLS) with owner-isolated policies for SELECT, INSERT, UPDATE, DELETE on both projects and project_milestones.
 
-- [x] **Task 1.2: Supabase Client & Auth Strategy**
-  - Created `src/lib/supabase/server.ts` with cookie-backed server client.
-  - Created `src/lib/supabase/auth.ts` deriving verified user identity from session cookies (with offline/test fallback support).
-  - Created `src/lib/api/response.ts` implementing standardized success `{ data, meta }` and error `{ error }` envelopes.
+- [x] **Task 2.2: Projects Domain Module**
+  - Created `src/modules/projects/types.ts` for entities, milestones, and DTOs.
+  - Created `src/modules/projects/schemas.ts` with strict Zod boundary validation.
+  - Created `src/modules/projects/project.repository.ts` with in-memory and Supabase repository implementations.
+  - Created `src/modules/projects/project.service.ts` with dynamic stats calculation (`completed_tasks / total_tasks * 100`, milestone stats, status management).
 
-- [x] **Task 1.3: Task Domain Module**
-  - Created `src/modules/tasks/types.ts` for entities and DTOs.
-  - Created `src/modules/tasks/schemas.ts` with strict Zod boundary validation.
-  - Created `src/modules/tasks/task.repository.ts` with in-memory and Supabase database repository implementations.
-  - Created `src/modules/tasks/task.service.ts` enforcing business invariants and automatic `completed_at` timestamp management.
+- [x] **Task 2.3: REST API Endpoints (`/api/v1/projects`)**
+  - `GET /api/v1/projects`: list and filter projects with calculated progress and task counts.
+  - `POST /api/v1/projects`: create project.
+  - `GET /api/v1/projects/:id`: get project details with milestones and stats.
+  - `PATCH /api/v1/projects/:id`: partial update (status, priority, dates).
+  - `DELETE /api/v1/projects/:id`: delete project.
+  - `GET /api/v1/projects/:id/tasks`: list tasks associated with project.
+  - `GET /api/v1/projects/:id/milestones`: list milestones.
+  - `POST /api/v1/projects/:id/milestones`: create milestone.
+  - `PATCH /api/v1/projects/:id/milestones/:milestoneId`: toggle milestone completion.
+  - `DELETE /api/v1/projects/:id/milestones/:milestoneId`: delete milestone.
 
-- [x] **Task 1.4: REST API Endpoints (`/api/v1/tasks`)**
-  - `GET /api/v1/tasks`: list and filter tasks.
-  - `POST /api/v1/tasks`: create task with 201 response.
-  - `GET /api/v1/tasks/:id`: retrieve task.
-  - `PATCH /api/v1/tasks/:id`: partial update.
-  - `DELETE /api/v1/tasks/:id`: soft delete.
-  - `POST /api/v1/tasks/:id/complete`: complete task.
-  - `POST /api/v1/tasks/:id/reopen`: reopen task.
+- [x] **Task 2.4: UI Layer & Pages**
+  - Created `src/components/projects/ProjectCard.tsx` with dynamic progress bar, task completion indicators, and priority badges.
+  - Created `src/components/projects/ProjectFilterBar.tsx` with status tabs, search, and priority filter.
+  - Created `src/components/projects/ProjectCreateDialog.tsx` modal for new project creation.
+  - Created `src/components/projects/ProjectList.tsx` with responsive grid and empty state handling.
+  - Created `src/components/projects/ProjectDetailView.tsx` with milestone timeline checklist, add milestone input, and linked tasks list.
+  - Created `src/app/projects/page.tsx` and `src/app/projects/[id]/page.tsx` with Next.js Partial Prerendering and streaming Suspense boundaries.
 
-- [x] **Task 1.5: UI Layer & Page**
-  - Created `src/components/tasks/TaskItem.tsx` with completion checkbox, priority badges, and delete action.
-  - Created `src/components/tasks/TaskFilterBar.tsx` with All/Active/Completed status tabs, search, and priority filter.
-  - Created `src/components/tasks/TaskCreateDialog.tsx` for task creation.
-  - Created `src/components/tasks/TaskEmptyState.tsx` and `TaskSkeleton.tsx`.
-  - Created `src/components/tasks/TaskList.tsx` with optimistic completion toggles.
-  - Created `src/app/tasks/page.tsx`.
-
-- [x] **Task 1.6: Verification & Test Suite**
-  - Schema boundary tests: `src/modules/tasks/schemas.test.ts` (10 tests).
-  - Service logic & isolation tests: `src/modules/tasks/task.service.test.ts` (6 tests).
-  - API Route Handler integration tests: `src/app/api/v1/tasks/tasks.api.test.ts` (8 tests).
-  - UI component tests: `TaskItem.test.tsx` (3 tests) & `TaskList.test.tsx` (4 tests).
-  - All 43 tests pass cleanly.
-  - Verified live in browser at Desktop (1440px) and Mobile (375px) via Playwright.
+- [x] **Task 2.5: Verification & Test Suite**
+  - Schema boundary tests: `src/modules/projects/schemas.test.ts` (10 tests).
+  - Service logic & isolation tests: `src/modules/projects/project.service.test.ts` (4 tests).
+  - API Route Handler integration tests: `src/app/api/v1/projects/projects.api.test.ts` (7 tests).
+  - UI component tests: `ProjectCard.test.tsx` (1 test) & `ProjectList.test.tsx` (4 tests).
+  - Vitest test suite: **69/69 tests passing** across 15 test files.
+  - ESLint: **0 errors, 0 warnings**.
+  - TypeScript: **0 errors**.
+  - Next.js Production Build: **Exit code 0** (`next build`).
+  - Playwright live UI inspection: Desktop (1440px) and Mobile (375px) verified with clean layouts and accessible dialogs.

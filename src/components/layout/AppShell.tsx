@@ -29,26 +29,32 @@ export function AppShell({ children }: AppShellProps) {
   return (
     <div className="flex min-h-screen bg-[var(--background)] text-[var(--foreground)] antialiased">
       {/* Desktop Persistent Left Sidebar */}
-      <Sidebar />
+      <React.Suspense fallback={<div className="hidden lg:flex w-64 border-r border-[var(--border)] bg-[var(--card)]" />}>
+        <Sidebar />
+      </React.Suspense>
 
       {/* Main Column */}
       <div className="flex flex-1 flex-col min-w-0">
-        <Header
-          onOpenMobileMenu={toggleMobileMenu}
-          onQuickCapture={handleQuickCapture}
-        />
+        <React.Suspense fallback={<header className="h-14 border-b border-[var(--border)] bg-[var(--background)]" />}>
+          <Header
+            onOpenMobileMenu={toggleMobileMenu}
+            onQuickCapture={handleQuickCapture}
+          />
+        </React.Suspense>
 
         <div className="flex-1 w-full overflow-y-auto">
           {children}
         </div>
 
         {/* Mobile Navigation and Drawer */}
-        <MobileNav
-          isMenuOpen={mobileMenuOpen}
-          onToggleMenu={toggleMobileMenu}
-          onCloseMenu={closeMobileMenu}
-          onQuickCapture={handleQuickCapture}
-        />
+        <React.Suspense fallback={null}>
+          <MobileNav
+            isMenuOpen={mobileMenuOpen}
+            onToggleMenu={toggleMobileMenu}
+            onCloseMenu={closeMobileMenu}
+            onQuickCapture={handleQuickCapture}
+          />
+        </React.Suspense>
       </div>
     </div>
   );
