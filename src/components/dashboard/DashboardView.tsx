@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import { DashboardOverviewDTO } from "@/modules/dashboard/types";
 import { Task, CreateTaskDTO } from "@/modules/tasks/types";
 import { DashboardHeader } from "./DashboardHeader";
@@ -15,6 +16,7 @@ interface DashboardViewProps {
 }
 
 export function DashboardView({ initialOverview }: DashboardViewProps) {
+  const router = useRouter();
   const [overview, setOverview] = React.useState<DashboardOverviewDTO>(initialOverview);
   const [isCreateOpen, setIsCreateOpen] = React.useState(false);
 
@@ -129,6 +131,7 @@ export function DashboardView({ initialOverview }: DashboardViewProps) {
         dateStr={overview.date}
         initialIntention={overview.intention}
         onUpdateIntention={handleUpdateIntention}
+        onStartFocus={() => router.push("/focus")}
       />
 
       {/* 2. Calm Summary Metrics */}

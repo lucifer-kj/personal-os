@@ -43,6 +43,7 @@ export function MobileNav({
   ];
 
   const secondaryDrawerItems = [
+    { title: "Focus Mode", href: "/focus", icon: Flame },
     { title: "Inbox", href: "/inbox", icon: Inbox },
     { title: "Projects", href: "/projects", icon: FolderKanban },
     { title: "Notes", href: "/notes", icon: FileText },

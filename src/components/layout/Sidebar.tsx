@@ -12,6 +12,7 @@ import {
   FileText,
   Flame,
   BookOpen,
+  Timer,
   Settings,
   Sparkles,
 } from "lucide-react";
@@ -28,6 +29,7 @@ export interface NavItem {
 const primaryNavItems: NavItem[] = [
   { title: "Dashboard", href: "/", icon: LayoutDashboard },
   { title: "Tasks", href: "/tasks", icon: CheckSquare },
+  { title: "Focus Mode", href: "/focus", icon: Timer },
   { title: "Inbox", href: "/inbox", icon: Inbox },
   { title: "Projects", href: "/projects", icon: FolderKanban },
   { title: "Calendar", href: "/calendar", icon: Calendar },

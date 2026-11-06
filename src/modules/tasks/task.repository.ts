@@ -14,7 +14,7 @@ export interface ITaskRepository {
 }
 
 // In-Memory store for tests and local development when Supabase DB is offline
-class InMemoryTaskRepository implements ITaskRepository {
+export class InMemoryTaskRepository implements ITaskRepository {
   private tasks: Map<string, Task> = new Map();
 
   async findMany(
