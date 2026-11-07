@@ -7,3 +7,28 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+# Personal OS — Architecture & Context Map
+
+Personal OS is a calm, private single-user productivity workstation built with Next.js 16 (Turbopack, React 19, Tailwind CSS v4) and Supabase Postgres.
+
+### 1. Structural Knowledge Graph (Graphify)
+- Knowledge graph available at `graphify-out/graph.json` (640 nodes, 2175 edges, 25 communities).
+- High-level topology, community clusters, and god nodes: `graphify-out/GRAPH_REPORT.md`.
+- Interactive visualizer: `graphify-out/graph.html`.
+- Run `graphify query "<question>"` to trace dependencies or explain nodes without re-reading source files.
+
+### 2. Single-User Security & Authentication
+- **Enclave Mode:** Single-user app claimed by verified owner `321arifali@gmail.com`.
+- **Database Guard:** PostgreSQL trigger `trg_prevent_multiple_users` on `auth.users` blocks all subsequent signups.
+- **Client Route Guards:** Next.js middleware in `src/middleware.ts` redirects unauthenticated traffic to `/login`.
+- **Database RLS:** All tables (`tasks`, `projects`, `focus_sessions`, `inbox_items`, `daily_plans`, `time_entries`) enforce `user_id = auth.uid()` across SELECT, INSERT, UPDATE, DELETE.
+
+### 3. Core Module Map
+- **Tasks (`/tasks`):** `src/modules/tasks/` — Domain types, Zod schemas, repository, service, and API routes (`/api/v1/tasks`).
+- **Focus (`/focus`):** `src/modules/focus/` — Pomodoro & stopwatch session engine, state machine, and thinking orb states (`breathing`, `weaving`, `searching`, `solving`, `resting`).
+- **Inbox (`/inbox`):** `src/modules/inbox/` — Quick capture, frictionless triage into tasks or projects.
+- **Projects (`/projects`):** `src/modules/projects/` — Milestone tracking, project progress, and associated tasks.
+- **Dashboard (`/`):** `src/components/dashboard/` — Daily intention, agenda, and metrics overview.
+- **App Shell & Theme:** `src/components/layout/` (`Sidebar`, `Header`, `MobileNav`, `AppShell`) with warm editorial design tokens.
+

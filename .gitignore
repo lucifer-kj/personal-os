@@ -42,3 +42,7 @@ next-env.d.ts
 
 # playwright artifacts
 .playwright-mcp/
+
+# graphify hidden sidecars
+graphify-out/.*
+graphify-out/cache/
