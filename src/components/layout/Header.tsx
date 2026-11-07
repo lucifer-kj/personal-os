@@ -2,8 +2,10 @@
 
 import * as React from "react";
 import { usePathname } from "next/navigation";
-import { Search, Plus, Bell, Command, Menu } from "lucide-react";
+import { Search, Plus, Bell, Command, Menu, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 const routeTitleMap: Record<string, { title: string; category?: string }> = {
   "/": { title: "Today Overview", category: "Workspace" },
@@ -23,10 +25,22 @@ interface HeaderProps {
 }
 
 export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
+  const router = useRouter();
   const pathname = usePathname();
   const currentRoute = routeTitleMap[pathname] || {
     title: pathname?.replace("/", "") || "Dashboard",
     category: "Workspace",
+  };
+
+  const handleSignOut = async () => {
+    try {
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      router.push("/login");
+      router.refresh();
+    } catch (err) {
+      console.error("Sign out error:", err);
+    }
   };
 
   return (
@@ -103,10 +117,17 @@ export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
           <span className="hidden sm:inline">Capture</span>
         </Button>
 
-        {/* User Avatar / Profile Bubble */}
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--secondary)] border border-[var(--border)] text-xs font-serif font-medium text-[var(--secondary-foreground)] select-none">
-          U
-        </div>
+        {/* Sign Out Button */}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleSignOut}
+          className="text-[var(--muted-foreground)] hover:text-red-600 transition-colors"
+          title="Sign Out"
+          aria-label="Sign Out"
+        >
+          <LogOut className="h-4 w-4" />
+        </Button>
       </div>
     </header>
   );
