@@ -4,6 +4,7 @@ import * as React from "react";
 import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
 import { MobileNav } from "./MobileNav";
+import { CommandPalette } from "@/components/search/CommandPalette";
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -56,6 +57,11 @@ export function AppShell({ children }: AppShellProps) {
           />
         </React.Suspense>
       </div>
+
+      {/* Global Command Palette */}
+      <React.Suspense fallback={null}>
+        <CommandPalette />
+      </React.Suspense>
     </div>
   );
 }

@@ -13,7 +13,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 Personal OS is a calm, private single-user productivity workstation built with Next.js 16 (Turbopack, React 19, Tailwind CSS v4) and Supabase Postgres.
 
 ### 1. Structural Knowledge Graph (Graphify)
-- Knowledge graph available at `graphify-out/graph.json` (1048 nodes, 3872 edges, 34 communities).
+- Knowledge graph available at `graphify-out/graph.json` (1096 nodes, 3997 edges, 41 communities).
 - High-level topology, community clusters, and god nodes: `graphify-out/GRAPH_REPORT.md`.
 - Interactive visualizer: `graphify-out/graph.html`.
 - Run `graphify query "<question>"` to trace dependencies or explain nodes without re-reading source files.
@@ -33,6 +33,7 @@ Personal OS is a calm, private single-user productivity workstation built with N
 - **Notes (`/notes`):** `src/modules/notes/` — Markdown knowledge base, tag taxonomy, note-to-note linking, and wiki-link resolution.
 - **Habits (`/habits`):** `src/modules/habits/` — Daily consistency engine, streak calculation, check-in logs, and API routes (`/api/v1/habits`).
 - **Journal (`/journal`):** `src/modules/journal/` — Reflective journaling, 5-point mood scaling, prompt responses, rolling mood trends, and API routes (`/api/v1/journal`).
+- **Search & Command Palette:** `src/modules/search/`, `src/components/search/CommandPalette.tsx`, and `/api/v1/search` — `cmdk` palette, keyboard routing (`Cmd+K`), universal search across tasks, projects, notes, habits, and inbox.
 - **Dashboard (`/`):** `src/components/dashboard/` — Daily intention, agenda, and metrics overview.
 - **App Shell & Theme:** `src/components/layout/` (`Sidebar`, `Header`, `MobileNav`, `AppShell`) with warm editorial design tokens.
 

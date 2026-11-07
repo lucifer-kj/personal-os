@@ -53,6 +53,12 @@ export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
     }
   };
 
+  const handleOpenSearch = () => {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("personal-os:command-palette"));
+    }
+  };
+
   return (
     <header className="sticky top-0 z-30 flex h-[var(--header-height)] items-center justify-between border-b border-[var(--border)] bg-[var(--background)]/90 backdrop-blur-md px-4 sm:px-6 lg:px-8 transition-all">
       {/* Left: Mobile trigger & Breadcrumbs */}
@@ -93,7 +99,8 @@ export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
             {/* Search Bar / Command Palette Trigger */}
             <button
               type="button"
-              className="hidden md:flex items-center gap-3 h-9 px-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--card)] text-xs text-[var(--muted-foreground)] hover:border-[var(--ring)] transition-colors shadow-2xs"
+              onClick={handleOpenSearch}
+              className="hidden md:flex items-center gap-3 h-9 px-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--card)] text-xs text-[var(--muted-foreground)] hover:border-[var(--ring)] transition-colors shadow-2xs cursor-pointer"
               aria-label="Open Command Search"
             >
               <Search className="h-3.5 w-3.5" />
@@ -107,6 +114,7 @@ export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
             <Button
               variant="ghost"
               size="icon"
+              onClick={handleOpenSearch}
               className="md:hidden text-[var(--muted-foreground)]"
               aria-label="Search"
             >

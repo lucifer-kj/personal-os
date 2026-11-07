@@ -1,71 +1,55 @@
-# Personal OS — Current Sprint (Sprint 8)
+# Personal OS — Current Sprint (Sprint 9)
 
-## Sprint Focus: M8 — Habits & Journal
-- **Objective:** Implement complete end-to-end Habits Tracking & Reflective Journaling module with database migration (`0008_habits_and_journal.sql`), Zod boundary schemas, repository layer (InMemory and Supabase), domain services with streak calculation and mood tracking, REST Route Handlers (`/api/v1/habits/*` and `/api/v1/journal/*`), responsive habit cards with visual streak badges, interactive journal editor with 5-point mood selector, reflection prompts, and dedicated `/habits` and `/journal` workstation pages with Partial Prerendering.
-- **Status:** M8 Completed & Verified. Next Focus: M9 (Global Search & Command Palette).
+## Sprint Focus: M9 — Global Search & Command Palette
+- **Objective:** Implement complete end-to-end Global Unified Search & Command Palette module with `cmdk` command palette, keyboard shortcut invocation (`Cmd+K` / `Ctrl+K`), custom event dispatching (`personal-os:command-palette`), unified search across tasks, projects, notes, habits, and inbox records, static navigation commands, quick action triggers, REST Route Handler (`/api/v1/search`), and global integration inside `AppShell` and `Header`.
+- **Status:** All 10 Milestones (M0 through M9) Completed & Verified! Personal OS Workstation Complete.
 
-## Sprint 8 Completed Deliverables
+## Sprint 9 Completed Deliverables
 
-- [x] **Task 8.1: Database Schema & Migration**
-  - Created `db/migrations/0008_habits_and_journal.sql` defining `habits`, `habit_logs`, and `journal_entries` tables conforming to Supabase Database Spec.
-  - Added columns to `habits`: `user_id`, `title`, `description`, `frequency` (`daily`, `weekdays`, `weekends`, `weekly`), `target_days_per_week`, `color`, `icon`, `is_archived`, `created_at`, `updated_at`.
-  - Added columns to `habit_logs`: `user_id`, `habit_id`, `date` (DATE format), `completed_at`, `notes`, with unique constraint on `(user_id, habit_id, date)`.
-  - Added columns to `journal_entries`: `user_id`, `entry_date` (DATE format), `mood` (1 to 5), `mood_label` (`rough`, `low`, `neutral`, `good`, `great`), `prompt_responses` (JSONB key-value array), `freeform_text`, `tags` (`text[]`), with unique constraint on `(user_id, entry_date)`.
-  - Configured PostgreSQL Row-Level Security (RLS) with owner-isolated policies (`user_id = auth.uid()`) for SELECT, INSERT, UPDATE, DELETE across all three tables.
-  - Successfully applied migration directly to remote Supabase Postgres project (`yvdzdwzfgozeanwusysh`).
+- [x] **Task 9.1: Search Domain Types & Zod Boundary Schemas**
+  - Created `src/modules/search/types.ts` defining `SearchResultItem`, `SearchResultType` (`task`, `project`, `note`, `habit`, `inbox`, `navigation`, `action`), `SearchQuery`, `NavigationCommand`, and `QuickActionCommand`.
+  - Created `src/modules/search/schemas.ts` with `SearchQuerySchema` validating string query (`min(1)`, `max(100)`), comma-delimited `types` array, and integer `limit` clamp (1 to 50).
+  - Created `src/modules/search/schemas.test.ts` (6 tests passing).
 
-- [x] **Task 8.2: Habits Domain Module & Streak Calculation**
-  - Created `src/modules/habits/types.ts` and `src/modules/habits/schemas.ts` with strict Zod boundary validation.
-  - Created `src/modules/habits/habit.repository.ts` with in-memory and Supabase repository implementations (`InMemoryHabitRepository`, `SupabaseHabitRepository`, `getHabitRepository`).
-  - Created `src/modules/habits/habit.service.ts`:
-    - Full CRUD for habits with archive toggling.
-    - Idempotent daily completion logging and unlogging.
-    - Robust streak calculation: computes `currentStreak` and `longestStreak` taking today's completion or grace period into account, avoiding timezone-related UTC day boundary shifts using local ISO dates (`YYYY-MM-DD`).
-    - Completion rate computation over custom rolling windows (e.g. 30 days).
+- [x] **Task 9.2: Repository Layer & Scoring Engine**
+  - Created `src/modules/search/search.repository.ts`:
+    - `ISearchRepository` interface.
+    - `InMemorySearchRepository`: Memory-backed store for tests with relevance scoring (exact match: 100, prefix match: 80, substring match: 50, description match: 25).
+    - `SupabaseSearchRepository`: Executes parallel queries against `tasks`, `projects`, `notes`, `habits`, and `inbox_items` using `ilike` filters strictly bounded by `user_id = auth.uid()`.
+    - `getSearchRepository` factory helper.
 
-- [x] **Task 8.3: Journal Domain Module & Mood Trends**
-  - Created `src/modules/journal/types.ts` and `src/modules/journal/schemas.ts` with strict Zod validation.
-  - Created `src/modules/journal/journal.repository.ts` with in-memory and Supabase repository implementations (`InMemoryJournalRepository`, `SupabaseJournalRepository`, `getJournalRepository`).
-  - Created `src/modules/journal/journal.service.ts`:
-    - Upsert journal entry per day (`user_id`, `entry_date`).
-    - 5-point mood scaling (`rough` [1], `low` [2], `neutral` [3], `good` [4], `great` [5]).
-    - Reflection prompts support: "What went well today?", "What gave me energy?", "One insight or lesson".
-    - Mood trend calculation: calculates rolling average mood score, distribution histogram, and daily timeline over 7-day, 14-day, or 30-day windows.
+- [x] **Task 9.3: Search Domain Service & Command Registry**
+  - Created `src/modules/search/search.service.ts`:
+    - `DEFAULT_NAVIGATION_COMMANDS`: Registered standard destination jumps (`/`, `/tasks`, `/inbox`, `/projects`, `/calendar`, `/notes`, `/habits`, `/journal`, `/focus`) with keyboard hints.
+    - `DEFAULT_QUICK_ACTIONS`: Registered rapid action triggers (Quick Capture, Create Task, Create Note, Start Focus, New Habit, Today's Reflection).
+    - Keyword and title filtering for navigation and actions.
+    - Coordinated `searchAll` unifying domain entity results with matching navigation and action commands.
+  - Created `src/modules/search/search.service.test.ts` (5 tests passing).
 
-- [x] **Task 8.4: REST API Endpoints**
-  - Habits:
-    - `GET /api/v1/habits`: List active habits with streak metrics and today's completion status.
-    - `POST /api/v1/habits`: Create new habit.
-    - `GET /api/v1/habits/[id]`: Retrieve habit details, streak, and recent 30-day completion log.
-    - `PATCH /api/v1/habits/[id]`: Update habit metadata.
-    - `DELETE /api/v1/habits/[id]`: Remove habit and cascade logs.
-    - `POST /api/v1/habits/[id]/log`: Toggle daily check-in (supports idempotent check and uncheck).
-    - `POST /api/v1/habits/[id]/archive`: Toggle archived status.
-  - Journal:
-    - `GET /api/v1/journal`: List journal entries with date range and tag filtering.
-    - `POST /api/v1/journal`: Upsert daily reflection entry.
-    - `GET /api/v1/journal/[id]`: Retrieve single entry by ID or date.
-    - `PATCH /api/v1/journal/[id]`: Update existing journal reflection.
-    - `DELETE /api/v1/journal/[id]`: Remove journal entry.
-    - `GET /api/v1/journal/trends`: Retrieve rolling mood averages and timeline trends.
+- [x] **Task 9.4: REST API Route (`/api/v1/search`)**
+  - Created `src/app/api/v1/search/route.ts`:
+    - Secure endpoint resolving `getAuthenticatedUser(request)`.
+    - Returns structured `{ data: results, navigation, actions, meta: { total, query } }`.
+    - Responds with static navigation and action commands when query is empty.
+  - Created `src/app/api/v1/search/search.api.test.ts` (3 tests passing).
 
-- [x] **Task 8.5: UI Layer & Workstation Pages**
-  - Created `src/components/habits/HabitCard.tsx`: Warm card with one-click check-in circle, current/longest streak badges, and weekly completion dots.
-  - Created `src/components/habits/HabitModal.tsx`: Creation and edit dialog with frequency selectors and color palette tags.
-  - Created `src/components/habits/HabitsView.tsx`: Overview with filter tabs (All, Daily, Weekly, Archived), completion rate stats bar, and quick creation flow.
-  - Created `src/app/habits/page.tsx`: Streaming Partial Prerendering page with Next.js 16 Suspense boundary.
-  - Created `src/components/journal/JournalCalendarStrip.tsx`: Horizontal interactive date selector showing mood indicators and completed reflection dots.
-  - Created `src/components/journal/JournalEditor.tsx`: Reflective writing suite with 5 mood pill options, 3 guided prompt textareas, freeform reflections, tag pills, and autosave feedback.
-  - Created `src/components/journal/JournalHistory.tsx`: Chronological reflection entries list with mood badge and prompt previews.
-  - Created `src/components/journal/JournalView.tsx`: Workstation view coordinating calendar strip, editor, and mood trend timeline.
-  - Created `src/app/journal/page.tsx`: Streaming Partial Prerendering page with Next.js 16 Suspense boundary.
+- [x] **Task 9.5: UI Command Palette Component (`cmdk`)**
+  - Installed and configured `cmdk`.
+  - Created `src/components/search/CommandPalette.tsx`:
+    - Listening for `Cmd+K` / `Ctrl+K`, `Escape`, and `personal-os:command-palette` events.
+    - Debounced live fetch against `/api/v1/search`.
+    - Grouped results: Tasks, Projects, Notes, Habits, Inbox, Navigation, Quick Actions.
+    - Keyboard navigation (Arrow Up/Down, Enter selection, Escape close).
+    - Warm editorial design matching design tokens (`bg-[var(--card)]`, `border-[var(--border)]`, `text-[var(--foreground)]`, typography scales).
+  - Polyfilled `ResizeObserver` and `scrollIntoView` in `src/test/setup.ts`.
+  - Created `src/components/search/CommandPalette.test.tsx` (6 tests passing).
 
-- [x] **Task 8.6: Verification & Test Suite**
-  - Schema unit tests: `src/modules/habits/schemas.test.ts` (7 tests) & `src/modules/journal/schemas.test.ts` (5 tests).
-  - Service unit tests: `src/modules/habits/habit.service.test.ts` (5 tests) & `src/modules/journal/journal.service.test.ts` (4 tests).
-  - API Route Handler integration tests: `src/app/api/v1/habits/habits.api.test.ts` (1 test) & `src/app/api/v1/journal/journal.api.test.ts` (1 test).
-  - Component tests: `src/components/habits/HabitsView.test.tsx` (3 tests) & `src/components/journal/JournalView.test.tsx` (3 tests).
-  - Full Vitest suite: **181/181 tests passing** across 46 test files.
-  - ESLint: **0 errors, 0 warnings**.
-  - TypeScript: **0 errors** (`tsc --noEmit`).
-  - Next.js Production Build: **Exit code 0** (`next build`) with Partial Prerendering on `/habits` and `/journal`.
+- [x] **Task 9.6: Global Integration & Shell Wiring**
+  - Integrated `<CommandPalette />` globally inside `src/components/layout/AppShell.tsx`.
+  - Wired search trigger buttons in `src/components/layout/Header.tsx` (both desktop search bar and mobile search icon) to dispatch `personal-os:command-palette`.
+
+- [x] **Task 9.7: Verification & Test Suite**
+  - Vitest test suite: **201/201 tests passing** across 50 test files.
+  - TypeScript: **0 errors** (`pnpm typecheck`).
+  - ESLint: **0 errors, 0 warnings** (`pnpm lint`).
+  - Next.js Production Build: **Exit code 0** (`pnpm build`) with all 35 routes verified.
