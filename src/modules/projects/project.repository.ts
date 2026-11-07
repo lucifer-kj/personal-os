@@ -17,7 +17,7 @@ export interface IProjectRepository {
   deleteMilestone(userId: string, milestoneId: string): Promise<boolean>;
 }
 
-class InMemoryProjectRepository implements IProjectRepository {
+export class InMemoryProjectRepository implements IProjectRepository {
   private projects: Map<string, Project> = new Map();
   private milestones: Map<string, ProjectMilestone> = new Map();
 

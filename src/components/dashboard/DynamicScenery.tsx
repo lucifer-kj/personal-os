@@ -19,11 +19,10 @@ export function getTimeOfDay(date: Date = new Date()): TimeOfDay {
 }
 
 export function DynamicScenery({ className = "", forceTimeOfDay }: DynamicSceneryProps) {
-  const [detectedTimeOfDay, setDetectedTimeOfDay] = React.useState<TimeOfDay>("day");
+  const [detectedTimeOfDay, setDetectedTimeOfDay] = React.useState<TimeOfDay>(() => getTimeOfDay());
 
   React.useEffect(() => {
     if (forceTimeOfDay) return;
-    setDetectedTimeOfDay(getTimeOfDay());
 
     const interval = setInterval(() => {
       setDetectedTimeOfDay(getTimeOfDay());

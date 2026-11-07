@@ -1,200 +1,209 @@
 # Graph Report - personal-os  (2026-11-06)
 
 ## Corpus Check
-- 189 files · ~85,161 words
+- 208 files · ~94,693 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 5 file(s) not represented in the graph (top: (none) 2, .css 2, .ico 1)
 
 ## Summary
-- 762 nodes · 2730 edges · 30 communities (27 shown, 3 thin omitted)
-- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 101 edges (avg confidence: 0.85)
+- 869 nodes · 3212 edges · 31 communities (29 shown, 2 thin omitted)
+- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 134 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
 - next.config.ts / nextConfig
-- calendar/page.tsx / CalendarContent()
-- zod@^4.6.7 / zod
-- FocusViewProps / focus.repository.ts
-- InboxListProps / InboxViewProps
-- CalendarViewProps / TimeBlockDrawerProps
-- ProjectCreateDialogProps / .create()
-- lucide-react / forgot-password/page.tsx
-- react / TodayAgenda.tsx
-- src_app_globals / layout.tsx
-- IDayRepository / .findByDate()
+- archive/route.ts / POST()
+- calendar.api.test.ts / GET()
+- ProjectCreateDialogProps / project.repository.ts
 - @supabase/supabase-js / dashboard.api.test.ts
-- InMemoryProjectRepository / .clear()
-- TimeBlockDrawer.tsx / ProjectCreateDialog.tsx
-- app/page.tsx / DashboardContent()
+- calendar/page.tsx / CalendarContent()
+- TimeBlockDrawerProps / DashboardViewProps
+- InboxListProps / InboxViewProps
+- FocusViewProps / InMemoryFocusRepository
+- react / CalendarView.test.tsx
+- lucide-react / forgot-password/page.tsx
+- package.json / devDependencies
+- ActiveProjectsWidgetProps / ProjectCard.tsx
 - tsconfig.json / compilerOptions
+- src_app_globals / layout.tsx
 - @testing-library/react / vitest
 - ActiveProjectsWidget.tsx / ActiveProjectsWidget()
-- devDependencies / jsdom@^31.0.0
 - dependencies / clsx@^2.1.1
-- package.json / tailwindcss@^4
-- DashboardHeader.tsx / DashboardHeader()
 - InboxList.tsx / InboxList()
+- zod@^4.6.7 / zod
 - scripts / build
+- card.tsx / CardContent
+- day/schemas.ts / DateQueryInput
+- projects/schemas.ts / CreateMilestoneSchema
 - @supabase/ssr@^0.12.7 / @supabase/ssr
+- focus/schemas.ts / abandonFocusSessionSchema
+- tasks/schemas.ts / CreateTaskSchema
 - eslint.config.mjs / eslintConfig
 - @vitejs/plugin-react@^6.2.1 / ref_node_path
 - pnpm-workspace.yaml / allowBuilds
-- DashboardService / .constructor()
 
 ## God Nodes (most connected - your core abstractions)
-1. `createClient()` - 80 edges
-2. `getAuthenticatedUser()` - 79 edges
-3. `apiSuccess()` - 66 edges
-4. `next` - 62 edges
-5. `react` - 59 edges
-6. `Button` - 49 edges
-7. `Task` - 47 edges
-8. `getTaskRepository()` - 42 edges
-9. `apiUnauthorized()` - 41 edges
-10. `apiBadRequest()` - 41 edges
+1. `createClient()` - 99 edges
+2. `getAuthenticatedUser()` - 98 edges
+3. `apiSuccess()` - 83 edges
+4. `next` - 70 edges
+5. `react` - 63 edges
+6. `apiUnauthorized()` - 58 edges
+7. `apiBadRequest()` - 58 edges
+8. `Button` - 53 edges
+9. `Task` - 51 edges
+10. `getTaskRepository()` - 49 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `ActiveProjectsWidgetProps` --references--> `ProjectWithStats`  [EXTRACTED]
-  src/components/dashboard/ActiveProjectsWidget.tsx → src/modules/projects/types.ts
 - `GET()` --calls--> `getAuthenticatedUser()`  [EXTRACTED]
   src/app/api/v1/auth/me/route.ts → src/lib/supabase/auth.ts
-- `GET()` --calls--> `createDashboardService()`  [EXTRACTED]
-  src/app/api/v1/dashboard/route.ts → src/modules/dashboard/dashboard.service.ts
-- `GET()` --calls--> `createClient()`  [EXTRACTED]
-  src/app/auth/callback/route.ts → src/lib/supabase/server.ts
-- `CalendarContent()` --calls--> `getAuthenticatedUser()`  [EXTRACTED]
-  src/app/calendar/page.tsx → src/lib/supabase/auth.ts
+- `GET()` --calls--> `apiBadRequest()`  [EXTRACTED]
+  src/app/api/v1/calendar/conflicts/route.ts → src/lib/api/response.ts
+- `GET()` --calls--> `apiSuccess()`  [EXTRACTED]
+  src/app/api/v1/calendar/conflicts/route.ts → src/lib/api/response.ts
+- `GET()` --calls--> `apiUnauthorized()`  [EXTRACTED]
+  src/app/api/v1/calendar/conflicts/route.ts → src/lib/api/response.ts
+- `GET()` --calls--> `getAuthenticatedUser()`  [EXTRACTED]
+  src/app/api/v1/calendar/conflicts/route.ts → src/lib/supabase/auth.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (30 total, 3 thin omitted)
+## Communities (31 total, 2 thin omitted)
 
 ### Community 0 - "next.config.ts / nextConfig"
 Cohesion: 0.09
-Nodes (82): nextConfig, next, GET(), GET(), POST(), DELETE(), GET(), PATCH() (+74 more)
+Nodes (72): nextConfig, next, GET(), GET(), PATCH(), GET(), POST(), POST() (+64 more)
 
-### Community 1 - "calendar/page.tsx / CalendarContent()"
+### Community 1 - "archive/route.ts / POST()"
+Cohesion: 0.05
+Nodes (48): POST(), DELETE(), GET(), POST(), POST(), DELETE(), GET(), PATCH() (+40 more)
+
+### Community 2 - "calendar.api.test.ts / GET()"
 Cohesion: 0.06
-Nodes (44): CalendarContent(), CalendarPage(), metadata, AgendaView(), AgendaViewProps, CalendarHeader(), CalendarHeaderProps, CalendarView() (+36 more)
+Nodes (39): GET(), POST(), DELETE(), GET(), PATCH(), GET(), POST(), POST() (+31 more)
 
-### Community 2 - "zod@^4.6.7 / zod"
-Cohesion: 0.06
-Nodes (38): zod@^4.6.7, zod, calendarQuerySchema, conflictQuerySchema, CreateCalendarEventInput, createCalendarEventSchema, eventTypeSchema, MoveCalendarEventInput (+30 more)
-
-### Community 3 - "FocusViewProps / focus.repository.ts"
-Cohesion: 0.10
-Nodes (13): FocusViewProps, globalInMemoryFocusRepo, InMemoryFocusRepository, SupabaseFocusRepository, ActiveFocusSession, CompleteFocusSessionDTO, EntryType, FocusSession (+5 more)
-
-### Community 4 - "InboxListProps / InboxViewProps"
+### Community 3 - "ProjectCreateDialogProps / project.repository.ts"
 Cohesion: 0.09
+Nodes (13): ProjectCreateDialogProps, globalInMemoryProjectRepo, InMemoryProjectRepository, IProjectRepository, SupabaseProjectRepository, ProjectService, CreateMilestoneDTO, CreateProjectDTO (+5 more)
+
+### Community 4 - "@supabase/supabase-js / dashboard.api.test.ts"
+Cohesion: 0.09
+Nodes (20): @supabase/supabase-js, DashboardContent(), HomePage(), metadata, createDashboardService(), DashboardService, getDayRepository(), getInMemoryDayRepository() (+12 more)
+
+### Community 5 - "calendar/page.tsx / CalendarContent()"
+Cohesion: 0.12
+Nodes (34): CalendarContent(), CalendarPage(), metadata, ProjectDetailPage(), metadata, ProjectsPage(), metadata, TasksPage() (+26 more)
+
+### Community 6 - "TimeBlockDrawerProps / DashboardViewProps"
+Cohesion: 0.09
+Nodes (15): TimeBlockDrawerProps, DashboardViewProps, TodayAgendaProps, TaskCreateDialogProps, TaskItemProps, TaskListProps, DashboardOverviewDTO, InMemoryTaskRepository (+7 more)
+
+### Community 7 - "InboxListProps / InboxViewProps"
+Cohesion: 0.10
 Nodes (14): InboxListProps, InboxViewProps, globalInMemoryInboxRepo, InMemoryInboxRepository, SupabaseInboxRepository, CaptureSource, ConvertedEntityType, CreateInboxItemDTO (+6 more)
 
-### Community 5 - "CalendarViewProps / TimeBlockDrawerProps"
+### Community 8 - "FocusViewProps / InMemoryFocusRepository"
 Cohesion: 0.10
-Nodes (14): CalendarViewProps, TimeBlockDrawerProps, TodayAgendaProps, TaskCreateDialogProps, TaskItemProps, TaskListProps, InMemoryTaskRepository, ITaskRepository (+6 more)
+Nodes (12): FocusViewProps, InMemoryFocusRepository, SupabaseFocusRepository, ActiveFocusSession, CompleteFocusSessionDTO, EntryType, FocusSession, IFocusRepository (+4 more)
 
-### Community 6 - "ProjectCreateDialogProps / .create()"
-Cohesion: 0.14
-Nodes (7): ProjectCreateDialogProps, IProjectRepository, ProjectService, CreateProjectDTO, Project, ProjectFilters, UpdateProjectDTO
-
-### Community 7 - "lucide-react / forgot-password/page.tsx"
+### Community 9 - "react / CalendarView.test.tsx"
 Cohesion: 0.19
+Nodes (16): react, ProjectDetailView(), TaskCreateDialog(), TaskEmptyState(), TaskEmptyStateProps, StatusFilterOption, TaskFilterBar(), TaskFilterBarProps (+8 more)
+
+### Community 10 - "lucide-react / forgot-password/page.tsx"
+Cohesion: 0.20
 Nodes (17): lucide-react, ForgotPasswordPage(), LoginPage(), ResetPasswordPage(), SignupPage(), checkWorkspace(), AppOrb(), AppOrbProps (+9 more)
 
-### Community 8 - "react / TodayAgenda.tsx"
-Cohesion: 0.18
-Nodes (15): react, TodayAgenda(), TaskEmptyState(), TaskEmptyStateProps, StatusFilterOption, TaskFilterBar(), TaskFilterBarProps, priorityBadgeVariant (+7 more)
+### Community 11 - "package.json / devDependencies"
+Cohesion: 0.11
+Nodes (23): devDependencies, jsdom@^31.0.0, tailwindcss@^4, @tailwindcss/turbopack@^4, @testing-library/jest-dom@^7.0.1, @testing-library/react@^16.3.3, @types/node@^20, @types/react@^19 (+15 more)
 
-### Community 9 - "src_app_globals / layout.tsx"
-Cohesion: 0.15
-Nodes (16): inter, metadata, RootLayout(), AppShell(), AppShellProps, MobileNav(), MobileNavProps, NavItem (+8 more)
+### Community 12 - "ActiveProjectsWidgetProps / ProjectCard.tsx"
+Cohesion: 0.19
+Nodes (15): ActiveProjectsWidgetProps, priorityBadgeVariant, ProjectCard(), ProjectCardProps, statusBadgeVariant, ProjectCreateDialog(), ProjectDetailViewProps, ProjectFilterBar() (+7 more)
 
-### Community 10 - "IDayRepository / .findByDate()"
-Cohesion: 0.14
-Nodes (7): IDayRepository, InMemoryDayRepository, SupabaseDayRepository, DailyPlan, DayMetrics, DayOverviewDTO, UpdateIntentionDTO
-
-### Community 11 - "@supabase/supabase-js / dashboard.api.test.ts"
-Cohesion: 0.23
-Nodes (10): @supabase/supabase-js, getDayRepository(), getInMemoryDayRepository(), globalInMemoryDayRepo, DayService, getInMemoryProjectRepository(), getProjectRepository(), globalInMemoryProjectRepo (+2 more)
-
-### Community 12 - "InMemoryProjectRepository / .clear()"
-Cohesion: 0.15
-Nodes (4): InMemoryProjectRepository, SupabaseProjectRepository, CreateMilestoneDTO, ProjectMilestone
-
-### Community 13 - "TimeBlockDrawer.tsx / ProjectCreateDialog.tsx"
-Cohesion: 0.27
-Nodes (12): ProjectCreateDialog(), ProjectDetailView(), ProjectFilterBar(), ProjectFilterBarProps, ProjectStatusFilterOption, ProjectList(), TaskCreateDialog(), Button (+4 more)
-
-### Community 14 - "app/page.tsx / DashboardContent()"
-Cohesion: 0.17
-Nodes (13): DashboardContent(), HomePage(), metadata, ProjectDetailContent(), ProjectDetailPage(), ProjectPageProps, metadata, ProjectsPage() (+5 more)
-
-### Community 15 - "tsconfig.json / compilerOptions"
+### Community 13 - "tsconfig.json / compilerOptions"
 Cohesion: 0.11
 Nodes (18): compilerOptions, allowJs, esModuleInterop, incremental, isolatedModules, jsx, lib, module (+10 more)
 
-### Community 16 - "@testing-library/react / vitest"
-Cohesion: 0.19
-Nodes (11): @testing-library/react, vitest, priorityBadgeVariant, ProjectCard(), ProjectCardProps, statusBadgeVariant, ProjectDetailViewProps, ProjectListProps (+3 more)
+### Community 14 - "src_app_globals / layout.tsx"
+Cohesion: 0.18
+Nodes (11): inter, metadata, RootLayout(), AppShell(), AppShellProps, Header(), MobileNav(), MobileNavProps (+3 more)
 
-### Community 17 - "ActiveProjectsWidget.tsx / ActiveProjectsWidget()"
-Cohesion: 0.24
-Nodes (10): ActiveProjectsWidget(), ActiveProjectsWidgetProps, DashboardMetrics(), DashboardMetricsProps, DashboardView(), DashboardViewProps, QuickCaptureCard(), QuickCaptureCardProps (+2 more)
+### Community 15 - "@testing-library/react / vitest"
+Cohesion: 0.17
+Nodes (9): @testing-library/react, vitest, DashboardHeader(), DashboardHeaderProps, DynamicScenery(), DynamicSceneryProps, getTimeOfDay(), TimeOfDay (+1 more)
 
-### Community 18 - "devDependencies / jsdom@^31.0.0"
-Cohesion: 0.14
-Nodes (13): devDependencies, jsdom@^31.0.0, @tailwindcss/turbopack@^4, @testing-library/jest-dom@^7.0.1, @testing-library/react@^16.3.3, @types/node@^20, @types/react-dom@^19, vitest@^5.1.0 (+5 more)
+### Community 16 - "ActiveProjectsWidget.tsx / ActiveProjectsWidget()"
+Cohesion: 0.28
+Nodes (9): ActiveProjectsWidget(), DashboardMetrics(), DashboardMetricsProps, DashboardView(), QuickCaptureCard(), QuickCaptureCardProps, TodayAgenda(), Card (+1 more)
 
-### Community 19 - "dependencies / clsx@^2.1.1"
+### Community 17 - "dependencies / clsx@^2.1.1"
 Cohesion: 0.15
 Nodes (13): dependencies, clsx@^2.1.1, lucide-react@^1.69.0, next@16.4.5, react@19.3.0, react-dom@19.3.0, @supabase/supabase-js@^2.119.0, tailwind-merge@^3.7.0 (+5 more)
 
-### Community 21 - "package.json / tailwindcss@^4"
-Cohesion: 0.18
-Nodes (10): tailwindcss@^4, @types/react@^19, typescript@^5, name, packageManager, private, version, tailwindcss (+2 more)
+### Community 18 - "InboxList.tsx / InboxList()"
+Cohesion: 0.27
+Nodes (7): InboxList(), InboxView(), QuickCaptureModal(), QuickCaptureModalProps, Badge(), BadgeProps, CaptureType
 
-### Community 22 - "DashboardHeader.tsx / DashboardHeader()"
-Cohesion: 0.33
-Nodes (6): DashboardHeader(), DashboardHeaderProps, DynamicScenery(), DynamicSceneryProps, getTimeOfDay(), TimeOfDay
+### Community 20 - "zod@^4.6.7 / zod"
+Cohesion: 0.28
+Nodes (7): zod@^4.6.7, zod, captureTypeSchema, createInboxItemSchema, inboxStatusSchema, processInboxItemSchema, updateInboxItemSchema
 
-### Community 23 - "InboxList.tsx / InboxList()"
-Cohesion: 0.39
-Nodes (5): InboxList(), InboxView(), QuickCaptureModal(), QuickCaptureModalProps, CaptureType
-
-### Community 24 - "scripts / build"
+### Community 21 - "scripts / build"
 Cohesion: 0.25
 Nodes (8): scripts, build, dev, lint, start, test, test:watch, typecheck
+
+### Community 22 - "card.tsx / CardContent"
+Cohesion: 0.57
+Nodes (6): CardContent, CardDescription, CardFooter, CardHeader, CardTitle, cn()
+
+### Community 23 - "day/schemas.ts / DateQueryInput"
+Cohesion: 0.36
+Nodes (6): DateQueryInput, dateQuerySchema, UpdateIntentionInput, updateIntentionSchema, UpdateShutdownNotesInput, updateShutdownNotesSchema
+
+### Community 24 - "projects/schemas.ts / CreateMilestoneSchema"
+Cohesion: 0.39
+Nodes (6): CreateMilestoneSchema, CreateProjectSchema, ProjectPriorityEnum, ProjectQuerySchema, ProjectStatusEnum, UpdateProjectSchema
 
 ### Community 25 - "@supabase/ssr@^0.12.7 / @supabase/ssr"
 Cohesion: 0.38
 Nodes (5): @supabase/ssr@^0.12.7, @supabase/ssr, updateSession(), config, middleware()
 
-### Community 26 - "eslint.config.mjs / eslintConfig"
+### Community 26 - "focus/schemas.ts / abandonFocusSessionSchema"
+Cohesion: 0.43
+Nodes (5): abandonFocusSessionSchema, completeFocusSessionSchema, sessionModeSchema, sessionStatusSchema, startFocusSessionSchema
+
+### Community 27 - "tasks/schemas.ts / CreateTaskSchema"
+Cohesion: 0.43
+Nodes (5): CreateTaskSchema, TaskPriorityEnum, TaskQuerySchema, TaskStatusEnum, UpdateTaskSchema
+
+### Community 28 - "eslint.config.mjs / eslintConfig"
 Cohesion: 0.33
 Nodes (5): eslintConfig, eslint@^9, eslint-config-next@16.4.5, eslint, eslint-config-next
 
-### Community 28 - "pnpm-workspace.yaml / allowBuilds"
+### Community 30 - "pnpm-workspace.yaml / allowBuilds"
 Cohesion: 0.50
 Nodes (3): allowBuilds, sharp, unrs-resolver
 
 ## Knowledge Gaps
-- **3 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **2 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `next` connect `Community 0` to `Community 1`, `Community 7`, `Community 8`, `Community 9`, `Community 11`, `Community 13`, `Community 14`, `Community 16`, `Community 17`, `Community 19`, `Community 21`, `Community 22`, `Community 25`?**
-  _High betweenness centrality (0.140) - this node is a cross-community bridge._
+- **Why does `next` connect `Community 0` to `Community 1`, `Community 2`, `Community 4`, `Community 5`, `Community 9`, `Community 10`, `Community 11`, `Community 12`, `Community 14`, `Community 15`, `Community 16`, `Community 17`, `Community 25`?**
+  _High betweenness centrality (0.129) - this node is a cross-community bridge._
 - **Should `Community 0` be split into smaller, more focused modules?**
-  _Cohesion score 0.09193650793650794 - nodes in this community are weakly interconnected._
-- **Why does `react` connect `Community 8` to `Community 0`, `Community 1`, `Community 7`, `Community 9`, `Community 13`, `Community 14`, `Community 16`, `Community 17`, `Community 19`, `Community 21`, `Community 22`, `Community 23`?**
-  _High betweenness centrality (0.099) - this node is a cross-community bridge._
+  _Cohesion score 0.08779298198076141 - nodes in this community are weakly interconnected._
+- **Why does `react` connect `Community 9` to `Community 0`, `Community 1`, `Community 4`, `Community 5`, `Community 10`, `Community 11`, `Community 12`, `Community 14`, `Community 15`, `Community 16`, `Community 17`, `Community 18`, `Community 22`?**
+  _High betweenness centrality (0.100) - this node is a cross-community bridge._
 - **Should `Community 1` be split into smaller, more focused modules?**
-  _Cohesion score 0.061782661782661785 - nodes in this community are weakly interconnected._
-- **Why does `vitest` connect `Community 16` to `Community 0`, `Community 1`, `Community 2`, `Community 3`, `Community 5`, `Community 7`, `Community 8`, `Community 9`, `Community 11`, `Community 18`, `Community 21`, `Community 22`, `Community 23`, `Community 27`?**
+  _Cohesion score 0.05070958809276566 - nodes in this community are weakly interconnected._
+- **Why does `vitest` connect `Community 15` to `Community 0`, `Community 1`, `Community 2`, `Community 4`, `Community 6`, `Community 7`, `Community 9`, `Community 11`, `Community 12`, `Community 14`, `Community 16`, `Community 18`, `Community 20`, `Community 22`, `Community 23`, `Community 24`, `Community 26`, `Community 27`, `Community 29`?**
   _High betweenness centrality (0.067) - this node is a cross-community bridge._
 - **Should `Community 2` be split into smaller, more focused modules?**
-  _Cohesion score 0.0563265306122449 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06288568909785483 - nodes in this community are weakly interconnected._
 - **Should `Community 3` be split into smaller, more focused modules?**
-  _Cohesion score 0.1 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.09224318658280922 - nodes in this community are weakly interconnected._
