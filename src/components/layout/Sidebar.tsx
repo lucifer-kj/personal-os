@@ -15,6 +15,7 @@ import {
   Timer,
   Settings,
   Sparkles,
+  Share2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -36,6 +37,7 @@ const primaryNavItems: NavItem[] = [
   { title: "Notes", href: "/notes", icon: FileText },
   { title: "Habits", href: "/habits", icon: Flame },
   { title: "Journal", href: "/journal", icon: BookOpen },
+  { title: "Studio", href: "/studio", icon: Share2 },
 ];
 
 export function Sidebar({ className }: { className?: string }) {

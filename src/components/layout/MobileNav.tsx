@@ -16,6 +16,7 @@ import {
   Flame,
   BookOpen,
   Settings,
+  Share2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -49,6 +50,7 @@ export function MobileNav({
     { title: "Notes", href: "/notes", icon: FileText },
     { title: "Habits", href: "/habits", icon: Flame },
     { title: "Journal", href: "/journal", icon: BookOpen },
+    { title: "Studio", href: "/studio", icon: Share2 },
     { title: "Settings", href: "/settings", icon: Settings },
   ];
 

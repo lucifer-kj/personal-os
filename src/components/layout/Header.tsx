@@ -16,6 +16,7 @@ const routeTitleMap: Record<string, { title: string; category?: string }> = {
   "/notes": { title: "Notes", category: "Knowledge" },
   "/habits": { title: "Habits", category: "Routines" },
   "/journal": { title: "Journal", category: "Reflection" },
+  "/studio": { title: "Social Studio", category: "Publishing" },
   "/settings": { title: "Settings", category: "System" },
   "/login": { title: "Sign In", category: "Authentication" },
   "/signup": { title: "Owner Initialization", category: "Authentication" },

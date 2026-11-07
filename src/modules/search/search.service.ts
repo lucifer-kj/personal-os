@@ -79,6 +79,14 @@ export const DEFAULT_NAVIGATION_COMMANDS: NavigationCommand[] = [
     keywords: ["focus", "pomodoro", "timer", "stopwatch", "deep work"],
     shortcut: "G F",
   },
+  {
+    id: "nav-studio",
+    title: "Social Studio",
+    category: "Navigation",
+    url: "/studio",
+    keywords: ["studio", "social", "twitter", "x", "linkedin", "threads", "posts", "media"],
+    shortcut: "G S",
+  },
 ];
 
 export const DEFAULT_QUICK_ACTIONS: QuickActionCommand[] = [
