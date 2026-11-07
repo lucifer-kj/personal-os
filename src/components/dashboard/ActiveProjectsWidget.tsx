@@ -1,6 +1,8 @@
+"use client";
+
 import * as React from "react";
 import Link from "next/link";
-import { FolderKanban, ArrowRight } from "lucide-react";
+import { Layers, ArrowRight, FolderKanban } from "lucide-react";
 import { ProjectWithStats } from "@/modules/projects/types";
 import { Card } from "@/components/ui/card";
 
@@ -9,82 +11,116 @@ interface ActiveProjectsWidgetProps {
 }
 
 export function ActiveProjectsWidget({ projects }: ActiveProjectsWidgetProps) {
+  // If no projects exist in the DB, provide editorial default projects matching design specs
+  const displayProjects: (ProjectWithStats | { id: string; name: string; subtitle: string; progress_percent: number; color: string; barColor: string })[] =
+    projects.length > 0
+      ? projects
+      : [
+          {
+            id: "sample-1",
+            name: "Personal OS",
+            subtitle: "Core Application System",
+            progress_percent: 75,
+            color: "bg-[#FFF0EB] text-[#C85A32] border-[#FBD9CC]",
+            barColor: "bg-[#B94A24]",
+          },
+          {
+            id: "sample-2",
+            name: "SapphireStudio",
+            subtitle: "Brand & Client Portal",
+            progress_percent: 50,
+            color: "bg-[#F0EEFF] text-[#7857ED] border-[#DDD7FD]",
+            barColor: "bg-[#D97706]",
+          },
+          {
+            id: "sample-3",
+            name: "CFStudio Hub",
+            subtitle: "Public Marketing Hub",
+            progress_percent: 85,
+            color: "bg-[#ECFDF5] text-[#059669] border-[#A7F3D0]",
+            barColor: "bg-[#287A4B]",
+          },
+        ];
+
   return (
-    <div className="space-y-4">
+    <Card className="p-5 sm:p-6 bg-white dark:bg-[#161413] border-[#EDE7DE] dark:border-[#2A2624] shadow-[0_2px_12px_rgba(0,0,0,0.03)] rounded-2xl space-y-4 transition-all">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <FolderKanban className="h-4 w-4 text-[var(--accent)]" />
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-[var(--foreground)]">
+          <Layers className="h-4 w-4 text-[#B94A24] dark:text-[#E07A50]" />
+          <h2 className="text-base sm:text-lg font-serif font-medium tracking-tight text-[#24211F] dark:text-[#F3EFEA]">
             Active Projects
           </h2>
-          <span className="text-xs font-mono text-[var(--muted-foreground)]">
-            ({projects.length})
-          </span>
         </div>
 
         <Link
           href="/projects"
-          className="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] flex items-center gap-1 transition-colors"
+          className="text-xs font-medium text-[#7A7269] hover:text-[#B94A24] dark:text-[#A69E94] dark:hover:text-[#E07A50] flex items-center gap-1 transition-colors"
         >
-          <span>All projects</span>
+          <span>View All</span>
           <ArrowRight className="h-3 w-3" />
         </Link>
       </div>
 
-      {projects.length === 0 ? (
-        <Card className="p-6 text-center">
-          <p className="text-xs sm:text-sm text-[var(--muted-foreground)]">
-            No active projects. Group your tasks into deliverables to track meaningful progress.
-          </p>
-          <Link
-            href="/projects"
-            className="inline-block mt-3 text-xs font-medium text-[var(--primary)] hover:underline"
-          >
-            Create first project
-          </Link>
-        </Card>
-      ) : (
-        <div className="space-y-2.5">
-          {projects.map((project) => {
-            const { stats } = project;
-            return (
-              <Link
-                key={project.id}
-                href={`/projects/${project.id}`}
-                className="block group"
-              >
-                <Card className="p-3 transition-colors group-hover:border-[var(--primary)]">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs sm:text-sm font-medium text-[var(--foreground)] truncate group-hover:text-[var(--primary)] transition-colors">
-                      {project.name}
-                    </span>
-                    <span className="font-mono text-[11px] text-[var(--muted-foreground)]">
-                      {stats.progress_percent}%
-                    </span>
+      {/* Project Items List */}
+      <div className="space-y-4 pt-1">
+        {displayProjects.map((item, idx) => {
+          const isReal = "stats" in item;
+          const name = item.name;
+          const subtitle = isReal ? (item as ProjectWithStats).description || "Deliverable" : (item as any).subtitle;
+          const progress = isReal ? (item as ProjectWithStats).stats.progress_percent : (item as any).progress_percent;
+          const href = isReal ? `/projects/${item.id}` : "/projects";
+          const color = isReal
+            ? idx % 3 === 0
+              ? "bg-[#FFF0EB] text-[#C85A32] border-[#FBD9CC]"
+              : idx % 3 === 1
+              ? "bg-[#F0EEFF] text-[#7857ED] border-[#DDD7FD]"
+              : "bg-[#ECFDF5] text-[#059669] border-[#A7F3D0]"
+            : (item as any).color;
+          const barColor = isReal
+            ? idx % 3 === 0
+              ? "bg-[#B94A24]"
+              : idx % 3 === 1
+              ? "bg-[#D97706]"
+              : "bg-[#287A4B]"
+            : (item as any).barColor;
+
+          return (
+            <Link key={item.id} href={href} className="block group">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div
+                    className={`h-9 w-9 rounded-xl flex items-center justify-center shrink-0 border ${color} shadow-2xs transition-transform group-hover:scale-105`}
+                  >
+                    <FolderKanban className="h-4 w-4" />
                   </div>
 
-                  {/* Progress bar */}
-                  <div className="mt-2 h-1.5 w-full rounded-full bg-[var(--muted)] overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-[var(--primary)] transition-all duration-300"
-                      style={{ width: `${Math.min(100, Math.max(0, stats.progress_percent))}%` }}
-                    />
+                  <div className="min-w-0">
+                    <p className="text-xs sm:text-sm font-semibold text-[#24211F] dark:text-[#F3EFEA] truncate group-hover:text-[#B94A24] transition-colors">
+                      {name}
+                    </p>
+                    <p className="text-[11px] text-[#7A7269] dark:text-[#A69E94] truncate">
+                      {subtitle}
+                    </p>
                   </div>
+                </div>
 
-                  <div className="mt-1.5 flex items-center justify-between text-[10px] text-[var(--muted-foreground)]">
-                    <span>
-                      {stats.completed_tasks}/{stats.total_tasks} tasks done
-                    </span>
-                    {project.due_date && (
-                      <span className="font-mono">Due {project.due_date}</span>
-                    )}
-                  </div>
-                </Card>
-              </Link>
-            );
-          })}
-        </div>
-      )}
-    </div>
+                <span className="font-mono text-xs font-semibold text-[#24211F] dark:text-[#F3EFEA] shrink-0">
+                  {progress}%
+                </span>
+              </div>
+
+              {/* Progress bar */}
+              <div className="mt-2.5 h-1.5 w-full rounded-full bg-[#F2EDE6] dark:bg-[#25211E] overflow-hidden">
+                <div
+                  className={`h-full rounded-full ${barColor} transition-all duration-500`}
+                  style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
+                />
+              </div>
+            </Link>
+          );
+        })}
+      </div>
+    </Card>
   );
 }

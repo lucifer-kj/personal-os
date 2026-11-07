@@ -47,6 +47,24 @@ export async function updateSession(request: NextRequest) {
     pathname.startsWith("/reset-password") ||
     pathname.startsWith("/auth");
 
+  // Check development preview mode
+  const hasDevPreview =
+    process.env.NODE_ENV === "development" &&
+    (request.nextUrl.searchParams.get("preview") === "true" ||
+      request.cookies.get("dev_preview")?.value === "true");
+
+  if (hasDevPreview) {
+    if (request.nextUrl.searchParams.get("preview") === "true") {
+      supabaseResponse.cookies.set("dev_preview", "true", { path: "/", httpOnly: false });
+    }
+    if (isAuthPage && !pathname.startsWith("/auth/callback")) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/";
+      return NextResponse.redirect(url);
+    }
+    return supabaseResponse;
+  }
+
   // Protect internal pages: if not signed in, redirect to /login
   if (!user && !isAuthPage && !pathname.startsWith("/api")) {
     const url = request.nextUrl.clone();

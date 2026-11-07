@@ -18,6 +18,7 @@ import {
   Settings,
   Share2,
   Radio,
+  Timer,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -36,145 +37,142 @@ export function MobileNav({
 }: MobileNavProps) {
   const pathname = usePathname();
 
-  const primaryMobileTabs = [
-    { title: "Today", href: "/", icon: LayoutDashboard },
+  const navTabs = [
+    { title: "Home", href: "/", icon: LayoutDashboard },
     { title: "Tasks", href: "/tasks", icon: CheckSquare },
-    { title: "Capture", isAction: true, onClick: onQuickCapture, icon: Plus },
+    { title: "Projects", href: "/projects", icon: FolderKanban },
     { title: "Calendar", href: "/calendar", icon: Calendar },
     { title: "More", isMenuTrigger: true, icon: MoreHorizontal },
   ];
 
   const secondaryDrawerItems = [
-    { title: "Focus Mode", href: "/focus", icon: Flame },
+    { title: "Focus Mode", href: "/focus", icon: Timer },
     { title: "Inbox", href: "/inbox", icon: Inbox },
-    { title: "Projects", href: "/projects", icon: FolderKanban },
     { title: "Notes", href: "/notes", icon: FileText },
     { title: "Habits", href: "/habits", icon: Flame },
     { title: "Journal", href: "/journal", icon: BookOpen },
-    { title: "Studio", href: "/studio", icon: Share2 },
+    { title: "Social Studio", href: "/studio", icon: Share2 },
     { title: "The Radar", href: "/radar", icon: Radio },
     { title: "Settings", href: "/settings", icon: Settings },
   ];
 
   return (
     <>
-      {/* Mobile Bottom Navigation Bar (< 1024px) */}
-      <nav
-        aria-label="Mobile Navigation"
-        className="lg:hidden fixed bottom-0 left-0 right-0 z-40 flex h-16 items-center justify-around border-t border-[var(--border)] bg-[var(--background)]/95 backdrop-blur-md px-2 pb-safe"
-      >
-        {primaryMobileTabs.map((tab) => {
-          if (tab.isAction) {
-            return (
-              <button
-                key="mobile-quick-action"
-                type="button"
-                onClick={tab.onClick}
-                className="flex flex-col items-center justify-center p-2 text-[var(--primary)] active:scale-95 transition-transform"
-                aria-label="Quick Capture"
-              >
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--primary)] text-[var(--primary-foreground)] shadow-sm">
-                  <Plus className="h-5 w-5" />
-                </div>
-              </button>
-            );
-          }
-
-          if (tab.isMenuTrigger) {
-            return (
-              <button
-                key="mobile-more-trigger"
-                type="button"
-                onClick={onToggleMenu}
-                className={cn(
-                  "flex min-w-[56px] min-h-[44px] flex-col items-center justify-center text-[10px] font-medium transition-colors",
-                  isMenuOpen
-                    ? "text-[var(--primary)] font-semibold"
-                    : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-                )}
-                aria-label="More options"
-                aria-expanded={isMenuOpen}
-              >
-                <MoreHorizontal className="h-5 w-5 mb-0.5" />
-                <span>More</span>
-              </button>
-            );
-          }
-
-          const isActive =
-            tab.href === "/"
-              ? pathname === "/"
-              : pathname === tab.href || pathname?.startsWith(`${tab.href}/`);
-          const Icon = tab.icon;
-
-          return (
-            <Link
-              key={tab.href}
-              href={tab.href!}
-              prefetch={false}
-              className={cn(
-                "flex min-w-[56px] min-h-[44px] flex-col items-center justify-center text-[10px] font-medium transition-colors",
-                isActive
-                  ? "text-[var(--primary)] font-semibold"
-                  : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-              )}
-            >
-              <Icon className="h-5 w-5 mb-0.5" />
-              <span>{tab.title}</span>
-            </Link>
-          );
-        })}
-      </nav>
-
-      {/* Mobile Drawer / Backdrop */}
-      {isMenuOpen && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label="Mobile Navigation Drawer"
-          className="lg:hidden fixed inset-0 z-50 flex flex-col justify-end bg-black/40 backdrop-blur-xs animate-in fade-in duration-200"
-          onClick={onCloseMenu}
+      {/* Floating Apple-Style Mobile Dock (< 1024px) */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 px-4 pb-3 pt-1 pointer-events-none flex flex-col items-center">
+        <nav
+          aria-label="Mobile Navigation"
+          className="pointer-events-auto w-full max-w-md flex items-center justify-between rounded-full border border-white/10 bg-[#161311]/92 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-3 py-1.5 transition-all text-[#8E867C]"
         >
-          <div
-            className="w-full rounded-t-[var(--radius-panel)] border-t border-[var(--border)] bg-[var(--card)] p-6 shadow-xl pb-10"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between pb-4 border-b border-[var(--border)]">
-              <span className="font-serif font-medium text-base text-[var(--foreground)]">
-                More Destinations
-              </span>
-              <button
-                type="button"
-                onClick={onCloseMenu}
-                className="p-1 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-                aria-label="Close Drawer"
+          {navTabs.map((tab) => {
+            const isHome = tab.href === "/";
+            const isActive = isHome ? pathname === "/" : pathname === tab.href || pathname?.startsWith(`${tab.href}/`);
+            const Icon = tab.icon;
+
+            if (tab.isMenuTrigger) {
+              return (
+                <button
+                  key="mobile-more-trigger"
+                  type="button"
+                  onClick={onToggleMenu}
+                  className={cn(
+                    "flex flex-col items-center justify-center p-2 rounded-full text-xs font-medium transition-all active:scale-90",
+                    isMenuOpen
+                      ? "text-[#E05B27] font-semibold"
+                      : "text-[#8E867C] hover:text-white"
+                  )}
+                  aria-label="More options"
+                  aria-expanded={isMenuOpen}
+                >
+                  <MoreHorizontal className="h-4.5 w-4.5" />
+                  <span className="text-[10px] mt-0.5">More</span>
+                </button>
+              );
+            }
+
+            return (
+              <Link
+                key={tab.title}
+                href={tab.href!}
+                className={cn(
+                  "flex items-center gap-1.5 rounded-full transition-all duration-200 active:scale-95",
+                  isActive
+                    ? "bg-[#D25828] text-white px-3.5 py-1.5 shadow-sm font-semibold text-xs"
+                    : "flex-col p-2 text-[#8E867C] hover:text-white"
+                )}
               >
-                <X className="h-5 w-5" />
-              </button>
+                <Icon className={cn("h-4.5 w-4.5", isActive ? "stroke-[2.5]" : "")} />
+                <span className={cn(isActive ? "text-xs font-semibold" : "text-[10px] mt-0.5")}>
+                  {tab.title}
+                </span>
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* iOS Home Indicator Bar */}
+        <div className="w-32 h-1 rounded-full bg-neutral-300 dark:bg-neutral-700 mt-2 opacity-60" />
+      </div>
+
+      {/* Secondary Drawer Sheet for "More" */}
+      {isMenuOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity animate-in fade-in duration-200"
+            onClick={onCloseMenu}
+          />
+
+          {/* Drawer content */}
+          <div className="fixed inset-y-0 right-0 w-3/4 max-w-xs bg-white dark:bg-[#161413] border-l border-[#EDE7DE] dark:border-[#262220] p-6 shadow-2xl flex flex-col justify-between animate-in slide-in-from-right duration-200">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between pb-4 border-b border-[#EDE7DE] dark:border-[#262220]">
+                <span className="font-serif font-medium text-base text-[#24211F] dark:text-[#F3EFEA]">
+                  More Destinations
+                </span>
+                <button
+                  onClick={onCloseMenu}
+                  className="p-1 rounded-md text-[#7A7269] hover:text-[#24211F] dark:text-[#A69E94]"
+                  aria-label="Close drawer"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="flex flex-col space-y-1">
+                {secondaryDrawerItems.map((item) => {
+                  const isActive = pathname === item.href;
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={onCloseMenu}
+                      className={cn(
+                        "flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-colors",
+                        isActive
+                          ? "bg-[#F5EBE1] text-[#A84A28] dark:bg-[#2C1C15] dark:text-[#E87A54] font-semibold"
+                          : "text-[#5C554E] dark:text-[#A69E94] hover:bg-[#F2ECE3] dark:hover:bg-[#1E1B19]"
+                      )}
+                    >
+                      <Icon className="h-4 w-4" />
+                      <span>{item.title}</span>
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2.5 pt-4">
-              {secondaryDrawerItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = pathname === item.href;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    prefetch={false}
-                    onClick={onCloseMenu}
-                    className={cn(
-                      "flex items-center gap-3 p-3 rounded-[var(--radius-control)] border text-sm font-medium transition-colors",
-                      isActive
-                        ? "border-[var(--primary)] bg-[var(--accent)] text-[var(--accent-foreground)]"
-                        : "border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:bg-[var(--muted)]"
-                    )}
-                  >
-                    <Icon className="h-4 w-4 text-[var(--primary)] shrink-0" />
-                    <span>{item.title}</span>
-                  </Link>
-                );
-              })}
+            <div className="pt-4 border-t border-[#EDE7DE] dark:border-[#262220] flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="h-7 w-7 rounded-full bg-[#B94A24] text-white flex items-center justify-center font-serif text-xs font-semibold">
+                  A
+                </div>
+                <span className="text-xs font-medium text-[#24211F] dark:text-[#F3EFEA]">
+                  Arif&apos;s Enclave
+                </span>
+              </div>
+              <span className="text-[10px] font-mono text-emerald-600">● Live</span>
             </div>
           </div>
         </div>

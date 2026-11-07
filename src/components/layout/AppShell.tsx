@@ -29,7 +29,7 @@ export function AppShell({ children }: AppShellProps) {
   };
 
   return (
-    <div className="flex min-h-screen bg-[var(--background)] text-[var(--foreground)] antialiased">
+    <div className="flex min-h-screen bg-[var(--background)] max-lg:bg-[#0D0B0A] text-[var(--foreground)] antialiased">
       {/* Desktop Persistent Left Sidebar */}
       <React.Suspense fallback={<div className="hidden lg:flex w-64 border-r border-[var(--border)] bg-[var(--card)]" />}>
         <Sidebar />

@@ -20,7 +20,7 @@ describe("AppShell component", () => {
     );
 
     // Sidebar brand
-    expect(screen.getByText("Personal OS")).toBeInTheDocument();
+    expect(screen.getAllByText("Personal OS").length).toBeGreaterThanOrEqual(1);
 
     // Tasks links exist for both desktop sidebar and mobile bottom nav
     const taskLinks = screen.getAllByRole("link", { name: /tasks/i });

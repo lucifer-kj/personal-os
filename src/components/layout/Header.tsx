@@ -1,28 +1,26 @@
 "use client";
 
 import * as React from "react";
-import { usePathname } from "next/navigation";
-import { Search, Plus, Bell, Command, Menu, LogOut } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Search, Plus, Bell, Menu, LogOut, Settings, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const routeTitleMap: Record<string, { title: string; category?: string }> = {
-  "/": { title: "Today Overview", category: "Workspace" },
-  "/tasks": { title: "Tasks", category: "Productivity" },
-  "/inbox": { title: "Inbox", category: "Capture" },
-  "/projects": { title: "Projects", category: "Work" },
-  "/calendar": { title: "Calendar", category: "Schedule" },
-  "/notes": { title: "Notes", category: "Knowledge" },
-  "/habits": { title: "Habits", category: "Routines" },
-  "/journal": { title: "Journal", category: "Reflection" },
-  "/studio": { title: "Social Studio", category: "Publishing" },
-  "/radar": { title: "The Radar", category: "Intelligence" },
-  "/settings": { title: "Settings", category: "System" },
+  "/": { title: "Dashboard", category: "Personal OS" },
+  "/tasks": { title: "Tasks", category: "Personal OS" },
+  "/inbox": { title: "Inbox", category: "Personal OS" },
+  "/projects": { title: "Projects", category: "Personal OS" },
+  "/calendar": { title: "Calendar", category: "Personal OS" },
+  "/notes": { title: "Notes", category: "Personal OS" },
+  "/habits": { title: "Habits", category: "Personal OS" },
+  "/journal": { title: "Journal", category: "Personal OS" },
+  "/studio": { title: "Social Studio", category: "Personal OS" },
+  "/radar": { title: "The Radar", category: "Personal OS" },
+  "/settings": { title: "Settings", category: "Personal OS" },
   "/login": { title: "Sign In", category: "Authentication" },
   "/signup": { title: "Owner Initialization", category: "Authentication" },
-  "/forgot-password": { title: "Password Recovery", category: "Authentication" },
-  "/reset-password": { title: "Set New Password", category: "Authentication" },
 };
 
 interface HeaderProps {
@@ -33,6 +31,8 @@ interface HeaderProps {
 export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const [showProfileMenu, setShowProfileMenu] = React.useState(false);
+
   const isAuthPage =
     pathname === "/login" ||
     pathname === "/signup" ||
@@ -41,7 +41,7 @@ export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
 
   const currentRoute = routeTitleMap[pathname] || {
     title: pathname?.replace("/", "") || "Dashboard",
-    category: "Workspace",
+    category: "Personal OS",
   };
 
   const handleSignOut = async () => {
@@ -62,101 +62,144 @@ export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-[var(--header-height)] items-center justify-between border-b border-[var(--border)] bg-[var(--background)]/90 backdrop-blur-md px-4 sm:px-6 lg:px-8 transition-all">
-      {/* Left: Mobile trigger & Breadcrumbs */}
-      <div className="flex items-center gap-3">
-        {onOpenMobileMenu && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onOpenMobileMenu}
-            className="lg:hidden text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-            aria-label="Open mobile navigation menu"
-          >
-            <Menu className="h-5 w-5" />
-          </Button>
-        )}
+    <header className="sticky top-0 z-30 flex h-[var(--header-height)] items-center justify-between border-b border-[#EDE7DE] dark:border-[#262220] bg-white/70 dark:bg-[#12100E]/80 max-lg:bg-[#0D0B0A] max-lg:border-white/10 max-lg:text-white backdrop-blur-xl px-4 sm:px-6 lg:px-8 transition-all">
+      {/* Mobile Top Bar (< lg) */}
+      <div className="flex lg:hidden items-center justify-between w-full">
+        <button
+          type="button"
+          onClick={onOpenMobileMenu}
+          className="p-2 -ml-2 text-[#A69E94] hover:text-white transition-colors"
+          aria-label="Open navigation menu"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
 
-        <div className="flex flex-col">
-          <div className="hidden sm:flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider text-[var(--muted-foreground)]">
-            <span>{currentRoute.category}</span>
-            <span>/</span>
-            <span className="text-[var(--foreground)]">{currentRoute.title}</span>
+        {/* Centered Mobile Brand */}
+        <div className="flex items-center gap-2">
+          <div className="h-7 w-7 rounded-full overflow-hidden border border-white/20 shadow-2xs">
+            <Image src="/logo.png" alt="Logo" width={28} height={28} className="object-cover" priority />
           </div>
-          <h1 className="font-serif font-medium text-lg sm:text-xl text-[var(--foreground)] leading-tight">
-            {currentRoute.title}
-          </h1>
+          <div className="flex flex-col text-center">
+            <span className="font-serif font-medium text-sm text-white leading-tight">
+              Personal OS
+            </span>
+            <span className="text-[9px] text-[#E07A50] font-sans tracking-wide">
+              Arif&apos;s Sanctuary
+            </span>
+          </div>
+        </div>
+
+        {/* Right Mobile Actions */}
+        <div className="flex items-center gap-1.5 -mr-1">
+          <button
+            type="button"
+            onClick={handleOpenSearch}
+            className="p-2 text-[#A69E94] hover:text-white transition-colors"
+            aria-label="Search"
+          >
+            <Search className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            className="relative p-2 text-[#A69E94] hover:text-white transition-colors"
+            aria-label="Notifications"
+          >
+            <Bell className="h-4 w-4" />
+            <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-[#E05B27] ring-2 ring-[#0D0B0A]" />
+          </button>
         </div>
       </div>
 
-      {/* Right: Actions or Auth Status */}
-      <div className="flex items-center gap-2 sm:gap-3">
-        {isAuthPage ? (
-          <div className="flex items-center gap-2 px-3 py-1 rounded-full border border-[var(--border)] bg-[var(--card)] text-[11px] font-mono text-[var(--muted-foreground)] shadow-2xs">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Single-User Secure Enclave</span>
-          </div>
-        ) : (
-          <>
-            {/* Search Bar / Command Palette Trigger */}
-            <button
-              type="button"
-              onClick={handleOpenSearch}
-              className="hidden md:flex items-center gap-3 h-9 px-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--card)] text-xs text-[var(--muted-foreground)] hover:border-[var(--ring)] transition-colors shadow-2xs cursor-pointer"
-              aria-label="Open Command Search"
-            >
-              <Search className="h-3.5 w-3.5" />
-              <span>Search or jump to...</span>
-              <kbd className="flex items-center gap-0.5 rounded bg-[var(--muted)] px-1.5 py-0.5 text-[10px] font-mono text-[var(--muted-foreground)] border border-[var(--border)]">
-                <Command className="h-2.5 w-2.5 inline" /> K
-              </kbd>
-            </button>
+      {/* Desktop Left Breadcrumb Navigation (>= lg) */}
+      <div className="hidden lg:flex items-center gap-2 text-xs font-mono tracking-wide text-[#7A7269] dark:text-[#A69E94]">
+        <span>Personal OS</span>
+        <span className="text-[#C5BCB2] dark:text-neutral-600">/</span>
+        <span className="text-[#24211F] dark:text-[#F3EFEA] font-medium">{currentRoute.title}</span>
+      </div>
 
-            {/* Mobile Search Button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleOpenSearch}
-              className="md:hidden text-[var(--muted-foreground)]"
-              aria-label="Search"
-            >
-              <Search className="h-4 w-4" />
-            </Button>
+      {/* Desktop Center/Right Controls (>= lg) */}
+      <div className="hidden lg:flex items-center gap-3">
+        {/* Command Search Pill Input */}
+        <button
+          type="button"
+          onClick={handleOpenSearch}
+          className="flex items-center gap-2.5 w-64 xl:w-72 rounded-full border border-[#EDE7DE] dark:border-[#2C2724] bg-white/80 dark:bg-[#1A1715]/90 px-3.5 py-1.5 text-xs text-[#968E85] dark:text-[#8E867C] shadow-2xs hover:border-[#D8CFBF] dark:hover:border-[#3D3733] transition-all cursor-pointer"
+        >
+          <Search className="h-3.5 w-3.5 text-[#A0988E]" />
+          <span className="flex-1 text-left">Search anything...</span>
+          <kbd className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#F7F4EF] dark:bg-[#25211E] border border-[#E8E1D7] dark:border-[#332E2A] text-[#7A7269] dark:text-[#A69E94]">
+            ⌘K
+          </kbd>
+        </button>
 
-            {/* Notifications */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="relative text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-              aria-label="Notifications"
-            >
-              <Bell className="h-4 w-4" />
-            </Button>
+        {/* Notification Bell */}
+        <button
+          type="button"
+          className="relative h-9 w-9 rounded-full flex items-center justify-center text-[#7A7269] hover:text-[#24211F] dark:text-[#A69E94] dark:hover:text-[#F3EFEA] hover:bg-[#F7F4EF] dark:hover:bg-[#1C1917] transition-colors cursor-pointer"
+          aria-label="Notifications"
+        >
+          <Bell className="h-4 w-4" />
+          <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-[#E05B27] ring-2 ring-white dark:ring-[#12100E]" />
+        </button>
 
-            {/* Primary Quick Capture / Action Button */}
-            <Button
-              variant="default"
-              size="sm"
-              onClick={onQuickCapture}
-              className="gap-1.5 shadow-sm text-xs font-semibold px-3"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Capture</span>
-            </Button>
+        {/* Primary + New / + Capture Button */}
+        <Button
+          size="sm"
+          onClick={onQuickCapture}
+          aria-label="Capture"
+          className="h-9 px-4 rounded-full bg-[#1F1D1B] hover:bg-[#33302C] active:scale-95 text-white dark:bg-[#FAF7F2] dark:text-[#1F1D1B] dark:hover:bg-white text-xs font-medium gap-1.5 shadow-xs transition-transform"
+        >
+          <Plus className="h-3.5 w-3.5" />
+          <span>New</span>
+        </Button>
 
-            {/* Sign Out Button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleSignOut}
-              className="text-[var(--muted-foreground)] hover:text-red-600 transition-colors"
-              title="Sign Out"
-              aria-label="Sign Out"
-            >
-              <LogOut className="h-4 w-4" />
-            </Button>
-          </>
-        )}
+        {/* User Profile Monogram Avatar & Dropdown */}
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setShowProfileMenu(!showProfileMenu)}
+            className="relative flex items-center justify-center h-8 w-8 rounded-full bg-[#B94A24] text-white font-serif font-medium text-xs shadow-xs ring-2 ring-emerald-500/80 ring-offset-2 ring-offset-white dark:ring-offset-[#12100E] active:scale-95 transition-all cursor-pointer"
+            aria-label="User account menu"
+          >
+            A
+          </button>
+
+          {showProfileMenu && (
+            <div className="absolute right-0 top-full mt-2 w-56 rounded-2xl bg-white dark:bg-[#1C1917] border border-[#EDE7DE] dark:border-[#2C2724] shadow-xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+              <div className="px-3 py-2 border-b border-[#F2EDE6] dark:border-[#282421]">
+                <p className="text-xs font-semibold text-[#24211F] dark:text-[#F3EFEA]">Arif</p>
+                <p className="text-[11px] text-[#7A7269] dark:text-[#A69E94] truncate">321arifali@gmail.com</p>
+                <div className="mt-1 flex items-center gap-1.5 text-[10px] text-emerald-600 font-mono">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                  <span>Enclave Active</span>
+                </div>
+              </div>
+
+              <div className="py-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    router.push("/settings");
+                  }}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[#24211F] dark:text-[#F3EFEA] hover:bg-[#F7F4EF] dark:hover:bg-[#25211E] rounded-lg transition-colors text-left"
+                >
+                  <Settings className="h-3.5 w-3.5 text-[#7A7269]" />
+                  <span>Settings</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors text-left"
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                  <span>Sign Out</span>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Sparkles, Edit2, Check, X, Play, Calendar as CalendarIcon, Sun } from "lucide-react";
+import { Sparkles, Edit2, Check, X, Play, Calendar as CalendarIcon, Sun, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DynamicScenery, TimeOfDay } from "./DynamicScenery";
 import { AppOrb, OrbState } from "@/components/brand/AppOrb";
@@ -9,6 +9,7 @@ import { AppOrb, OrbState } from "@/components/brand/AppOrb";
 interface DashboardHeaderProps {
   greeting: string;
   dateStr: string;
+  userName?: string;
   initialIntention: string | null;
   onUpdateIntention: (intention: string) => Promise<void>;
   onStartFocus?: () => void;
@@ -18,6 +19,7 @@ interface DashboardHeaderProps {
 export function DashboardHeader({
   greeting,
   dateStr,
+  userName = "Arif",
   initialIntention,
   onUpdateIntention,
   onStartFocus,
@@ -28,6 +30,7 @@ export function DashboardHeader({
   const [inputValue, setInputValue] = React.useState(initialIntention || "");
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [previewTimeOfDay, setPreviewTimeOfDay] = React.useState<TimeOfDay | null>(null);
+  const [showSceneryPicker, setShowSceneryPicker] = React.useState(false);
 
   // Compute synchronized orb state based on scenery time of day
   const orbState: OrbState = React.useMemo(() => {
@@ -79,95 +82,107 @@ export function DashboardHeader({
   };
 
   return (
-    <div className="relative rounded-2xl border border-[var(--border)] overflow-hidden bg-[var(--card)] shadow-xs transition-colors">
+    <div className="relative rounded-3xl border border-[#EDE7DE] dark:border-[#2A2624] overflow-hidden bg-white/60 dark:bg-[#161413]/70 backdrop-blur-md shadow-[0_4px_24px_rgba(0,0,0,0.03)] transition-colors">
       {/* 1. Time-of-Day Dynamic Scenic Mountain Horizon Background */}
       <DynamicScenery className="h-full" forceTimeOfDay={previewTimeOfDay ?? undefined} />
 
       {/* 2. Hero Content Region */}
-      <div className="relative z-10 p-5 sm:p-7 space-y-4">
-        {/* Date & Weather / Time-Scrubber Control Pill */}
-        <div className="flex flex-wrap items-center justify-between gap-3 text-[11px] font-mono tracking-wider text-[var(--muted-foreground)]">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5 font-medium">
-              <span className="h-2 w-2 rounded-full bg-[var(--primary)] animate-pulse" />
-              <span>{shortDate}</span>
-            </div>
-            <span className="text-[var(--border)]">•</span>
-            <div className="flex items-center gap-1 text-[var(--foreground)]">
-              <Sun className="h-3 w-3 text-amber-500" />
-              <span>Focused Horizon</span>
+      <div className="relative z-10 p-6 sm:p-9 space-y-5">
+        {/* Date & Weather Pill + Disguised Scenery Control */}
+        <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-mono tracking-wider text-[#7A7269] dark:text-[#A69E94]">
+          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/80 dark:bg-black/40 backdrop-blur-md border border-[#E8DFD5] dark:border-white/10 shadow-2xs">
+            <span className="h-2 w-2 rounded-full bg-[#E05B27] inline-block animate-pulse" />
+            <span className="font-semibold text-[#24211F] dark:text-[#F3EFEA]">{shortDate}</span>
+            <span className="text-[#C5BCB2] dark:text-neutral-600">•</span>
+            <div className="flex items-center gap-1.5 text-[#24211F] dark:text-[#F3EFEA]">
+              <Sun className="h-3.5 w-3.5 text-amber-500" />
+              <span>24°C Kolkata</span>
             </div>
           </div>
 
-          {/* Day Change & Scenery Preview Pill */}
-          <div className="flex items-center gap-1 rounded-full border border-[var(--border)] bg-[var(--background)]/85 backdrop-blur-md px-2 py-0.5 shadow-2xs">
-            <span className="text-[10px] text-[var(--muted-foreground)] mr-0.5">Scenery:</span>
-            {(["auto", "dawn", "day", "dusk", "night"] as const).map((mode) => {
-              const isActive =
-                (mode === "auto" && previewTimeOfDay === null) ||
-                previewTimeOfDay === mode;
-              return (
-                <button
-                  key={mode}
-                  type="button"
-                  onClick={() => setPreviewTimeOfDay(mode === "auto" ? null : mode)}
-                  className={`px-1.5 py-0.5 rounded-full text-[10px] capitalize transition-all ${
-                    isActive
-                      ? "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold shadow-xs"
-                      : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-                  }`}
-                >
-                  {mode}
-                </button>
-              );
-            })}
+          {/* Discreet Scenery Preview Pill */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setShowSceneryPicker(!showSceneryPicker)}
+              className="flex items-center gap-1.5 rounded-full border border-[#E8DFD5] dark:border-white/10 bg-white/70 dark:bg-black/30 backdrop-blur-md px-2.5 py-1 text-[11px] hover:bg-white dark:hover:bg-black/50 transition-colors shadow-2xs"
+            >
+              <SlidersHorizontal className="h-3 w-3 text-[#A84A28]" />
+              <span className="capitalize">{previewTimeOfDay ?? "Auto"}</span>
+            </button>
+
+            {showSceneryPicker && (
+              <div className="absolute right-0 top-full mt-1.5 z-20 flex items-center gap-1 p-1 rounded-full bg-white dark:bg-[#1E1B19] border border-[#EDE7DE] dark:border-[#332E2A] shadow-lg">
+                {(["auto", "dawn", "day", "dusk", "night"] as const).map((mode) => {
+                  const isActive =
+                    (mode === "auto" && previewTimeOfDay === null) ||
+                    previewTimeOfDay === mode;
+                  return (
+                    <button
+                      key={mode}
+                      type="button"
+                      onClick={() => {
+                        setPreviewTimeOfDay(mode === "auto" ? null : mode);
+                        setShowSceneryPicker(false);
+                      }}
+                      className={`px-2 py-0.5 rounded-full text-[10px] capitalize transition-all ${
+                        isActive
+                          ? "bg-[#B94A24] text-white font-semibold shadow-xs"
+                          : "text-[#7A7269] hover:text-[#24211F] dark:text-[#A69E94]"
+                      }`}
+                    >
+                      {mode}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
 
         {/* Big Editorial Heading & Subtitle */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl sm:text-4xl font-serif font-medium tracking-tight text-[var(--foreground)]">
-              {greeting}, User.
+          <div className="space-y-1">
+            <h1 className="text-3xl sm:text-5xl font-serif font-normal tracking-tight text-[#24211F] dark:text-[#F3EFEA] leading-tight">
+              {greeting}, {userName}.
             </h1>
-            <p className="text-xs sm:text-sm text-[var(--muted-foreground)] italic font-serif mt-1">
+            <p className="text-sm sm:text-base text-[#7A7269] dark:text-[#A69E94] italic font-serif">
               A focused day builds meaningful progress.
             </p>
           </div>
 
-          {/* Glowing Animated Orb Avatar from Jakubantalik/thinking-orbs */}
-          <div className="shrink-0">
-            <AppOrb size={64} state={orbState} interactive />
+          {/* Thinking Orb Avatar */}
+          <div className="shrink-0 flex items-center justify-center">
+            <AppOrb size={68} state={orbState} interactive />
           </div>
         </div>
 
         {/* Primary Action Buttons */}
-        <div className="flex flex-wrap items-center gap-2.5 pt-1">
+        <div className="flex flex-wrap items-center gap-3 pt-1">
           <Button
-            size="sm"
-            variant="default"
+            size="default"
             onClick={onStartFocus}
-            className="h-9 px-4 gap-2 text-xs font-medium shadow-xs"
+            className="h-10 px-5 rounded-full bg-[#B94A24] hover:bg-[#A33E1C] active:scale-95 text-white text-xs font-medium gap-2 shadow-sm transition-transform"
           >
             <Play className="h-3.5 w-3.5 fill-current" />
             <span>Start Deep Work (45m)</span>
           </Button>
 
           <Button
-            size="sm"
+            size="default"
             variant="outline"
             onClick={onPlanDay}
-            className="h-9 px-3.5 gap-2 text-xs font-medium bg-[var(--card)]/80 backdrop-blur-xs"
+            className="h-10 px-5 rounded-full bg-white/80 hover:bg-white active:scale-95 text-[#24211F] dark:text-[#EDE7DE] border-[#E2DAD1] dark:border-white/10 text-xs font-medium gap-2 shadow-xs transition-transform"
           >
-            <CalendarIcon className="h-3.5 w-3.5 text-[var(--primary)]" />
+            <CalendarIcon className="h-3.5 w-3.5 text-[#B94A24]" />
             <span>Plan My Day</span>
           </Button>
         </div>
 
         {/* Daily Focus Intention Pill Card */}
-        <div className="rounded-xl border border-[var(--border)] bg-[var(--background)]/90 backdrop-blur-xs p-3.5 transition-colors mt-2">
+        <div className="rounded-2xl border border-[#EDE7DE] dark:border-[#2A2624] bg-white/80 dark:bg-black/30 backdrop-blur-xs p-4 transition-colors">
           <div className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[var(--primary)]">
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#B94A24] dark:text-[#E07A50]">
               <Sparkles className="h-3.5 w-3.5" />
               <span>Daily Focus Intention</span>
             </div>
@@ -175,7 +190,7 @@ export function DashboardHeader({
             {!isEditing && (
               <button
                 onClick={() => setIsEditing(true)}
-                className="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] flex items-center gap-1 transition-colors"
+                className="text-xs text-[#7A7269] hover:text-[#24211F] dark:text-[#A69E94] dark:hover:text-[#EDE7DE] flex items-center gap-1 transition-colors"
                 title="Edit intention"
               >
                 <Edit2 className="h-3 w-3" />
@@ -191,7 +206,7 @@ export function DashboardHeader({
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder="What is your singular priority for today?"
-                className="flex-1 rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-1.5 text-xs sm:text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
+                className="flex-1 rounded-lg border border-[#E2DAD1] bg-white dark:bg-[#1E1B19] px-3.5 py-2 text-xs sm:text-sm text-[#24211F] dark:text-[#F3EFEA] placeholder:text-[#A0988E] focus:outline-none focus:ring-1 focus:ring-[#B94A24]"
                 autoFocus
                 onKeyDown={(e) => {
                   if (e.key === "Enter") handleSave();
@@ -203,7 +218,7 @@ export function DashboardHeader({
                 variant="default"
                 onClick={handleSave}
                 disabled={isSubmitting}
-                className="h-8 px-2.5"
+                className="h-8 px-3 rounded-lg bg-[#B94A24] text-white"
                 aria-label="Save intention"
               >
                 <Check className="h-3.5 w-3.5" />
@@ -213,14 +228,14 @@ export function DashboardHeader({
                 variant="outline"
                 onClick={handleCancel}
                 disabled={isSubmitting}
-                className="h-8 px-2.5"
+                className="h-8 px-3 rounded-lg"
                 aria-label="Cancel editing"
               >
                 <X className="h-3.5 w-3.5" />
               </Button>
             </div>
           ) : (
-            <p className="mt-1.5 text-xs sm:text-sm text-[var(--foreground)] italic">
+            <p className="mt-1.5 text-xs sm:text-sm text-[#24211F] dark:text-[#EDE7DE] italic">
               {intention
                 ? `“${intention}”`
                 : "No focus intention set for today. Take a moment to define your primary outcome."}

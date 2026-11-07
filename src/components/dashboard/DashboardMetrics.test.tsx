@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { DashboardMetrics } from "./DashboardMetrics";
 
 describe("DashboardMetrics component", () => {
-  it("renders 3 metric cards with correct values and calculations", () => {
+  it("renders 4 metric cards with correct values and calculations", () => {
     render(
       <DashboardMetrics
         metrics={{
@@ -15,17 +15,22 @@ describe("DashboardMetrics component", () => {
       />
     );
 
-    // 3 completed of 5 total (60%)
-    expect(screen.getByText("3")).toBeDefined();
-    expect(screen.getByText(/of 5 tasks/i)).toBeDefined();
-    expect(screen.getByText(/60%/)).toBeDefined();
+    // 4 Cards matching design reference
+    expect(screen.getByText("Focus Time")).toBeDefined();
+    expect(screen.getByText("Daily Tasks")).toBeDefined();
+    expect(screen.getByText("Active Projects")).toBeDefined();
+    expect(screen.getByText("Targets")).toBeDefined();
 
-    // 120 minutes focus
-    expect(screen.getByText("120")).toBeDefined();
-    expect(screen.getByText(/minutes allocated/i)).toBeDefined();
+    // 3 completed of 5 total -> "3 / 5"
+    expect(screen.getByText("3 / 5")).toBeDefined();
+
+    // 120 minutes focus -> "2h 0m"
+    expect(screen.getByText("2h 0m")).toBeDefined();
 
     // 4 active projects
     expect(screen.getByText("4")).toBeDefined();
-    expect(screen.getByText(/deliverables active/i)).toBeDefined();
+
+    // 60% targets
+    expect(screen.getByText("60%")).toBeDefined();
   });
 });

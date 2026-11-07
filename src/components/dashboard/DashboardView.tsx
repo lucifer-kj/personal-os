@@ -6,10 +6,13 @@ import { DashboardOverviewDTO } from "@/modules/dashboard/types";
 import { Task, CreateTaskDTO } from "@/modules/tasks/types";
 import { DashboardHeader } from "./DashboardHeader";
 import { DashboardMetrics } from "./DashboardMetrics";
+import { CurrentFocusCard } from "./CurrentFocusCard";
+import { FocusTimerWidget } from "./FocusTimerWidget";
 import { TodayAgenda } from "./TodayAgenda";
 import { ActiveProjectsWidget } from "./ActiveProjectsWidget";
 import { QuickCaptureCard } from "./QuickCaptureCard";
 import { TaskCreateDialog } from "@/components/tasks/TaskCreateDialog";
+import { MobileFocusedDashboard } from "./MobileFocusedDashboard";
 
 interface DashboardViewProps {
   initialOverview: DashboardOverviewDTO;
@@ -80,7 +83,6 @@ export function DashboardView({ initialOverview }: DashboardViewProps) {
     try {
       const res = await fetch(endpoint, { method: "POST" });
       if (!res.ok) {
-        // Revert on failure
         setOverview(initialOverview);
       }
     } catch {
@@ -99,7 +101,6 @@ export function DashboardView({ initialOverview }: DashboardViewProps) {
       const { data: created } = await res.json();
       setIsCreateOpen(false);
 
-      // Add to today's agenda if due today
       if (created.due_date === overview.date) {
         setOverview((prev) => ({
           ...prev,
@@ -124,39 +125,65 @@ export function DashboardView({ initialOverview }: DashboardViewProps) {
   };
 
   return (
-    <div className="space-y-6">
-      {/* 1. Header with greeting, date & editable intention */}
-      <DashboardHeader
-        greeting={overview.greeting}
-        dateStr={overview.date}
-        initialIntention={overview.intention}
-        onUpdateIntention={handleUpdateIntention}
-        onStartFocus={() => router.push("/focus")}
+    <div>
+      {/* 1. Mobile Focused Day View (< lg) */}
+      <MobileFocusedDashboard
+        overview={overview}
+        onAddTask={() => setIsCreateOpen(true)}
+        onPlanDay={() => router.push("/calendar")}
+        onQuickCapture={() => setIsCreateOpen(true)}
+        onSubmitPrompt={(text) => handleQuickAddTodayTask(text)}
       />
 
-      {/* 2. Calm Summary Metrics */}
-      <DashboardMetrics metrics={overview.metrics} />
+      {/* 2. Desktop High-Craft Workstation Layout (>= lg) */}
+      <div className="hidden lg:flex flex-col space-y-6">
+        {/* Header with greeting, date & editable intention */}
+        <DashboardHeader
+          greeting={overview.greeting}
+          dateStr={overview.date}
+          userName="Arif"
+          initialIntention={overview.intention}
+          onUpdateIntention={handleUpdateIntention}
+          onStartFocus={() => router.push("/focus")}
+          onPlanDay={() => router.push("/calendar")}
+        />
 
-      {/* 3. Balanced 2-Column Content Layout (Single-Column Mobile) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Column: Today's Chronological Flow & Priority Tasks */}
-        <div className="lg:col-span-7 space-y-6">
-          <TodayAgenda
-            todayTasks={overview.today_agenda}
-            overdueTasks={overview.overdue_tasks}
-            onToggleTask={handleToggleTask}
-            onOpenCreateTask={() => setIsCreateOpen(true)}
-          />
+        {/* 4-Card Calm Summary Metrics */}
+        <DashboardMetrics metrics={overview.metrics} />
+
+        {/* Middle Section: Current Focus & Focus Timer */}
+        <div className="grid grid-cols-12 gap-6 items-stretch">
+          <div className="col-span-8">
+            <CurrentFocusCard
+              title={overview.intention || "Complete dashboard design & token architecture"}
+              description="Finalize layouts, interaction patterns, and design tokens before spec handoff."
+              onOpenDetails={() => router.push("/tasks")}
+            />
+          </div>
+          <div className="col-span-4">
+            <FocusTimerWidget onSessionComplete={() => router.push("/focus")} />
+          </div>
         </div>
 
-        {/* Right Column: Active Projects & Quick Capture */}
-        <div className="lg:col-span-5 space-y-6">
-          <ActiveProjectsWidget projects={overview.active_projects} />
+        {/* Bottom Section: Today's Flow & Active Projects */}
+        <div className="grid grid-cols-12 gap-6 items-start">
+          <div className="col-span-7 space-y-6">
+            <TodayAgenda
+              todayTasks={overview.today_agenda}
+              overdueTasks={overview.overdue_tasks}
+              onToggleTask={handleToggleTask}
+              onOpenCreateTask={() => setIsCreateOpen(true)}
+            />
+          </div>
 
-          <QuickCaptureCard
-            onQuickAddTodayTask={handleQuickAddTodayTask}
-            onOpenCreateDialog={() => setIsCreateOpen(true)}
-          />
+          <div className="col-span-5 space-y-6">
+            <ActiveProjectsWidget projects={overview.active_projects} />
+
+            <QuickCaptureCard
+              onQuickAddTodayTask={handleQuickAddTodayTask}
+              onOpenCreateDialog={() => setIsCreateOpen(true)}
+            />
+          </div>
         </div>
       </div>
 

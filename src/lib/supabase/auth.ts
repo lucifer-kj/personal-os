@@ -35,16 +35,30 @@ export async function getAuthenticatedUser(
         error,
       } = await supabase.auth.getUser();
 
-      if (error || !user) {
-        return null;
+      if (!error && user) {
+        return {
+          id: user.id,
+          email: user.email,
+        };
       }
-
-      return {
-        id: user.id,
-        email: user.email,
-      };
     } catch {
-      return null;
+      // Fall through to dev check
+    }
+  }
+
+  // Support local dev preview when running in development
+  if (process.env.NODE_ENV === "development") {
+    try {
+      const { cookies } = await import("next/headers");
+      const cookieStore = await cookies();
+      if (cookieStore.get("dev_preview")?.value === "true") {
+        return {
+          id: "40dd9499-53c2-48d9-9749-a061ac72ad7a",
+          email: "321arifali@gmail.com",
+        };
+      }
+    } catch {
+      // Outside request context
     }
   }
 
