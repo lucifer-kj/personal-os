@@ -42,7 +42,7 @@ export function MobileNav({
     { title: "Tasks", href: "/tasks", icon: CheckSquare },
     { title: "Capture", isCapture: true, icon: Plus },
     { title: "Calendar", href: "/calendar", icon: Calendar },
-    { title: "More", isMenuTrigger: true, icon: MoreHorizontal },
+    { title: "Habits", href: "/habits", icon: Flame },
   ];
 
   const secondaryDrawerItems = [
@@ -85,36 +85,15 @@ export function MobileNav({
               );
             }
 
-            if (tab.isMenuTrigger) {
-              return (
-                <button
-                  key="mobile-more-trigger"
-                  type="button"
-                  onClick={onToggleMenu}
-                  className={cn(
-                    "flex flex-col items-center justify-center p-2 rounded-full text-xs font-medium transition-all active:scale-90",
-                    isMenuOpen
-                      ? "text-[#E05B27] font-semibold"
-                      : "text-[#8E867C] hover:text-white"
-                  )}
-                  aria-label="More options"
-                  aria-expanded={isMenuOpen}
-                >
-                  <MoreHorizontal className="h-4.5 w-4.5" />
-                  <span className="text-[10px] mt-0.5">More</span>
-                </button>
-              );
-            }
-
             return (
               <Link
                 key={tab.title}
                 href={tab.href!}
                 className={cn(
-                  "flex items-center gap-1.5 rounded-full transition-all duration-200 active:scale-95",
+                  "flex items-center gap-1.5 rounded-xl transition-all duration-200 active:scale-95",
                   isActive
-                    ? "bg-[#D25828] text-white px-3.5 py-1.5 shadow-sm font-semibold text-xs"
-                    : "flex-col p-2 text-[#8E867C] hover:text-white"
+                    ? "bg-[#D25828] text-white px-3 py-1.5 shadow-sm font-semibold text-xs rounded-xl"
+                    : "flex-col p-2 text-[#8E867C] hover:text-white rounded-xl"
                 )}
               >
                 <Icon className={cn("h-4.5 w-4.5", isActive ? "stroke-[2.5]" : "")} />

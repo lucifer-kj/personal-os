@@ -68,37 +68,13 @@ export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
     <header className="sticky top-0 z-30 flex h-[var(--header-height)] items-center justify-between border-b border-[#EDE7DE] dark:border-[#262220] bg-white/70 dark:bg-[#12100E]/80 max-lg:bg-[#0D0B0A] max-lg:border-white/10 max-lg:text-white backdrop-blur-xl px-4 sm:px-6 lg:px-8 transition-all">
       {/* Mobile Top Bar (< lg) */}
       <div className="flex lg:hidden items-center justify-between w-full">
-        <button
-          type="button"
-          onClick={onOpenMobileMenu}
-          className="p-2 -ml-2 text-[#A69E94] hover:text-white transition-colors"
-          aria-label="Open navigation menu"
-        >
-          <Menu className="h-5 w-5" />
-        </button>
-
-        {/* Centered Mobile Brand */}
-        <div className="flex items-center gap-2">
-          <div className="h-7 w-7 rounded-full overflow-hidden border border-white/20 shadow-2xs">
-            <Image src="/logo.png" alt="Logo" width={28} height={28} className="object-cover" priority />
-          </div>
-          <div className="flex flex-col text-center">
-            <span className="font-serif font-medium text-sm text-white leading-tight">
-              Personal OS
-            </span>
-            <span className="text-[9px] text-[#E07A50] font-sans tracking-wide">
-              Arif&apos;s Sanctuary
-            </span>
-          </div>
-        </div>
-
-        {/* Right Mobile Actions */}
-        <div className="flex items-center gap-1.5 -mr-1">
+        {/* Left Mobile Actions (Theme, Search, Notifications) */}
+        <div className="flex items-center gap-1.5 -ml-1">
           <ThemeToggle compact />
           <button
             type="button"
             onClick={handleOpenSearch}
-            className="p-2 text-[#A69E94] hover:text-white transition-colors"
+            className="p-2 text-[#A69E94] hover:text-white transition-colors cursor-pointer"
             aria-label="Search"
           >
             <Search className="h-4 w-4" />
@@ -116,9 +92,35 @@ export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
           </button>
         </div>
 
+        {/* Centered Mobile Brand */}
+        <div className="flex items-center gap-2">
+          <div className="h-7 w-7 rounded-full overflow-hidden border border-white/20 shadow-2xs">
+            <Image src="/logo.png" alt="Logo" width={28} height={28} className="object-cover" priority />
+          </div>
+          <div className="flex flex-col text-center">
+            <span className="font-serif font-medium text-sm text-white leading-tight">
+              Personal OS
+            </span>
+            <span className="text-[9px] text-[#E07A50] font-sans tracking-wide">
+              Arif&apos;s Sanctuary
+            </span>
+          </div>
+        </div>
+
+        {/* Right Mobile Navigation Menu Trigger */}
+        <button
+          type="button"
+          onClick={onOpenMobileMenu}
+          className="p-2 -mr-2 text-[#A69E94] hover:text-white transition-colors cursor-pointer"
+          aria-label="More options / Open navigation menu"
+          title="More options"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+
         {/* Mobile Notification Popover */}
         {showNotifications && (
-          <div className="absolute right-4 top-[calc(var(--header-height)+4px)] w-[calc(100vw-32px)] max-w-sm rounded-2xl bg-[#1C1917] border border-white/10 shadow-2xl p-3 z-50 animate-in fade-in duration-150">
+          <div className="absolute left-4 top-[calc(var(--header-height)+4px)] w-[calc(100vw-32px)] max-w-sm rounded-2xl bg-[#1C1917] border border-white/10 shadow-2xl p-3 z-50 animate-in fade-in duration-150">
             <div className="flex items-center justify-between pb-2 border-b border-white/10">
               <p className="text-xs font-semibold text-white">Signals & Alerts</p>
               {hasUnread && (
