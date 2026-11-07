@@ -124,6 +124,48 @@
   --motion-ease: cubic-bezier(0.2, 0, 0, 1);
 }
 
+.dark {
+  color-scheme: dark;
+
+  /* Core surfaces and text */
+  --background: #0d0b0a;
+  --foreground: #f4efea;
+  --card: #161311;
+  --card-foreground: #f4efea;
+  --popover: #1a1614;
+  --popover-foreground: #f4efea;
+
+  /* Brand / interaction */
+  --primary: #d25828;
+  --primary-foreground: #ffffff;
+  --secondary: #221d1a;
+  --secondary-foreground: #d4ccc4;
+  --muted: #1e1916;
+  --muted-foreground: #9a9085;
+  --accent: #2c1a12;
+  --accent-foreground: #e87a54;
+  --destructive: #d93829;
+  --destructive-foreground: #ffffff;
+  --border: #26211d;
+  --input: #26211d;
+  --ring: #e06a3a;
+
+  /* Semantic status */
+  --success: #34945a;
+  --warning: #d98218;
+  --info: #5587c4;
+
+  /* Sidebar */
+  --sidebar: #12100e;
+  --sidebar-foreground: #9a9085;
+  --sidebar-primary: #d25828;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #2c1a12;
+  --sidebar-accent-foreground: #e87a54;
+  --sidebar-border: #26211d;
+  --sidebar-ring: #e06a3a;
+}
+
 * {
   box-sizing: border-box;
 }

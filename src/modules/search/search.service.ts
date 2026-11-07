@@ -151,6 +151,14 @@ export const DEFAULT_QUICK_ACTIONS: QuickActionCommand[] = [
     keywords: ["journal", "reflect", "mood", "today", "check-in"],
     shortcut: "J",
   },
+  {
+    id: "act-preview-states",
+    title: "Preview App States",
+    description: "Open Apple-grade State Preview Studio (themes, orbs, viewports)",
+    actionId: "state-preview",
+    keywords: ["preview", "states", "apple", "theme", "orb", "animation", "demo"],
+    shortcut: "P S",
+  },
 ];
 
 export class SearchService {

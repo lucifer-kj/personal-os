@@ -2,10 +2,11 @@
 
 import * as React from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Search, Plus, Bell, Menu, LogOut, Settings, User } from "lucide-react";
+import { Search, Plus, Bell, Menu, LogOut, Settings, User, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import Image from "next/image";
+import { ThemeToggle } from "@/components/brand/ThemeToggle";
 
 const routeTitleMap: Record<string, { title: string; category?: string }> = {
   "/": { title: "Dashboard", category: "Personal OS" },
@@ -91,6 +92,7 @@ export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
 
         {/* Right Mobile Actions */}
         <div className="flex items-center gap-1.5 -mr-1">
+          <ThemeToggle compact />
           <button
             type="button"
             onClick={handleOpenSearch}
@@ -131,6 +133,24 @@ export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
             ⌘K
           </kbd>
         </button>
+
+        {/* State Preview Modal Trigger */}
+        <button
+          type="button"
+          onClick={() => {
+            if (typeof window !== "undefined") {
+              window.dispatchEvent(new CustomEvent("personal-os:state-preview"));
+            }
+          }}
+          className="relative h-9 w-9 rounded-full flex items-center justify-center text-[#7A7269] hover:text-[#24211F] dark:text-[#A69E94] dark:hover:text-[#F3EFEA] hover:bg-[#F7F4EF] dark:hover:bg-[#1C1917] transition-colors cursor-pointer"
+          aria-label="Preview app states"
+          title="Preview app states & devices"
+        >
+          <Sparkles className="h-4 w-4 text-[#B94A24] dark:text-[#E07A50]" />
+        </button>
+
+        {/* Theme Mode Toggle */}
+        <ThemeToggle compact />
 
         {/* Notification Bell */}
         <button

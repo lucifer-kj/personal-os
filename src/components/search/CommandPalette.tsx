@@ -128,6 +128,12 @@ export function CommandPalette({
       }
       return;
     }
+    if (actionId === "state-preview") {
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("personal-os:state-preview"));
+      }
+      return;
+    }
     if (url) {
       router.push(url);
     }
