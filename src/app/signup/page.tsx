@@ -16,6 +16,22 @@ export default function SignupPage() {
   const [error, setError] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(false);
   const [success, setSuccess] = React.useState(false);
+  const [isClaimed, setIsClaimed] = React.useState(false);
+
+  React.useEffect(() => {
+    async function checkWorkspace() {
+      try {
+        const supabase = createClient();
+        const { data, error } = await supabase.rpc("is_workspace_initialized");
+        if (!error && data === true) {
+          setIsClaimed(true);
+        }
+      } catch {
+        // Ignore check error if RPC is not accessible
+      }
+    }
+    checkWorkspace();
+  }, []);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,7 +42,7 @@ export default function SignupPage() {
 
     try {
       const supabase = createClient();
-      const { error: signUpError } = await supabase.auth.signUp({
+      const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -35,7 +51,19 @@ export default function SignupPage() {
       });
 
       if (signUpError) {
-        setError(signUpError.message);
+        if (
+          signUpError.message.includes("single-user") ||
+          signUpError.message.includes("Additional signups")
+        ) {
+          setIsClaimed(true);
+          setError("Workspace is already claimed by an owner. Additional signups are disabled.");
+        } else {
+          setError(signUpError.message);
+        }
+      } else if (data?.session) {
+        // Direct session returned (e.g. email confirmations disabled)
+        router.push("/");
+        router.refresh();
       } else {
         setSuccess(true);
       }
@@ -47,7 +75,7 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center p-4 bg-[var(--background)]">
+    <div className="min-h-[calc(100vh-var(--header-height)-1rem)] w-full flex items-center justify-center p-4 sm:p-6 lg:p-8">
       <div className="w-full max-w-sm space-y-6">
         {/* Brand Orb & Heading */}
         <div className="text-center space-y-3">
@@ -71,7 +99,24 @@ export default function SignupPage() {
             </div>
           )}
 
-          {success ? (
+          {isClaimed ? (
+            <div className="py-6 flex flex-col items-center justify-center space-y-3 text-center">
+              <ShieldCheck className="h-10 w-10 text-[var(--primary)]" />
+              <h2 className="text-sm font-semibold text-[var(--foreground)]">
+                Workspace Initialized
+              </h2>
+              <p className="text-xs text-[var(--muted-foreground)]">
+                This Personal OS workspace has already been claimed by its owner. Additional registrations are locked.
+              </p>
+              <Button
+                size="sm"
+                onClick={() => router.push("/login")}
+                className="mt-2 text-xs"
+              >
+                Go to Sign In
+              </Button>
+            </div>
+          ) : success ? (
             <div className="py-6 flex flex-col items-center justify-center space-y-3 text-center animate-in zoom-in-95">
               <ShieldCheck className="h-10 w-10 text-emerald-600" />
               <h2 className="text-sm font-semibold text-[var(--foreground)]">

@@ -17,6 +17,10 @@ const routeTitleMap: Record<string, { title: string; category?: string }> = {
   "/habits": { title: "Habits", category: "Routines" },
   "/journal": { title: "Journal", category: "Reflection" },
   "/settings": { title: "Settings", category: "System" },
+  "/login": { title: "Sign In", category: "Authentication" },
+  "/signup": { title: "Owner Initialization", category: "Authentication" },
+  "/forgot-password": { title: "Password Recovery", category: "Authentication" },
+  "/reset-password": { title: "Set New Password", category: "Authentication" },
 };
 
 interface HeaderProps {
@@ -27,6 +31,12 @@ interface HeaderProps {
 export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const isAuthPage =
+    pathname === "/login" ||
+    pathname === "/signup" ||
+    pathname === "/forgot-password" ||
+    pathname === "/reset-password";
+
   const currentRoute = routeTitleMap[pathname] || {
     title: pathname?.replace("/", "") || "Dashboard",
     category: "Workspace",
@@ -71,63 +81,72 @@ export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
         </div>
       </div>
 
-      {/* Right: Actions, Search, Quick Add & Profile */}
+      {/* Right: Actions or Auth Status */}
       <div className="flex items-center gap-2 sm:gap-3">
-        {/* Search Bar / Command Palette Trigger */}
-        <button
-          type="button"
-          className="hidden md:flex items-center gap-3 h-9 px-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--card)] text-xs text-[var(--muted-foreground)] hover:border-[var(--ring)] transition-colors shadow-2xs"
-          aria-label="Open Command Search"
-        >
-          <Search className="h-3.5 w-3.5" />
-          <span>Search or jump to...</span>
-          <kbd className="flex items-center gap-0.5 rounded bg-[var(--muted)] px-1.5 py-0.5 text-[10px] font-mono text-[var(--muted-foreground)] border border-[var(--border)]">
-            <Command className="h-2.5 w-2.5 inline" /> K
-          </kbd>
-        </button>
+        {isAuthPage ? (
+          <div className="flex items-center gap-2 px-3 py-1 rounded-full border border-[var(--border)] bg-[var(--card)] text-[11px] font-mono text-[var(--muted-foreground)] shadow-2xs">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span>Single-User Secure Enclave</span>
+          </div>
+        ) : (
+          <>
+            {/* Search Bar / Command Palette Trigger */}
+            <button
+              type="button"
+              className="hidden md:flex items-center gap-3 h-9 px-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--card)] text-xs text-[var(--muted-foreground)] hover:border-[var(--ring)] transition-colors shadow-2xs"
+              aria-label="Open Command Search"
+            >
+              <Search className="h-3.5 w-3.5" />
+              <span>Search or jump to...</span>
+              <kbd className="flex items-center gap-0.5 rounded bg-[var(--muted)] px-1.5 py-0.5 text-[10px] font-mono text-[var(--muted-foreground)] border border-[var(--border)]">
+                <Command className="h-2.5 w-2.5 inline" /> K
+              </kbd>
+            </button>
 
-        {/* Mobile Search Button */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="md:hidden text-[var(--muted-foreground)]"
-          aria-label="Search"
-        >
-          <Search className="h-4 w-4" />
-        </Button>
+            {/* Mobile Search Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden text-[var(--muted-foreground)]"
+              aria-label="Search"
+            >
+              <Search className="h-4 w-4" />
+            </Button>
 
-        {/* Notifications */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="relative text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-          aria-label="Notifications"
-        >
-          <Bell className="h-4 w-4" />
-        </Button>
+            {/* Notifications */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+              aria-label="Notifications"
+            >
+              <Bell className="h-4 w-4" />
+            </Button>
 
-        {/* Primary Quick Capture / Action Button */}
-        <Button
-          variant="default"
-          size="sm"
-          onClick={onQuickCapture}
-          className="gap-1.5 shadow-sm text-xs font-semibold px-3"
-        >
-          <Plus className="h-3.5 w-3.5" />
-          <span className="hidden sm:inline">Capture</span>
-        </Button>
+            {/* Primary Quick Capture / Action Button */}
+            <Button
+              variant="default"
+              size="sm"
+              onClick={onQuickCapture}
+              className="gap-1.5 shadow-sm text-xs font-semibold px-3"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Capture</span>
+            </Button>
 
-        {/* Sign Out Button */}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleSignOut}
-          className="text-[var(--muted-foreground)] hover:text-red-600 transition-colors"
-          title="Sign Out"
-          aria-label="Sign Out"
-        >
-          <LogOut className="h-4 w-4" />
-        </Button>
+            {/* Sign Out Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleSignOut}
+              className="text-[var(--muted-foreground)] hover:text-red-600 transition-colors"
+              title="Sign Out"
+              aria-label="Sign Out"
+            >
+              <LogOut className="h-4 w-4" />
+            </Button>
+          </>
+        )}
       </div>
     </header>
   );
