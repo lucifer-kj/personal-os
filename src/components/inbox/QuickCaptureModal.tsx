@@ -12,8 +12,11 @@ import {
   Calendar,
   Send,
   Loader2,
+  Mic,
+  MicOff,
 } from "lucide-react";
 import { CaptureType } from "@/modules/inbox/types";
+import { useSpeechToText } from "@/lib/hooks/useSpeechToText";
 
 interface QuickCaptureModalProps {
   isOpen: boolean;
@@ -33,6 +36,17 @@ export function QuickCaptureModal({
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isSuccess, setIsSuccess] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleTranscriptChange = React.useCallback(
+    (newTranscript: string) => {
+      setTitle(newTranscript);
+    },
+    []
+  );
+
+  const { isSupported, isListening, toggleListening } = useSpeechToText({
+    onTranscriptChange: handleTranscriptChange,
+  });
 
   // Sync state when open status toggles
   const [prevOpen, setPrevOpen] = React.useState(isOpen);
@@ -137,16 +151,35 @@ export function QuickCaptureModal({
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Primary One-Line Capture Input */}
-            <div className="space-y-1.5">
+            <div className="relative flex items-center">
               <input
                 ref={inputRef}
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="What's on your mind? Capture immediately..."
-                className="w-full text-base font-medium px-3.5 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
+                className="w-full text-base font-medium px-3.5 pr-10 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
                 required
               />
+              {isSupported && (
+                <button
+                  type="button"
+                  onClick={toggleListening}
+                  className={`absolute right-2.5 p-1.5 rounded-full transition-all cursor-pointer ${
+                    isListening
+                      ? "bg-rose-500 text-white animate-pulse"
+                      : "text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]"
+                  }`}
+                  title={isListening ? "Listening... click to stop" : "Click to speak"}
+                  aria-label="Speech to text input"
+                >
+                  {isListening ? (
+                    <Mic className="h-4 w-4" />
+                  ) : (
+                    <MicOff className="h-4 w-4" />
+                  )}
+                </button>
+              )}
             </div>
 
             {/* Optional Additional Detail */}

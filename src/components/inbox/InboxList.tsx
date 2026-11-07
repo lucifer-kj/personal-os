@@ -16,6 +16,7 @@ import {
   ExternalLink,
   Archive,
 } from "lucide-react";
+import { QuickIngestBar } from "./QuickIngestBar";
 
 interface InboxListProps {
   initialItems: InboxItem[];
@@ -110,6 +111,18 @@ export function InboxList({
     }
   };
 
+  const handleRefresh = async () => {
+    try {
+      const res = await fetch("/api/v1/inbox");
+      if (res.ok) {
+        const json = await res.json();
+        setItems(json.data || []);
+      }
+    } catch (err) {
+      console.error("Failed to refresh inbox:", err);
+    }
+  };
+
   const getTypeIcon = (type: CaptureType) => {
     switch (type) {
       case "task":
@@ -127,6 +140,9 @@ export function InboxList({
 
   return (
     <div className="space-y-6">
+      {/* Zero-friction quick ingest bar with mic and batch dump */}
+      <QuickIngestBar onItemCreated={handleRefresh} />
+
       {/* Tab filter bar */}
       <div className="flex items-center justify-between border-b border-[var(--border)] pb-3">
         <div className="flex items-center gap-2">
