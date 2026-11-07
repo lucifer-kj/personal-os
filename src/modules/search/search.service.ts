@@ -87,6 +87,14 @@ export const DEFAULT_NAVIGATION_COMMANDS: NavigationCommand[] = [
     keywords: ["studio", "social", "twitter", "x", "linkedin", "threads", "posts", "media"],
     shortcut: "G S",
   },
+  {
+    id: "nav-radar",
+    title: "The Radar",
+    category: "Navigation",
+    url: "/radar",
+    keywords: ["radar", "rss", "feed", "news", "articles", "signal", "curation"],
+    shortcut: "G R",
+  },
 ];
 
 export const DEFAULT_QUICK_ACTIONS: QuickActionCommand[] = [

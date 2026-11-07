@@ -16,6 +16,7 @@ import {
   Settings,
   Sparkles,
   Share2,
+  Radio,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -38,6 +39,7 @@ const primaryNavItems: NavItem[] = [
   { title: "Habits", href: "/habits", icon: Flame },
   { title: "Journal", href: "/journal", icon: BookOpen },
   { title: "Studio", href: "/studio", icon: Share2 },
+  { title: "The Radar", href: "/radar", icon: Radio },
 ];
 
 export function Sidebar({ className }: { className?: string }) {

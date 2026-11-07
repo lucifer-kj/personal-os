@@ -3,8 +3,8 @@
 import * as React from "react";
 import { Sparkles, Edit2, Check, X, Play, Calendar as CalendarIcon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { DynamicScenery } from "./DynamicScenery";
-import { AppOrb } from "@/components/brand/AppOrb";
+import { DynamicScenery, TimeOfDay } from "./DynamicScenery";
+import { AppOrb, OrbState } from "@/components/brand/AppOrb";
 
 interface DashboardHeaderProps {
   greeting: string;
@@ -27,6 +27,22 @@ export function DashboardHeader({
   const [isEditing, setIsEditing] = React.useState(false);
   const [inputValue, setInputValue] = React.useState(initialIntention || "");
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [previewTimeOfDay, setPreviewTimeOfDay] = React.useState<TimeOfDay | null>(null);
+
+  // Compute synchronized orb state based on scenery time of day
+  const orbState: OrbState = React.useMemo(() => {
+    if (!previewTimeOfDay) return "breathing";
+    switch (previewTimeOfDay) {
+      case "dawn":
+        return "breathing";
+      case "day":
+        return "working";
+      case "dusk":
+        return "weaving";
+      case "night":
+        return "solving";
+    }
+  }, [previewTimeOfDay]);
 
   // Format short date: e.g. "THU, NOV 6"
   const shortDate = React.useMemo(() => {
@@ -65,20 +81,46 @@ export function DashboardHeader({
   return (
     <div className="relative rounded-2xl border border-[var(--border)] overflow-hidden bg-[var(--card)] shadow-xs transition-colors">
       {/* 1. Time-of-Day Dynamic Scenic Mountain Horizon Background */}
-      <DynamicScenery className="h-full" />
+      <DynamicScenery className="h-full" forceTimeOfDay={previewTimeOfDay ?? undefined} />
 
       {/* 2. Hero Content Region */}
       <div className="relative z-10 p-5 sm:p-7 space-y-4">
-        {/* Date & Weather Indicator Pill */}
-        <div className="flex items-center gap-3 text-[11px] font-mono tracking-wider text-[var(--muted-foreground)]">
-          <div className="flex items-center gap-1.5 font-medium">
-            <span className="h-2 w-2 rounded-full bg-[var(--primary)] animate-pulse" />
-            <span>{shortDate}</span>
+        {/* Date & Weather / Time-Scrubber Control Pill */}
+        <div className="flex flex-wrap items-center justify-between gap-3 text-[11px] font-mono tracking-wider text-[var(--muted-foreground)]">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5 font-medium">
+              <span className="h-2 w-2 rounded-full bg-[var(--primary)] animate-pulse" />
+              <span>{shortDate}</span>
+            </div>
+            <span className="text-[var(--border)]">•</span>
+            <div className="flex items-center gap-1 text-[var(--foreground)]">
+              <Sun className="h-3 w-3 text-amber-500" />
+              <span>Focused Horizon</span>
+            </div>
           </div>
-          <span className="text-[var(--border)]">•</span>
-          <div className="flex items-center gap-1 text-[var(--foreground)]">
-            <Sun className="h-3 w-3 text-amber-500" />
-            <span>Focused Horizon</span>
+
+          {/* Day Change & Scenery Preview Pill */}
+          <div className="flex items-center gap-1 rounded-full border border-[var(--border)] bg-[var(--background)]/85 backdrop-blur-md px-2 py-0.5 shadow-2xs">
+            <span className="text-[10px] text-[var(--muted-foreground)] mr-0.5">Scenery:</span>
+            {(["auto", "dawn", "day", "dusk", "night"] as const).map((mode) => {
+              const isActive =
+                (mode === "auto" && previewTimeOfDay === null) ||
+                previewTimeOfDay === mode;
+              return (
+                <button
+                  key={mode}
+                  type="button"
+                  onClick={() => setPreviewTimeOfDay(mode === "auto" ? null : mode)}
+                  className={`px-1.5 py-0.5 rounded-full text-[10px] capitalize transition-all ${
+                    isActive
+                      ? "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold shadow-xs"
+                      : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+                  }`}
+                >
+                  {mode}
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -95,7 +137,7 @@ export function DashboardHeader({
 
           {/* Glowing Animated Orb Avatar from Jakubantalik/thinking-orbs */}
           <div className="shrink-0">
-            <AppOrb size={64} state="breathing" interactive />
+            <AppOrb size={64} state={orbState} interactive />
           </div>
         </div>
 

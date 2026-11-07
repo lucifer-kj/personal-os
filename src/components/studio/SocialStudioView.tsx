@@ -26,6 +26,7 @@ import {
   X,
   ExternalLink,
 } from "lucide-react";
+import { toast } from "sonner";
 
 interface SocialStudioViewProps {
   initialPosts?: SocialPost[];
@@ -54,8 +55,6 @@ export function SocialStudioView({ initialPosts = [] }: SocialStudioViewProps) {
 
   const [isSaving, setIsSaving] = React.useState(false);
   const [isUploading, setIsUploading] = React.useState(false);
-  const [errorMsg, setErrorMsg] = React.useState<string | null>(null);
-  const [successMsg, setSuccessMsg] = React.useState<string | null>(null);
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -97,7 +96,6 @@ export function SocialStudioView({ initialPosts = [] }: SocialStudioViewProps) {
         current.scheduled_at ? current.scheduled_at.slice(0, 16) : ""
       );
       setEditorTags(current.tags || []);
-      setErrorMsg(null);
     }
   }, [selectedPostId, posts]);
 
@@ -110,7 +108,6 @@ export function SocialStudioView({ initialPosts = [] }: SocialStudioViewProps) {
     setEditorMediaUrls([]);
     setEditorScheduledAt("");
     setEditorTags([]);
-    setErrorMsg(null);
   };
 
   const handleCreateNew = () => {
@@ -130,7 +127,6 @@ export function SocialStudioView({ initialPosts = [] }: SocialStudioViewProps) {
     if (!files || files.length === 0) return;
 
     setIsUploading(true);
-    setErrorMsg(null);
 
     try {
       const uploadedUrls: string[] = [];
@@ -154,11 +150,10 @@ export function SocialStudioView({ initialPosts = [] }: SocialStudioViewProps) {
       }
 
       setEditorMediaUrls((prev) => [...prev, ...uploadedUrls]);
-      setSuccessMsg(`Uploaded ${uploadedUrls.length} file(s)`);
-      setTimeout(() => setSuccessMsg(null), 3000);
+      toast.success(`Uploaded ${uploadedUrls.length} media file(s)`);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Media upload failed";
-      setErrorMsg(msg);
+      toast.error(msg);
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -188,17 +183,16 @@ export function SocialStudioView({ initialPosts = [] }: SocialStudioViewProps) {
   // Save Post Handler
   const handleSavePost = async (overrideStatus?: PostStatus) => {
     if (!editorContent.trim()) {
-      setErrorMsg("Post content cannot be empty.");
+      toast.error("Post content cannot be empty.");
       return;
     }
 
     if (isOverLimit) {
-      setErrorMsg(`Post content exceeds ${editorPlatform.toUpperCase()} limit (${charsUsed}/${charLimit}).`);
+      toast.error(`Post content exceeds ${editorPlatform.toUpperCase()} limit (${charsUsed}/${charLimit}).`);
       return;
     }
 
     setIsSaving(true);
-    setErrorMsg(null);
 
     const statusToSave = overrideStatus || editorStatus;
     const scheduledAtPayload =
@@ -234,7 +228,13 @@ export function SocialStudioView({ initialPosts = [] }: SocialStudioViewProps) {
         setPosts((prev) =>
           prev.map((p) => (p.id === selectedPostId ? json.data : p))
         );
-        setSuccessMsg("Post updated successfully");
+        toast.success(
+          statusToSave === "published"
+            ? "Post marked as published"
+            : statusToSave === "scheduled"
+            ? "Post scheduled successfully"
+            : "Post updated successfully"
+        );
       } else {
         // Create new
         const res = await fetch("/api/v1/studio/posts", {
@@ -251,12 +251,17 @@ export function SocialStudioView({ initialPosts = [] }: SocialStudioViewProps) {
         const json = await res.json();
         setPosts((prev) => [json.data, ...prev]);
         setSelectedPostId(json.data.id);
-        setSuccessMsg("Draft created successfully");
+        toast.success(
+          statusToSave === "published"
+            ? "Post published"
+            : statusToSave === "scheduled"
+            ? "Post scheduled"
+            : "Draft created successfully"
+        );
       }
-      setTimeout(() => setSuccessMsg(null), 3000);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Error saving post";
-      setErrorMsg(msg);
+      toast.error(msg);
     } finally {
       setIsSaving(false);
     }
@@ -275,11 +280,10 @@ export function SocialStudioView({ initialPosts = [] }: SocialStudioViewProps) {
 
       setPosts((prev) => prev.filter((p) => p.id !== selectedPostId));
       resetEditor();
-      setSuccessMsg("Post deleted");
-      setTimeout(() => setSuccessMsg(null), 3000);
+      toast.success("Post deleted");
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Error deleting post";
-      setErrorMsg(msg);
+      toast.error(msg);
     }
   };
 
@@ -622,18 +626,6 @@ export function SocialStudioView({ initialPosts = [] }: SocialStudioViewProps) {
               )}
             </div>
           </div>
-
-          {/* Feedback Messages */}
-          {errorMsg && (
-            <div className="p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs">
-              {errorMsg}
-            </div>
-          )}
-          {successMsg && (
-            <div className="p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs">
-              {successMsg}
-            </div>
-          )}
 
           {/* Action Footer */}
           <div className="pt-2 flex items-center justify-between gap-2 border-t border-[var(--border)]">

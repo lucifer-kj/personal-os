@@ -19,6 +19,9 @@ import {
   FolderKanban,
   CheckSquare,
 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { toast } from "sonner";
 
 interface NoteEditorProps {
   note: NoteWithLinks | null;
@@ -528,7 +531,7 @@ export function NoteEditor({
 }
 
 /**
- * Lightweight, zero-dependency Markdown renderer for note previews
+ * Modern, rich GitHub-Flavored Markdown renderer for note previews
  */
 function MarkdownPreview({ content }: { content: string }) {
   if (!content.trim()) {
@@ -539,91 +542,95 @@ function MarkdownPreview({ content }: { content: string }) {
     );
   }
 
-  const lines = content.split("\n");
-
   return (
-    <div className="space-y-3 text-sm text-[var(--foreground)] leading-relaxed font-sans max-w-2xl">
-      {lines.map((line, idx) => {
-        // Headers
-        if (line.startsWith("# ")) {
-          return (
-            <h1
-              key={idx}
-              className="text-2xl font-serif font-medium tracking-tight text-[var(--foreground)] border-b border-[var(--border)] pb-1 mt-4"
-            >
-              {line.replace("# ", "")}
+    <div className="text-sm text-[var(--foreground)] leading-relaxed font-sans max-w-2xl prose prose-neutral dark:prose-invert">
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={{
+          h1: ({ children }) => (
+            <h1 className="text-2xl font-serif font-semibold tracking-tight text-[var(--foreground)] border-b border-[var(--border)] pb-1.5 mt-5 mb-2.5">
+              {children}
             </h1>
-          );
-        }
-        if (line.startsWith("## ")) {
-          return (
-            <h2
-              key={idx}
-              className="text-xl font-serif font-medium tracking-tight text-[var(--foreground)] mt-3"
-            >
-              {line.replace("## ", "")}
+          ),
+          h2: ({ children }) => (
+            <h2 className="text-xl font-serif font-semibold tracking-tight text-[var(--foreground)] mt-4 mb-2">
+              {children}
             </h2>
-          );
-        }
-        if (line.startsWith("### ")) {
-          return (
-            <h3
-              key={idx}
-              className="text-base font-serif font-medium text-[var(--foreground)] mt-2"
-            >
-              {line.replace("### ", "")}
+          ),
+          h3: ({ children }) => (
+            <h3 className="text-base font-serif font-semibold text-[var(--foreground)] mt-3 mb-1.5">
+              {children}
             </h3>
-          );
-        }
-
-        // Blockquotes
-        if (line.startsWith("> ")) {
-          return (
-            <blockquote
-              key={idx}
-              className="border-l-2 border-[var(--primary)] pl-3 italic text-[var(--muted-foreground)]"
-            >
-              {line.replace("> ", "")}
+          ),
+          p: ({ children }) => <p className="mb-3 leading-relaxed">{children}</p>,
+          blockquote: ({ children }) => (
+            <blockquote className="border-l-2 border-[var(--primary)] pl-3.5 italic text-[var(--muted-foreground)] my-3">
+              {children}
             </blockquote>
-          );
-        }
-
-        // Bullet lists
-        if (line.startsWith("- ") || line.startsWith("* ")) {
-          return (
-            <div key={idx} className="flex items-start gap-2 pl-2">
-              <span className="text-[var(--primary)]">•</span>
-              <span>{line.replace(/^[-*] /, "")}</span>
+          ),
+          ul: ({ children }) => (
+            <ul className="list-disc list-inside space-y-1 mb-3 pl-1 text-[var(--foreground)]">
+              {children}
+            </ul>
+          ),
+          ol: ({ children }) => (
+            <ol className="list-decimal list-inside space-y-1 mb-3 pl-1 text-[var(--foreground)]">
+              {children}
+            </ol>
+          ),
+          li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+          code: ({ children, className }) => {
+            const isBlock = className?.includes("language-");
+            if (isBlock) {
+              return (
+                <code className="block bg-[var(--muted)]/60 text-[var(--foreground)] p-3 rounded-lg text-xs font-mono overflow-x-auto border border-[var(--border)] my-2">
+                  {children}
+                </code>
+              );
+            }
+            return (
+              <code className="bg-[var(--muted)]/60 text-[var(--foreground)] px-1.5 py-0.5 rounded text-xs font-mono border border-[var(--border)]/50">
+                {children}
+              </code>
+            );
+          },
+          table: ({ children }) => (
+            <div className="overflow-x-auto my-3">
+              <table className="w-full text-left text-xs border-collapse border border-[var(--border)] rounded-lg">
+                {children}
+              </table>
             </div>
-          );
-        }
-
-        // Checklists
-        if (line.startsWith("- [ ] ") || line.startsWith("- [x] ")) {
-          const isChecked = line.startsWith("- [x] ");
-          return (
-            <div key={idx} className="flex items-center gap-2 pl-2">
-              <input
-                type="checkbox"
-                checked={isChecked}
-                readOnly
-                className="rounded border-[var(--border)] text-[var(--primary)]"
-              />
-              <span className={isChecked ? "line-through opacity-60" : ""}>
-                {line.replace(/^- \[[ x]\] /, "")}
-              </span>
-            </div>
-          );
-        }
-
-        // Empty lines
-        if (!line.trim()) {
-          return <div key={idx} className="h-2" />;
-        }
-
-        // Normal paragraph
-        return <p key={idx}>{line}</p>;
-      })}
+          ),
+          th: ({ children }) => (
+            <th className="border border-[var(--border)] bg-[var(--muted)]/40 p-2 font-semibold">
+              {children}
+            </th>
+          ),
+          td: ({ children }) => (
+            <td className="border border-[var(--border)] p-2">{children}</td>
+          ),
+          input: ({ checked }) => (
+            <input
+              type="checkbox"
+              checked={checked}
+              readOnly
+              className="mr-2 rounded border-[var(--border)] text-[var(--primary)] align-middle cursor-default"
+            />
+          ),
+          a: ({ href, children }) => (
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sky-600 dark:text-sky-400 underline hover:opacity-80"
+            >
+              {children}
+            </a>
+          ),
+        }}
+      >
+        {content}
+      </ReactMarkdown>
     </div>
   );
 }

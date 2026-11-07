@@ -17,6 +17,7 @@ import {
   X,
   Sparkles,
   Share2,
+  Radio,
 } from "lucide-react";
 import {
   DEFAULT_NAVIGATION_COMMANDS,
@@ -394,6 +395,7 @@ export function CommandPalette({
                     {nav.url === "/focus" && <Timer className="h-3.5 w-3.5 shrink-0 text-teal-600" />}
                     {nav.url === "/inbox" && <Inbox className="h-3.5 w-3.5 shrink-0 text-purple-600" />}
                     {nav.url === "/studio" && <Share2 className="h-3.5 w-3.5 shrink-0 text-indigo-600" />}
+                    {nav.url === "/radar" && <Radio className="h-3.5 w-3.5 shrink-0 text-rose-500" />}
                     <span className="font-medium">{nav.title}</span>
                   </div>
                   {nav.shortcut && (

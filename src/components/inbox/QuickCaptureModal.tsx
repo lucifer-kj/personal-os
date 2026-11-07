@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { CaptureType } from "@/modules/inbox/types";
 import { useSpeechToText } from "@/lib/hooks/useSpeechToText";
+import { toast } from "sonner";
 
 interface QuickCaptureModalProps {
   isOpen: boolean;
@@ -102,13 +103,17 @@ export function QuickCaptureModal({
 
       if (res.ok) {
         setIsSuccess(true);
+        toast.success("Captured to Inbox");
         onCaptured?.();
         setTimeout(() => {
           onClose();
         }, 600);
+      } else {
+        toast.error("Failed to capture item");
       }
     } catch (err) {
       console.error("Failed to capture inbox item:", err);
+      toast.error("Failed to capture inbox item");
     } finally {
       setIsSubmitting(false);
     }

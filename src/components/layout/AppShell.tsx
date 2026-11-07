@@ -5,6 +5,7 @@ import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
 import { MobileNav } from "./MobileNav";
 import { CommandPalette } from "@/components/search/CommandPalette";
+import { Toaster } from "sonner";
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -62,6 +63,9 @@ export function AppShell({ children }: AppShellProps) {
       <React.Suspense fallback={null}>
         <CommandPalette />
       </React.Suspense>
+
+      {/* Global Notifications */}
+      <Toaster position="bottom-right" richColors closeButton />
     </div>
   );
 }

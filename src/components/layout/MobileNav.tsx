@@ -17,6 +17,7 @@ import {
   BookOpen,
   Settings,
   Share2,
+  Radio,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -51,6 +52,7 @@ export function MobileNav({
     { title: "Habits", href: "/habits", icon: Flame },
     { title: "Journal", href: "/journal", icon: BookOpen },
     { title: "Studio", href: "/studio", icon: Share2 },
+    { title: "The Radar", href: "/radar", icon: Radio },
     { title: "Settings", href: "/settings", icon: Settings },
   ];
 

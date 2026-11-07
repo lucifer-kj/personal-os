@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { Check, Plus, AlertCircle, Calendar, Clock, ArrowRight } from "lucide-react";
 import { Task } from "@/modules/tasks/types";
+import { fireCelebrationConfetti } from "@/lib/ui/confetti";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,18 @@ export function TodayAgenda({
   onOpenCreateTask,
 }: TodayAgendaProps) {
   const [showOverdue, setShowOverdue] = React.useState(true);
+
+  const handleTaskCheck = (task: Task) => {
+    if (task.status !== "completed") {
+      const remainingUncompleted = todayTasks.filter(
+        (t) => t.id !== task.id && t.status !== "completed"
+      );
+      if (remainingUncompleted.length === 0) {
+        fireCelebrationConfetti();
+      }
+    }
+    onToggleTask(task);
+  };
 
   return (
     <div className="space-y-4">
@@ -129,7 +142,7 @@ export function TodayAgenda({
               >
                 <div className="flex items-center gap-3 min-w-0 flex-1">
                   <button
-                    onClick={() => onToggleTask(task)}
+                    onClick={() => handleTaskCheck(task)}
                     className={`h-4.5 w-4.5 rounded border transition-colors flex items-center justify-center shrink-0 ${
                       isCompleted
                         ? "bg-[var(--primary)] border-[var(--primary)] text-white"

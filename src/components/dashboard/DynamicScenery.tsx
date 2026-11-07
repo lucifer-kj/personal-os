@@ -32,6 +32,7 @@ export function DynamicScenery({ className = "", forceTimeOfDay }: DynamicScener
 
   const activeTimeOfDay: TimeOfDay = forceTimeOfDay ?? detectedTimeOfDay;
 
+  const times: TimeOfDay[] = ["dawn", "day", "dusk", "night"];
   const sceneryMap: Record<TimeOfDay, string> = {
     dawn: "/scenery/dawn.svg",
     day: "/scenery/day.svg",
@@ -41,17 +42,26 @@ export function DynamicScenery({ className = "", forceTimeOfDay }: DynamicScener
 
   return (
     <div
-      className={`absolute inset-0 overflow-hidden pointer-events-none select-none transition-opacity duration-1000 ${className}`}
+      className={`absolute inset-0 overflow-hidden pointer-events-none select-none ${className}`}
       aria-hidden="true"
     >
-      <Image
-        src={sceneryMap[activeTimeOfDay]}
-        alt=""
-        fill
-        priority
-        className="object-cover object-top opacity-60 dark:opacity-40"
-        sizes="100vw"
-      />
+      {times.map((t) => (
+        <div
+          key={t}
+          className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+            activeTimeOfDay === t ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <Image
+            src={sceneryMap[t]}
+            alt=""
+            fill
+            priority={t === activeTimeOfDay}
+            className="object-cover object-top opacity-60 dark:opacity-40"
+            sizes="100vw"
+          />
+        </div>
+      ))}
       {/* Soft gradient bottom blend */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[var(--background)]" />
     </div>
