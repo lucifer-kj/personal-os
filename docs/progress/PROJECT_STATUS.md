@@ -2,7 +2,7 @@
 
 ## Overview
 - **Product Name:** Personal OS
-- **Status:** M5 Inbox & Quick Capture Completed & Verified. Ready for M6 (Calendar & Time Blocking).
+- **Status:** M6 Calendar & Time Blocking Completed & Verified. Ready for M7 (Notes & Knowledge Base).
 - **Architecture Baseline:** Modular monolith with Next.js App Router (React 19, TypeScript strict mode, Tailwind CSS v4), Supabase PostgreSQL, and explicit domain module boundaries.
 - **Visual Direction:** Warm, editorial, quiet, spacious, functional. Design tokens active in `src/app/globals.css`.
 
@@ -13,14 +13,15 @@
 - **M3 — Day Planner & Today Dashboard:** COMPLETED & VERIFIED
 - **M4 — Focus Sessions & Time Tracking:** COMPLETED & VERIFIED
 - **M5 — Inbox & Quick Capture:** COMPLETED & VERIFIED
-- **M6 — Calendar & Time Blocking:** READY TO START
+- **M6 — Calendar & Time Blocking:** COMPLETED & VERIFIED
+- **M7 — Notes & Knowledge Base:** READY TO START
 
 ## Key Verification Status
 - Lint: PASSED (`pnpm lint` — 0 errors, 0 warnings)
 - Typecheck: PASSED (`pnpm typecheck` — 0 errors)
-- Tests: PASSED (`pnpm test` — 116/116 unit, domain, API, and component tests passing across 30 test files)
-- Build: PASSED (`pnpm build` — Clean production build with Partial Prerendering on `/`, `/focus`, `/inbox`, `/projects/[id]`, and static `/projects` & `/tasks`)
-- Viewport Inspection: VERIFIED (Desktop 1440px and Mobile 375px verified with Playwright; live rapid capture, quick capture modal, tab filtering, and task triage conversion verified)
+- Tests: PASSED (`pnpm test` — 135/135 unit, domain, API, and component tests passing across 34 test files)
+- Build: PASSED (`pnpm build` — Clean production build with Partial Prerendering on `/`, `/calendar`, `/focus`, `/inbox`, `/projects/[id]`, and static `/projects` & `/tasks`)
+- Viewport Inspection: VERIFIED (Desktop 1440px and Mobile 375px; multi-view Month/Week/Day/Agenda rendering, live conflict advisory indicators, and task time blocking verified)
 
 ## Architecture Decisions Record (ADR) Summary
 - **ADR-001 (Tooling & Package Manager):** `pnpm` exclusively used. Next.js 16 App Router with React 19, TypeScript in strict mode, ESLint 9, and Vitest for testing.
@@ -33,3 +34,4 @@
 - **ADR-008 (Orb & Dynamic Scenery System):** Installed `thinking-orbs` for an interactive, canvas-driven animated state orb (`AppOrb`) embedded into the hero dashboard card and brand elements. Integrated SVG dynamic scenery (`DynamicScenery`) that transitions through dawn, day, dusk, and night based on real-time client hour with soft warm gradient blend. Client mounting handled via `useSyncExternalStore` for React 19 / Next.js 16 hydration safety.
 - **ADR-009 (Focus Sessions & Time Tracking Engine):** Server-authoritative timer tracking in `time_entries` and `focus_sessions` tables (`0004_focus_sessions.sql`). Clock-drift and tab-sleep resilience implemented by computing elapsed time from server UTC timestamps and accumulated pause duration. Automatic duration rollup commits tracked focus minutes into linked task `actual_minutes` upon session completion. Dedicated `/focus` view synchronizes dynamic `AppOrb` states (`working`, `breathing`, `composing`).
 - **ADR-010 (Inbox & Quick Capture Architecture):** Unprocessed information captured first into `inbox_items` (`0005_inbox_items.sql`) with capture types (`task`, `note`, `idea`, `link`, `reminder`, `other`). Rapid capture modal with auto-focused inputs supports single-keystroke entry (< 3s capture latency). Atomic triage conversion converts inbox records into domain tasks (`source_type: "inbox"`, `source_id: item.id`) and marks the inbox item processed in a single transaction-like workflow.
+- **ADR-011 (Calendar & Time Blocking Engine):** Timestamps stored in authoritative UTC `timestamptz` format in `calendar_events` (`0006_calendar_events.sql`) while preserving client origin IANA timezone. Advisory conflict detection calculates overlaps (`e1.start_at < e2.end_at AND e1.end_at > e2.start_at`) and surfaces non-blocking amber badges in modals and views without artificially restricting the user from booking commitments. Time blocking seamlessly links calendar events to task records (`task_id`), synchronizing `scheduled_start_at` and `scheduled_end_at` fields on the task. View orchestrator delivers responsive Month, Week, Day, and Agenda views with Partial Prerendering support.

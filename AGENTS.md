@@ -13,7 +13,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 Personal OS is a calm, private single-user productivity workstation built with Next.js 16 (Turbopack, React 19, Tailwind CSS v4) and Supabase Postgres.
 
 ### 1. Structural Knowledge Graph (Graphify)
-- Knowledge graph available at `graphify-out/graph.json` (640 nodes, 2175 edges, 25 communities).
+- Knowledge graph available at `graphify-out/graph.json` (762 nodes, 2730 edges, 30 communities).
 - High-level topology, community clusters, and god nodes: `graphify-out/GRAPH_REPORT.md`.
 - Interactive visualizer: `graphify-out/graph.html`.
 - Run `graphify query "<question>"` to trace dependencies or explain nodes without re-reading source files.
