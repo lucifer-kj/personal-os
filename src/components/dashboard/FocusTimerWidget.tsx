@@ -134,11 +134,15 @@ export function FocusTimerWidget({
 
           <button
             type="button"
-            onClick={() => setIsActive(false)}
-            className="h-9 w-9 rounded-full bg-[#F7F4EF] hover:bg-[#EFE9DF] active:scale-95 border border-[#E8E1D7] dark:bg-[#201C1A] dark:border-[#332E2A] dark:hover:bg-[#2C2724] text-[#554E46] dark:text-[#C4BCB3] flex items-center justify-center transition-all cursor-pointer"
-            aria-label="Pause"
+            onClick={() => {
+              setSecondsRemaining((prev) => prev + 300);
+              setTotalSeconds((prev) => prev + 300);
+            }}
+            className="h-9 w-9 rounded-full bg-[#F7F4EF] hover:bg-[#EFE9DF] active:scale-95 border border-[#E8E1D7] dark:bg-[#201C1A] dark:border-[#332E2A] dark:hover:bg-[#2C2724] text-[#554E46] dark:text-[#C4BCB3] flex items-center justify-center transition-all cursor-pointer text-[11px] font-mono font-medium"
+            aria-label="Add 5 minutes"
+            title="Add 5 minutes"
           >
-            <Pause className="h-3.5 w-3.5" />
+            +5m
           </button>
 
           <button

@@ -157,7 +157,7 @@ export function DashboardView({ initialOverview }: DashboardViewProps) {
             <CurrentFocusCard
               title={overview.intention || "Complete dashboard design & token architecture"}
               description="Finalize layouts, interaction patterns, and design tokens before spec handoff."
-              onOpenDetails={() => router.push("/tasks")}
+              onOpenDetails={() => router.push("/focus")}
             />
           </div>
           <div className="col-span-4">

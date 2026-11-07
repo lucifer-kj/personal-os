@@ -15,6 +15,9 @@ import {
   Trash2,
   ExternalLink,
   Archive,
+  ChevronDown,
+  FileText,
+  FolderKanban,
 } from "lucide-react";
 import { QuickIngestBar } from "./QuickIngestBar";
 
@@ -40,20 +43,25 @@ export function InboxList({
 
   const [activeTab, setActiveTab] = React.useState<"unprocessed" | "processed" | "all">("unprocessed");
   const [processingId, setProcessingId] = React.useState<string | null>(null);
+  const [triageDropdownId, setTriageDropdownId] = React.useState<string | null>(null);
 
   const filteredItems = React.useMemo(() => {
     if (activeTab === "all") return items;
     return items.filter((i) => i.status === activeTab);
   }, [items, activeTab]);
 
-  const handleTriageToTask = async (item: InboxItem) => {
+  const handleTriage = async (
+    item: InboxItem,
+    targetType: "task" | "note" | "project" = "task"
+  ) => {
     setProcessingId(item.id);
+    setTriageDropdownId(null);
     try {
       const res = await fetch(`/api/v1/inbox/${item.id}/process`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          target_type: "task",
+          target_type: targetType,
           priority: "medium",
         }),
       });
@@ -65,16 +73,16 @@ export function InboxList({
               ? {
                   ...i,
                   status: "processed",
-                  converted_entity_type: "task",
+                  converted_entity_type: targetType,
                   processed_at: new Date().toISOString(),
                 }
               : i
           )
         );
-        onTriageItem?.(item.id, "task");
+        onTriageItem?.(item.id, targetType);
       }
     } catch (err) {
-      console.error("Failed to convert item to task:", err);
+      console.error(`Failed to convert item to ${targetType}:`, err);
     } finally {
       setProcessingId(null);
     }
@@ -245,15 +253,51 @@ export function InboxList({
               <div className="flex items-center gap-2 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[var(--border)]">
                 {item.status === "unprocessed" ? (
                   <>
-                    <Button
-                      size="sm"
-                      onClick={() => handleTriageToTask(item)}
-                      disabled={processingId === item.id}
-                      className="h-8 px-3 text-xs gap-1.5 shadow-xs"
-                    >
-                      <Check className="h-3.5 w-3.5" />
-                      <span>Convert to Task</span>
-                    </Button>
+                    <div className="relative inline-flex rounded-lg shadow-xs">
+                      <Button
+                        size="sm"
+                        onClick={() => handleTriage(item, "task")}
+                        disabled={processingId === item.id}
+                        className="h-8 px-3 text-xs gap-1.5 rounded-r-none"
+                        aria-label="Convert to task"
+                      >
+                        <Check className="h-3.5 w-3.5" />
+                        <span>Convert to Task</span>
+                      </Button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setTriageDropdownId(triageDropdownId === item.id ? null : item.id)
+                        }
+                        disabled={processingId === item.id}
+                        className="h-8 px-1.5 bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-white rounded-r-lg border-l border-white/20 transition-colors flex items-center justify-center cursor-pointer"
+                        aria-label="More triage options"
+                      >
+                        <ChevronDown className="h-3 w-3" />
+                      </button>
+
+                      {triageDropdownId === item.id && (
+                        <div className="absolute right-0 top-full mt-1 w-44 rounded-xl bg-white dark:bg-[#1C1917] border border-[#EDE7DE] dark:border-[#2C2724] shadow-xl p-1 z-50 animate-in fade-in zoom-in-95 duration-100">
+                          <button
+                            type="button"
+                            onClick={() => handleTriage(item, "note")}
+                            className="w-full flex items-center gap-2 px-2.5 py-1.5 text-xs text-[#24211F] dark:text-[#F3EFEA] hover:bg-[#F7F4EF] dark:hover:bg-[#25211E] rounded-lg transition-colors text-left cursor-pointer"
+                          >
+                            <FileText className="h-3.5 w-3.5 text-amber-500" />
+                            <span>Convert to Note</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleTriage(item, "project")}
+                            className="w-full flex items-center gap-2 px-2.5 py-1.5 text-xs text-[#24211F] dark:text-[#F3EFEA] hover:bg-[#F7F4EF] dark:hover:bg-[#25211E] rounded-lg transition-colors text-left cursor-pointer"
+                          >
+                            <FolderKanban className="h-3.5 w-3.5 text-indigo-500" />
+                            <span>Convert to Project</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
                     <Button
                       size="sm"
                       variant="outline"

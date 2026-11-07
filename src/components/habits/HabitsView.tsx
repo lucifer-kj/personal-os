@@ -6,6 +6,7 @@ import { HabitCard } from "./HabitCard";
 import { HabitModal } from "./HabitModal";
 import { Button } from "@/components/ui/button";
 import { Plus, Flame, CheckCircle2, TrendingUp, Sparkles } from "lucide-react";
+import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
 interface HabitsViewProps {
@@ -59,7 +60,7 @@ export function HabitsView({ initialHabits = [], initialStats = null }: HabitsVi
   };
 
   const handleToggleCheckin = async (id: string) => {
-    const today = new Date().toISOString().split("T")[0];
+    const today = format(new Date(), "yyyy-MM-dd");
     const res = await fetch(`/api/v1/habits/${id}/log`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

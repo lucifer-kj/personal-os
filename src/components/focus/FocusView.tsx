@@ -17,6 +17,7 @@ import {
   Clock,
 } from "lucide-react";
 import { ActiveFocusSession } from "@/modules/focus/types";
+import { startAmbientNoise, stopAmbientNoise } from "@/lib/audio/ambientAudio";
 
 interface FocusViewProps {
   initialActiveSession?: ActiveFocusSession | null;
@@ -43,6 +44,19 @@ export function FocusView({
   const [rating, setRating] = React.useState<number>(5);
   const [reflectionNotes, setReflectionNotes] = React.useState("");
   const [markCompleteTask, setMarkCompleteTask] = React.useState(false);
+
+  // Play soothing acoustic brown noise when unmuted during active focus session
+  React.useEffect(() => {
+    if (soundEnabled && activeSession?.session.status === "running") {
+      const stop = startAmbientNoise();
+      return () => stop();
+    } else {
+      stopAmbientNoise();
+    }
+    return () => {
+      stopAmbientNoise();
+    };
+  }, [soundEnabled, activeSession?.session.status]);
 
   // Sync state if initialActiveSession changes via props
   const [prevInitial, setPrevInitial] = React.useState(initialActiveSession);

@@ -33,6 +33,8 @@ export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [showProfileMenu, setShowProfileMenu] = React.useState(false);
+  const [showNotifications, setShowNotifications] = React.useState(false);
+  const [hasUnread, setHasUnread] = React.useState(true);
 
   const isAuthPage =
     pathname === "/login" ||
@@ -103,13 +105,54 @@ export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
           </button>
           <button
             type="button"
-            className="relative p-2 text-[#A69E94] hover:text-white transition-colors"
+            onClick={() => setShowNotifications(!showNotifications)}
+            className="relative p-2 text-[#A69E94] hover:text-white transition-colors cursor-pointer"
             aria-label="Notifications"
           >
             <Bell className="h-4 w-4" />
-            <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-[#E05B27] ring-2 ring-[#0D0B0A]" />
+            {hasUnread && (
+              <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-[#E05B27] ring-2 ring-[#0D0B0A]" />
+            )}
           </button>
         </div>
+
+        {/* Mobile Notification Popover */}
+        {showNotifications && (
+          <div className="absolute right-4 top-[calc(var(--header-height)+4px)] w-[calc(100vw-32px)] max-w-sm rounded-2xl bg-[#1C1917] border border-white/10 shadow-2xl p-3 z-50 animate-in fade-in duration-150">
+            <div className="flex items-center justify-between pb-2 border-b border-white/10">
+              <p className="text-xs font-semibold text-white">Signals & Alerts</p>
+              {hasUnread && (
+                <button
+                  type="button"
+                  onClick={() => setHasUnread(false)}
+                  className="text-[10px] text-[#E07A50] hover:underline cursor-pointer"
+                >
+                  Mark read
+                </button>
+              )}
+            </div>
+            <div className="py-2 space-y-2 text-xs">
+              <div className="p-2 rounded-xl bg-white/5 border border-white/8">
+                <div className="flex items-center gap-1.5 font-medium text-white">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                  <span>Deep Focus Ready</span>
+                </div>
+                <p className="text-[11px] text-white/60 mt-0.5">
+                  Start your scheduled 25m focus sprint for today.
+                </p>
+              </div>
+              <div className="p-2 rounded-xl bg-white/5 border border-white/8">
+                <div className="flex items-center gap-1.5 font-medium text-white">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#E05B27]" />
+                  <span>The Radar Signal</span>
+                </div>
+                <p className="text-[11px] text-white/60 mt-0.5">
+                  Curated RSS insights ready to review.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Desktop Left Breadcrumb Navigation (>= lg) */}
@@ -152,15 +195,57 @@ export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
         {/* Theme Mode Toggle */}
         <ThemeToggle compact />
 
-        {/* Notification Bell */}
-        <button
-          type="button"
-          className="relative h-9 w-9 rounded-full flex items-center justify-center text-[#7A7269] hover:text-[#24211F] dark:text-[#A69E94] dark:hover:text-[#F3EFEA] hover:bg-[#F7F4EF] dark:hover:bg-[#1C1917] transition-colors cursor-pointer"
-          aria-label="Notifications"
-        >
-          <Bell className="h-4 w-4" />
-          <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-[#E05B27] ring-2 ring-white dark:ring-[#12100E]" />
-        </button>
+        {/* Notification Bell with Dropdown */}
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setShowNotifications(!showNotifications)}
+            className="relative h-9 w-9 rounded-full flex items-center justify-center text-[#7A7269] hover:text-[#24211F] dark:text-[#A69E94] dark:hover:text-[#F3EFEA] hover:bg-[#F7F4EF] dark:hover:bg-[#1C1917] transition-colors cursor-pointer"
+            aria-label="Notifications"
+          >
+            <Bell className="h-4 w-4" />
+            {hasUnread && (
+              <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-[#E05B27] ring-2 ring-white dark:ring-[#12100E]" />
+            )}
+          </button>
+
+          {showNotifications && (
+            <div className="absolute right-0 top-full mt-2 w-80 rounded-2xl bg-white dark:bg-[#1C1917] border border-[#EDE7DE] dark:border-[#2C2724] shadow-xl p-3 z-50 animate-in fade-in zoom-in-95 duration-150">
+              <div className="flex items-center justify-between pb-2 border-b border-[#F2EDE6] dark:border-[#282421]">
+                <p className="text-xs font-semibold text-[#24211F] dark:text-[#F3EFEA]">Signals & Alerts</p>
+                {hasUnread && (
+                  <button
+                    type="button"
+                    onClick={() => setHasUnread(false)}
+                    className="text-[10px] text-[#B94A24] dark:text-[#E07A50] hover:underline cursor-pointer"
+                  >
+                    Mark read
+                  </button>
+                )}
+              </div>
+              <div className="py-2 space-y-2 text-xs">
+                <div className="p-2 rounded-xl bg-[#F7F4EF]/70 dark:bg-[#25211E]/50 border border-[#EDE7DE]/60 dark:border-[#2C2724]">
+                  <div className="flex items-center gap-1.5 font-medium text-[#24211F] dark:text-[#F3EFEA]">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                    <span>Deep Focus Ready</span>
+                  </div>
+                  <p className="text-[11px] text-[#7A7269] dark:text-[#A69E94] mt-0.5">
+                    Start your scheduled 25m focus sprint for today.
+                  </p>
+                </div>
+                <div className="p-2 rounded-xl bg-[#F7F4EF]/70 dark:bg-[#25211E]/50 border border-[#EDE7DE]/60 dark:border-[#2C2724]">
+                  <div className="flex items-center gap-1.5 font-medium text-[#24211F] dark:text-[#F3EFEA]">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#E05B27]" />
+                    <span>The Radar Signal</span>
+                  </div>
+                  <p className="text-[11px] text-[#7A7269] dark:text-[#A69E94] mt-0.5">
+                    Curated RSS insights ready to review.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Primary + New / + Capture Button */}
         <Button

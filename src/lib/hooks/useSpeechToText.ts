@@ -47,13 +47,17 @@ export function useSpeechToText(options: UseSpeechToTextOptions = {}) {
   const [transcript, setTranscript] = React.useState("");
   const [error, setError] = React.useState<string | null>(null);
 
-  const [isSupported] = React.useState(() => {
-    if (typeof window === "undefined") return false;
-    return !!(
-      (window as unknown as { SpeechRecognition?: unknown }).SpeechRecognition ||
-      (window as unknown as { webkitSpeechRecognition?: unknown }).webkitSpeechRecognition
-    );
-  });
+  const [isSupported, setIsSupported] = React.useState(false);
+
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      const supported = !!(
+        (window as unknown as { SpeechRecognition?: unknown }).SpeechRecognition ||
+        (window as unknown as { webkitSpeechRecognition?: unknown }).webkitSpeechRecognition
+      );
+      setIsSupported(supported);
+    }
+  }, []);
 
   const recognitionRef = React.useRef<IWindowSpeechRecognition | null>(null);
 

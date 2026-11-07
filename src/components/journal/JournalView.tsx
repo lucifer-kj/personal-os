@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { JournalEntry, JournalMood } from "@/modules/journal/types";
+import { format } from "date-fns";
 import { JournalCalendarStrip } from "./JournalCalendarStrip";
 import { JournalEditor } from "./JournalEditor";
 import { JournalHistory } from "./JournalHistory";
@@ -23,7 +24,7 @@ export function JournalView({
   });
 
   const [selectedDate, setSelectedDate] = React.useState<string>(() => {
-    return new Date().toISOString().split("T")[0];
+    return format(new Date(), "yyyy-MM-dd");
   });
 
   const entriesDates = React.useMemo(() => {

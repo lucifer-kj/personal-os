@@ -29,6 +29,11 @@ export function QuickIngestBar({ onItemCreated, className = "" }: QuickIngestBar
   const [batchInput, setBatchInput] = React.useState("");
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [successMessage, setSuccessMessage] = React.useState<string | null>(null);
+  const [isMounted, setIsMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Live parsed preview for single input
   const parsedSingle = React.useMemo<ParsedNaturalSyntax | null>(() => {
@@ -155,7 +160,7 @@ export function QuickIngestBar({ onItemCreated, className = "" }: QuickIngestBar
               />
 
               {/* Speech-to-Text Microphone Button */}
-              {isSupported && (
+              {isMounted && isSupported && (
                 <button
                   type="button"
                   onClick={toggleListening}

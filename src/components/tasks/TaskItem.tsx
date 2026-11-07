@@ -90,7 +90,7 @@ export function TaskItem({ task, onToggleComplete, onDelete }: TaskItemProps) {
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity focus-within:opacity-100">
+      <div className="flex items-center gap-1 opacity-70 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity focus-within:opacity-100">
         <button
           type="button"
           onClick={() => onDelete(task.id)}

@@ -75,6 +75,7 @@ export function Sidebar({ className }: { className?: string }) {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = React.useState(false);
   const [navPage, setNavPage] = React.useState<1 | 2>(1);
+  const [showWorkspaceMenu, setShowWorkspaceMenu] = React.useState(false);
 
   // Automatically switch pagination page if active route is on Page 2
   React.useEffect(() => {
@@ -281,13 +282,35 @@ export function Sidebar({ className }: { className?: string }) {
           </div>
 
           {!isCollapsed && (
-            <button
-              type="button"
-              className="text-[#968E85] hover:text-[#24211F] dark:hover:text-[#F3EFEA] p-1 rounded-md transition-colors"
-              aria-label="Workspace options"
-            >
-              <MoreHorizontal className="h-4 w-4" />
-            </button>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setShowWorkspaceMenu(!showWorkspaceMenu)}
+                className="text-[#968E85] hover:text-[#24211F] dark:hover:text-[#F3EFEA] p-1 rounded-md transition-colors cursor-pointer"
+                aria-label="Workspace options"
+              >
+                <MoreHorizontal className="h-4 w-4" />
+              </button>
+
+              {showWorkspaceMenu && (
+                <div className="absolute right-0 bottom-full mb-2 w-48 rounded-xl bg-white dark:bg-[#1C1917] border border-[#EDE7DE] dark:border-[#2C2724] shadow-xl p-1.5 z-50 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="px-2.5 py-1.5 border-b border-[#F2EDE6] dark:border-[#282421]">
+                    <p className="text-[11px] font-semibold text-[#24211F] dark:text-[#F3EFEA]">Workspace</p>
+                    <p className="text-[10px] text-emerald-600 font-mono">Single-User Enclave</p>
+                  </div>
+                  <div className="py-1 space-y-0.5 text-xs">
+                    <Link
+                      href="/settings"
+                      onClick={() => setShowWorkspaceMenu(false)}
+                      className="flex items-center gap-2 px-2.5 py-1.5 text-xs rounded-lg text-[#24211F] dark:text-[#F3EFEA] hover:bg-[#F7F4EF] dark:hover:bg-[#25211E] transition-colors"
+                    >
+                      <Settings className="h-3.5 w-3.5 text-[#7A7269]" />
+                      <span>Preferences</span>
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
           )}
         </div>
       </div>

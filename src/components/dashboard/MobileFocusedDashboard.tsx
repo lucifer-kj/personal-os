@@ -71,7 +71,17 @@ export function MobileFocusedDashboard({
 
   const totalTasks = overview.metrics.tasks_completed_today + overview.metrics.tasks_pending_today;
   const targetPercent =
-    totalTasks > 0 ? Math.round((overview.metrics.tasks_completed_today / totalTasks) * 100) : 68;
+    totalTasks > 0 ? Math.round((overview.metrics.tasks_completed_today / totalTasks) * 100) : 0;
+
+  const focusTimeDisplay = React.useMemo(() => {
+    const mins = overview.metrics.estimated_focus_minutes || 0;
+    if (mins >= 60) {
+      const h = Math.floor(mins / 60);
+      const m = mins % 60;
+      return m > 0 ? `${h}h ${m}m` : `${h}h`;
+    }
+    return `${mins}m`;
+  }, [overview.metrics.estimated_focus_minutes]);
 
   // Format short date: e.g. "THU, NOV 6"
   const shortDate = React.useMemo(() => {
@@ -103,7 +113,7 @@ export function MobileFocusedDashboard({
       </div>
 
       {/* Content Stack */}
-      <div className="relative z-10 flex flex-col space-y-6">
+      <div className="relative z-10 flex flex-col space-y-6 max-w-lg mx-auto w-full">
         {/* Date & Weather Pill */}
         <div className="flex items-center justify-start gap-2 text-xs font-mono tracking-wider">
           <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#1A1614]/85 backdrop-blur-md border border-white/10 shadow-sm">
@@ -112,7 +122,7 @@ export function MobileFocusedDashboard({
             <span className="text-neutral-500">•</span>
             <div className="flex items-center gap-1.5 text-white">
               <Sun className="h-3.5 w-3.5 text-amber-500" />
-              <span>24°C Kolkata</span>
+              <span>Calm Flow</span>
             </div>
           </div>
         </div>
@@ -120,7 +130,7 @@ export function MobileFocusedDashboard({
         {/* Editorial Greeting & Subtitle */}
         <div className="space-y-1">
           <h1 className="text-3xl sm:text-4xl font-serif font-normal tracking-tight text-white leading-tight">
-            Good morning, Arif.
+            {overview.greeting || "Good morning"}, Arif.
           </h1>
           <p className="text-xs sm:text-sm text-[#A69E94] italic font-serif">
             A focused day builds meaningful progress.
@@ -278,7 +288,9 @@ export function MobileFocusedDashboard({
             <div className="p-2.5 rounded-2xl border border-white/8 bg-[#181412] flex flex-col justify-between">
               <Clock className="h-3.5 w-3.5 text-orange-400" />
               <div className="mt-2.5">
-                <span className="text-xs sm:text-sm font-bold text-white font-mono block">3h 20m</span>
+                <span className="text-xs sm:text-sm font-bold text-white font-mono block">
+                  {focusTimeDisplay}
+                </span>
                 <span className="text-[9px] text-[#8E867C]">Focus</span>
               </div>
               <div className="mt-2.5 h-1 w-full rounded-full bg-orange-500/60" />
@@ -289,7 +301,7 @@ export function MobileFocusedDashboard({
               <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
               <div className="mt-2.5">
                 <span className="text-xs sm:text-sm font-bold text-white font-mono block">
-                  {overview.metrics.tasks_completed_today} / {totalTasks || 12}
+                  {overview.metrics.tasks_completed_today} / {totalTasks}
                 </span>
                 <span className="text-[9px] text-[#8E867C]">Tasks</span>
               </div>

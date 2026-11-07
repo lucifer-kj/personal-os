@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -20,12 +21,12 @@ export function JournalCalendarStrip({
   const days = React.useMemo(() => {
     const list: { date: string; dayNum: number; dayLabel: string; isToday: boolean }[] = [];
     const today = new Date();
-    const todayStr = today.toISOString().split("T")[0];
+    const todayStr = format(today, "yyyy-MM-dd");
 
     for (let i = 13; i >= 0; i--) {
       const d = new Date(today);
       d.setDate(today.getDate() - i);
-      const iso = d.toISOString().split("T")[0];
+      const iso = format(d, "yyyy-MM-dd");
       const dayLabel = d.toLocaleDateString("en-US", { weekday: "narrow" });
       const dayNum = d.getDate();
 
@@ -42,21 +43,21 @@ export function JournalCalendarStrip({
   const handlePrev = () => {
     const d = new Date(selectedDate);
     d.setDate(d.getDate() - 1);
-    onSelectDate(d.toISOString().split("T")[0]);
+    onSelectDate(format(d, "yyyy-MM-dd"));
   };
 
   const handleNext = () => {
-    const todayStr = new Date().toISOString().split("T")[0];
+    const todayStr = format(new Date(), "yyyy-MM-dd");
     if (selectedDate >= todayStr) return;
     const d = new Date(selectedDate);
     d.setDate(d.getDate() + 1);
-    const nextIso = d.toISOString().split("T")[0];
+    const nextIso = format(d, "yyyy-MM-dd");
     if (nextIso <= todayStr) {
       onSelectDate(nextIso);
     }
   };
 
-  const todayStr = new Date().toISOString().split("T")[0];
+  const todayStr = format(new Date(), "yyyy-MM-dd");
   const isSelectedToday = selectedDate === todayStr;
 
   return (

@@ -40,12 +40,13 @@ export function MobileNav({
   const navTabs = [
     { title: "Home", href: "/", icon: LayoutDashboard },
     { title: "Tasks", href: "/tasks", icon: CheckSquare },
-    { title: "Projects", href: "/projects", icon: FolderKanban },
+    { title: "Capture", isCapture: true, icon: Plus },
     { title: "Calendar", href: "/calendar", icon: Calendar },
     { title: "More", isMenuTrigger: true, icon: MoreHorizontal },
   ];
 
   const secondaryDrawerItems = [
+    { title: "Projects", href: "/projects", icon: FolderKanban },
     { title: "Focus Mode", href: "/focus", icon: Timer },
     { title: "Inbox", href: "/inbox", icon: Inbox },
     { title: "Notes", href: "/notes", icon: FileText },
@@ -68,6 +69,21 @@ export function MobileNav({
             const isHome = tab.href === "/";
             const isActive = isHome ? pathname === "/" : pathname === tab.href || pathname?.startsWith(`${tab.href}/`);
             const Icon = tab.icon;
+
+            if (tab.isCapture) {
+              return (
+                <button
+                  key="mobile-quick-capture"
+                  type="button"
+                  onClick={onQuickCapture}
+                  className="flex items-center justify-center h-9 w-9 rounded-full bg-[#E05B27] hover:bg-[#C94D1D] active:scale-90 text-white shadow-md transition-transform cursor-pointer mx-1"
+                  aria-label="Quick capture"
+                  title="Quick capture"
+                >
+                  <Plus className="h-5 w-5 stroke-[2.5]" />
+                </button>
+              );
+            }
 
             if (tab.isMenuTrigger) {
               return (

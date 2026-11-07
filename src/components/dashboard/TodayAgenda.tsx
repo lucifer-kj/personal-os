@@ -37,14 +37,6 @@ export function TodayAgenda({
     onToggleTask(task);
   };
 
-  // Default chronological sample flow if tasks don't specify explicit times
-  const sampleTimeSlots = [
-    { time: "08:45 AM", isDeepWork: false },
-    { time: "09:15 AM – 11:00 AM", isDeepWork: true },
-    { time: "11:30 AM – 12:00 PM", isDeepWork: false },
-    { time: "02:00 PM – 03:00 PM", isDeepWork: false },
-  ];
-
   return (
     <Card className="p-5 sm:p-6 bg-white dark:bg-[#161413] border-[#EDE7DE] dark:border-[#2A2624] shadow-[0_2px_12px_rgba(0,0,0,0.03)] rounded-2xl space-y-5 transition-all">
       {/* Header with Segmented Toggle */}
@@ -160,8 +152,27 @@ export function TodayAgenda({
         <div className="relative pl-6 space-y-4 before:absolute before:left-2.5 before:top-3 before:bottom-3 before:w-0.5 before:bg-[#EAE4DC] dark:before:bg-[#2E2824]">
           {todayTasks.map((task, idx) => {
             const isCompleted = task.status === "completed";
-            const slot = sampleTimeSlots[idx % sampleTimeSlots.length];
-            const isHighlighted = idx === 1 && !isCompleted;
+            const firstPendingIdx = todayTasks.findIndex((t) => t.status !== "completed");
+            const isHighlighted = idx === firstPendingIdx;
+
+            const timeLabel = (() => {
+              if (task.scheduled_start_at) {
+                try {
+                  const d = new Date(task.scheduled_start_at);
+                  return d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+                } catch {
+                  // fallback
+                }
+              }
+              if (task.estimated_minutes) {
+                return `${task.estimated_minutes}m block`;
+              }
+              return `Step ${idx + 1}`;
+            })();
+
+            const isDeepWork =
+              task.priority === "urgent" ||
+              Boolean(task.estimated_minutes && task.estimated_minutes >= 45);
 
             return (
               <div key={task.id} className="relative group">
@@ -194,8 +205,8 @@ export function TodayAgenda({
                   }`}
                 >
                   <div className="flex items-center gap-2 text-[11px] font-mono text-[#968E85] dark:text-[#8E867C]">
-                    <span>{slot.time}</span>
-                    {slot.isDeepWork && (
+                    <span>{timeLabel}</span>
+                    {isDeepWork && (
                       <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#B94A24] text-white">
                         Deep Work
                       </span>

@@ -114,8 +114,22 @@ export const UpdateTaskSchema = z
   );
 
 export const TaskQuerySchema = z.object({
-  status: z.union([TaskStatusEnum, z.array(TaskStatusEnum)]).optional(),
-  priority: z.union([TaskPriorityEnum, z.array(TaskPriorityEnum)]).optional(),
+  status: z
+    .preprocess((val) => {
+      if (typeof val === "string") {
+        return val.includes(",") ? val.split(",").map((s) => s.trim()) : val;
+      }
+      return val;
+    }, z.union([TaskStatusEnum, z.array(TaskStatusEnum)]))
+    .optional(),
+  priority: z
+    .preprocess((val) => {
+      if (typeof val === "string") {
+        return val.includes(",") ? val.split(",").map((s) => s.trim()) : val;
+      }
+      return val;
+    }, z.union([TaskPriorityEnum, z.array(TaskPriorityEnum)]))
+    .optional(),
   project_id: z.string().uuid().optional(),
   search: z.string().trim().max(100).optional(),
   due_before: z.string().datetime().optional(),

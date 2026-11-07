@@ -98,5 +98,17 @@ describe("Task validation schemas", () => {
       const resultValid = TaskQuerySchema.safeParse({ limit: 50 });
       expect(resultValid.success).toBe(true);
     });
+
+    it("parses comma-delimited status and priority into arrays", () => {
+      const result = TaskQuerySchema.safeParse({
+        status: "todo,in_progress",
+        priority: "high,urgent",
+      });
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.status).toEqual(["todo", "in_progress"]);
+        expect(result.data.priority).toEqual(["high", "urgent"]);
+      }
+    });
   });
 });

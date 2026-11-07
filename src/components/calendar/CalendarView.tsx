@@ -36,6 +36,13 @@ export function CalendarView({
   const [tasks, setTasks] = React.useState<Task[]>(initialTasks);
   const [isLoading, setIsLoading] = React.useState(false);
 
+  // Auto-switch to Agenda view on mobile viewport for clarity
+  React.useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 640) {
+      setViewType("agenda");
+    }
+  }, []);
+
   // Modals & Panels state
   const [isEventModalOpen, setIsEventModalOpen] = React.useState(false);
   const [eventToEdit, setEventToEdit] = React.useState<CalendarEvent | null>(null);
