@@ -1,4 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
+import { InfrastructureError } from "@/lib/errors";
 import {
   FocusSession,
   TimeEntry,
@@ -301,6 +302,11 @@ const globalInMemoryFocusRepo = new InMemoryFocusRepository();
 export function getFocusRepository(client?: SupabaseClient | null): IFocusRepository {
   if (client) {
     return new SupabaseFocusRepository(client);
+  }
+  if (process.env.NODE_ENV === "production") {
+    throw new InfrastructureError(
+      "Supabase client is required in production. In-memory persistence fallback is disabled."
+    );
   }
   return globalInMemoryFocusRepo;
 }

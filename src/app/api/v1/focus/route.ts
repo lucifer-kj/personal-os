@@ -1,6 +1,5 @@
 import { NextRequest } from "next/server";
-import { getAuthenticatedUser } from "@/lib/supabase/auth";
-import { createClient } from "@/lib/supabase/server";
+import { getRequestContext } from "@/lib/supabase/context";
 import { getFocusRepository } from "@/modules/focus/focus.repository";
 import { getTaskRepository } from "@/modules/tasks/task.repository";
 import { FocusService } from "@/modules/focus/focus.service";
@@ -11,18 +10,17 @@ import {
   apiBadRequest,
 } from "@/lib/api/response";
 
-export async function GET() {
+export async function GET(req?: NextRequest) {
   try {
-    const user = await getAuthenticatedUser();
-    if (!user) return apiUnauthorized();
+    const ctx = await getRequestContext(req);
+    if (!ctx) return apiUnauthorized();
 
-    const supabase = await createClient();
-    const focusRepo = getFocusRepository(supabase);
-    const taskRepo = getTaskRepository(supabase);
+    const focusRepo = getFocusRepository(ctx.supabase);
+    const taskRepo = getTaskRepository(ctx.supabase);
     const service = new FocusService(focusRepo, taskRepo);
 
-    const activeSession = await service.getActiveSession(user.id);
-    const recent = await service.listRecentSessions(user.id, 5);
+    const activeSession = await service.getActiveSession(ctx.user.id);
+    const recent = await service.listRecentSessions(ctx.user.id, 5);
 
     return apiSuccess({
       active: activeSession,
@@ -36,8 +34,8 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    const user = await getAuthenticatedUser();
-    if (!user) return apiUnauthorized();
+    const ctx = await getRequestContext(req);
+    if (!ctx) return apiUnauthorized();
 
     const body = await req.json().catch(() => ({}));
     const parseResult = startFocusSessionSchema.safeParse(body);
@@ -47,13 +45,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const supabase = await createClient();
-    const focusRepo = getFocusRepository(supabase);
-    const taskRepo = getTaskRepository(supabase);
+    const focusRepo = getFocusRepository(ctx.supabase);
+    const taskRepo = getTaskRepository(ctx.supabase);
     const service = new FocusService(focusRepo, taskRepo);
 
     const activeSession = await service.startSession({
-      user_id: user.id,
+      user_id: ctx.user.id,
       ...parseResult.data,
     });
 

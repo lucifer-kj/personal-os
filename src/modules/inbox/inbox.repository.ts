@@ -1,4 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
+import { InfrastructureError } from "@/lib/errors";
 import {
   InboxItem,
   CreateInboxItemDTO,
@@ -265,6 +266,11 @@ const globalInMemoryInboxRepo = new InMemoryInboxRepository();
 export function getInboxRepository(client?: SupabaseClient | null): IInboxRepository {
   if (client) {
     return new SupabaseInboxRepository(client);
+  }
+  if (process.env.NODE_ENV === "production") {
+    throw new InfrastructureError(
+      "Supabase client is required in production. In-memory persistence fallback is disabled."
+    );
   }
   return globalInMemoryInboxRepo;
 }

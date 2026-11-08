@@ -1,6 +1,5 @@
 import { NextRequest } from "next/server";
-import { getAuthenticatedUser } from "@/lib/supabase/auth";
-import { createClient } from "@/lib/supabase/server";
+import { getRequestContext } from "@/lib/supabase/context";
 import { createProjectService } from "@/modules/projects/project.service";
 import { UpdateProjectSchema } from "@/modules/projects/schemas";
 import { apiSuccess, apiError } from "@/lib/api/response";
@@ -10,15 +9,14 @@ interface RouteParams {
 }
 
 export async function GET(request: NextRequest, context: RouteParams) {
-  const user = await getAuthenticatedUser(request);
-  if (!user) {
+  const ctx = await getRequestContext(request);
+  if (!ctx) {
     return apiError("UNAUTHORIZED", "Authentication required", undefined, 401);
   }
 
   const { id } = await context.params;
-  const supabase = await createClient();
-  const service = createProjectService(supabase);
-  const project = await service.getProject(user.id, id);
+  const service = createProjectService(ctx.supabase);
+  const project = await service.getProject(ctx.user.id, id);
 
   if (!project) {
     return apiError("NOT_FOUND", `Project with id '${id}' not found`, undefined, 404);
@@ -28,8 +26,8 @@ export async function GET(request: NextRequest, context: RouteParams) {
 }
 
 export async function PATCH(request: NextRequest, context: RouteParams) {
-  const user = await getAuthenticatedUser(request);
-  if (!user) {
+  const ctx = await getRequestContext(request);
+  if (!ctx) {
     return apiError("UNAUTHORIZED", "Authentication required", undefined, 401);
   }
 
@@ -51,9 +49,8 @@ export async function PATCH(request: NextRequest, context: RouteParams) {
     return apiError("VALIDATION_ERROR", "The request payload is invalid", details, 422);
   }
 
-  const supabase = await createClient();
-  const service = createProjectService(supabase);
-  const updated = await service.updateProject(user.id, id, parsed.data);
+  const service = createProjectService(ctx.supabase);
+  const updated = await service.updateProject(ctx.user.id, id, parsed.data);
 
   if (!updated) {
     return apiError("NOT_FOUND", `Project with id '${id}' not found`, undefined, 404);
@@ -63,15 +60,14 @@ export async function PATCH(request: NextRequest, context: RouteParams) {
 }
 
 export async function DELETE(request: NextRequest, context: RouteParams) {
-  const user = await getAuthenticatedUser(request);
-  if (!user) {
+  const ctx = await getRequestContext(request);
+  if (!ctx) {
     return apiError("UNAUTHORIZED", "Authentication required", undefined, 401);
   }
 
   const { id } = await context.params;
-  const supabase = await createClient();
-  const service = createProjectService(supabase);
-  const success = await service.deleteProject(user.id, id);
+  const service = createProjectService(ctx.supabase);
+  const success = await service.deleteProject(ctx.user.id, id);
 
   if (!success) {
     return apiError("NOT_FOUND", `Project with id '${id}' not found`, undefined, 404);

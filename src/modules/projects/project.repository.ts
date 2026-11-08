@@ -1,5 +1,6 @@
 import { Project, ProjectMilestone, CreateProjectDTO, UpdateProjectDTO, CreateMilestoneDTO, ProjectFilters } from "./types";
 import { SupabaseClient } from "@supabase/supabase-js";
+import { InfrastructureError } from "@/lib/errors";
 
 export interface IProjectRepository {
   findMany(userId: string, filters?: ProjectFilters): Promise<{ projects: Project[]; total: number }>;
@@ -413,6 +414,11 @@ const globalInMemoryProjectRepo = new InMemoryProjectRepository();
 export function getProjectRepository(client?: SupabaseClient | null): IProjectRepository {
   if (client) {
     return new SupabaseProjectRepository(client);
+  }
+  if (process.env.NODE_ENV === "production") {
+    throw new InfrastructureError(
+      "Supabase client is required in production. In-memory persistence fallback is disabled."
+    );
   }
   return globalInMemoryProjectRepo;
 }

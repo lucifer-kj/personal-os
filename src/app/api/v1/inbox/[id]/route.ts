@@ -1,6 +1,5 @@
 import { NextRequest } from "next/server";
-import { getAuthenticatedUser } from "@/lib/supabase/auth";
-import { createClient } from "@/lib/supabase/server";
+import { getRequestContext } from "@/lib/supabase/context";
 import { getInboxRepository } from "@/modules/inbox/inbox.repository";
 import { getTaskRepository } from "@/modules/tasks/task.repository";
 import { InboxService } from "@/modules/inbox/inbox.service";
@@ -13,19 +12,18 @@ import {
 } from "@/lib/api/response";
 
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = await getAuthenticatedUser();
-    if (!user) return apiUnauthorized();
+    const ctx = await getRequestContext(req);
+    if (!ctx) return apiUnauthorized();
 
     const { id } = await params;
-    const supabase = await createClient();
-    const inboxRepo = getInboxRepository(supabase);
+    const inboxRepo = getInboxRepository(ctx.supabase);
     const service = new InboxService(inboxRepo);
 
-    const item = await service.getItemById(user.id, id);
+    const item = await service.getItemById(ctx.user.id, id);
     if (!item) return apiNotFound("Inbox item not found");
 
     return apiSuccess(item);
@@ -40,8 +38,8 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = await getAuthenticatedUser();
-    if (!user) return apiUnauthorized();
+    const ctx = await getRequestContext(req);
+    if (!ctx) return apiUnauthorized();
 
     const { id } = await params;
     const body = await req.json().catch(() => ({}));
@@ -52,12 +50,11 @@ export async function PATCH(
       );
     }
 
-    const supabase = await createClient();
-    const inboxRepo = getInboxRepository(supabase);
-    const taskRepo = getTaskRepository(supabase);
+    const inboxRepo = getInboxRepository(ctx.supabase);
+    const taskRepo = getTaskRepository(ctx.supabase);
     const service = new InboxService(inboxRepo, taskRepo);
 
-    const updated = await service.updateItem(user.id, id, parseResult.data);
+    const updated = await service.updateItem(ctx.user.id, id, parseResult.data);
     return apiSuccess(updated);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Failed to update inbox item";
@@ -66,19 +63,18 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = await getAuthenticatedUser();
-    if (!user) return apiUnauthorized();
+    const ctx = await getRequestContext(req);
+    if (!ctx) return apiUnauthorized();
 
     const { id } = await params;
-    const supabase = await createClient();
-    const inboxRepo = getInboxRepository(supabase);
+    const inboxRepo = getInboxRepository(ctx.supabase);
     const service = new InboxService(inboxRepo);
 
-    const success = await service.deleteItem(user.id, id);
+    const success = await service.deleteItem(ctx.user.id, id);
     return apiSuccess({ deleted: success });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Failed to delete inbox item";

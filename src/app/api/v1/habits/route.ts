@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAuthenticatedUser } from "@/lib/supabase/auth";
-import { createClient } from "@/lib/supabase/server";
+import { getRequestContext } from "@/lib/supabase/context";
 import { HabitService } from "@/modules/habits/habit.service";
 import { getHabitRepository } from "@/modules/habits/habit.repository";
 import { CreateHabitSchema, HabitFilterSchema } from "@/modules/habits/schemas";
 
 export async function GET(request: NextRequest) {
   try {
-    const user = await getAuthenticatedUser(request);
-    if (!user) {
+    const ctx = await getRequestContext(request);
+    if (!ctx) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -25,10 +24,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const supabase = await createClient();
-    const service = new HabitService(getHabitRepository(supabase));
-    const habits = await service.listHabits(user.id, filterParsed.data);
-    const stats = await service.getSummaryStats(user.id, filterParsed.data.date);
+    const service = new HabitService(getHabitRepository(ctx.supabase));
+    const habits = await service.listHabits(ctx.user.id, filterParsed.data);
+    const stats = await service.getSummaryStats(ctx.user.id, filterParsed.data.date);
 
     return NextResponse.json({
       data: habits,
@@ -42,8 +40,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await getAuthenticatedUser(request);
-    if (!user) {
+    const ctx = await getRequestContext(request);
+    if (!ctx) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -57,9 +55,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = await createClient();
-    const service = new HabitService(getHabitRepository(supabase));
-    const habit = await service.createHabit(user.id, parsed.data);
+    const service = new HabitService(getHabitRepository(ctx.supabase));
+    const habit = await service.createHabit(ctx.user.id, parsed.data);
 
     return NextResponse.json({ data: habit }, { status: 201 });
   } catch (error) {

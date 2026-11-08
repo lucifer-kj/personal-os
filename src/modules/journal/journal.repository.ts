@@ -1,4 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
+import { InfrastructureError } from "@/lib/errors";
 import {
   JournalEntry,
   CreateJournalDTO,
@@ -260,6 +261,11 @@ const globalInMemoryJournalRepo = new InMemoryJournalRepository();
 export function getJournalRepository(client?: SupabaseClient | null): IJournalRepository {
   if (client) {
     return new SupabaseJournalRepository(client);
+  }
+  if (process.env.NODE_ENV === "production") {
+    throw new InfrastructureError(
+      "Supabase client is required in production. In-memory persistence fallback is disabled."
+    );
   }
   return globalInMemoryJournalRepo;
 }

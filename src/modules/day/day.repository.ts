@@ -1,4 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
+import { InfrastructureError } from "@/lib/errors";
 import { DailyPlan } from "./types";
 
 export interface IDayRepository {
@@ -148,6 +149,11 @@ const globalInMemoryDayRepo = new InMemoryDayRepository();
 export function getDayRepository(client?: SupabaseClient | null): IDayRepository {
   if (client) {
     return new SupabaseDayRepository(client);
+  }
+  if (process.env.NODE_ENV === "production") {
+    throw new InfrastructureError(
+      "Supabase client is required in production. In-memory persistence fallback is disabled."
+    );
   }
   return globalInMemoryDayRepo;
 }

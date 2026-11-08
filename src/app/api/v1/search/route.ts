@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAuthenticatedUser } from "@/lib/supabase/auth";
-import { createClient } from "@/lib/supabase/server";
+import { getRequestContext } from "@/lib/supabase/context";
 import { SearchService } from "@/modules/search/search.service";
 import { getSearchRepository } from "@/modules/search/search.repository";
 import { SearchQuerySchema } from "@/modules/search/schemas";
 
 export async function GET(request: NextRequest) {
   try {
-    const user = await getAuthenticatedUser(request);
-    if (!user) {
+    const ctx = await getRequestContext(request);
+    if (!ctx) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -17,7 +16,7 @@ export async function GET(request: NextRequest) {
 
     // If query string is completely empty, return static navigation and actions
     if (!q.trim()) {
-      const service = new SearchService(getSearchRepository(null));
+      const service = new SearchService(getSearchRepository(ctx.supabase));
       return NextResponse.json({
         data: [],
         navigation: service.getNavigationCommands(),
@@ -39,9 +38,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const supabase = await createClient();
-    const service = new SearchService(getSearchRepository(supabase));
-    const response = await service.searchAll(user.id, parsed.data);
+    const service = new SearchService(getSearchRepository(ctx.supabase));
+    const response = await service.searchAll(ctx.user.id, parsed.data);
 
     return NextResponse.json({
       data: response.results,

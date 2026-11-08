@@ -1,4 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
+import { InfrastructureError } from "@/lib/errors";
 import {
   CalendarEvent,
   CreateCalendarEventDTO,
@@ -350,6 +351,11 @@ export function getCalendarRepository(
 ): ICalendarRepository {
   if (client) {
     return new SupabaseCalendarRepository(client);
+  }
+  if (process.env.NODE_ENV === "production") {
+    throw new InfrastructureError(
+      "Supabase client is required in production. In-memory persistence fallback is disabled."
+    );
   }
   return globalInMemoryCalendarRepo;
 }

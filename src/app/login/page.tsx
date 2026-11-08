@@ -7,14 +7,28 @@ import { createClient } from "@/lib/supabase/client";
 import { AppOrb } from "@/components/brand/AppOrb";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { PasskeyButton } from "@/components/auth/PasskeyButton";
 import { Loader2, ArrowRight, Lock, Mail, AlertCircle } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [isTrusted, setIsTrusted] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(false);
+
+  const establishSession = async (trusted: boolean) => {
+    try {
+      await fetch("/api/v1/auth/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isTrusted: trusted }),
+      });
+    } catch {
+      // Non-blocking
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,6 +47,7 @@ export default function LoginPage() {
       if (signInError) {
         setError(signInError.message);
       } else {
+        await establishSession(isTrusted);
         router.push("/");
         router.refresh();
       }
@@ -67,6 +82,26 @@ export default function LoginPage() {
               <span>{error}</span>
             </div>
           )}
+
+          {/* Primary Passwordless Passkey Action */}
+          <div className="space-y-3">
+            <PasskeyButton
+              mode="signin"
+              onSuccess={async () => {
+                await establishSession(isTrusted);
+                router.push("/");
+                router.refresh();
+              }}
+              onError={(err) => setError(err.message)}
+            />
+
+            <div className="relative flex items-center justify-center">
+              <div className="border-t border-[var(--border)] w-full" />
+              <span className="bg-[var(--card)] px-2.5 text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] font-mono">
+                or password
+              </span>
+            </div>
+          </div>
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-1.5">
@@ -105,6 +140,22 @@ export default function LoginPage() {
                 required
                 className="w-full text-xs px-3.5 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
               />
+            </div>
+
+            <div className="flex items-center gap-2 pt-0.5">
+              <input
+                type="checkbox"
+                id="remember-device"
+                checked={isTrusted}
+                onChange={(e) => setIsTrusted(e.target.checked)}
+                className="h-3.5 w-3.5 rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)] accent-[var(--primary)] cursor-pointer"
+              />
+              <label
+                htmlFor="remember-device"
+                className="text-[11px] text-[var(--muted-foreground)] cursor-pointer select-none"
+              >
+                Remember this workstation (trusted device)
+              </label>
             </div>
 
             <Button

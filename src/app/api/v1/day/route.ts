@@ -1,13 +1,12 @@
 import { NextRequest } from "next/server";
-import { getAuthenticatedUser } from "@/lib/supabase/auth";
-import { createClient } from "@/lib/supabase/server";
+import { getRequestContext } from "@/lib/supabase/context";
 import { createDayService } from "@/modules/day/day.service";
 import { apiSuccess, apiUnauthorized, apiBadRequest } from "@/lib/api/response";
 import { dateQuerySchema } from "@/modules/day/schemas";
 
 export async function GET(request: NextRequest) {
-  const user = await getAuthenticatedUser();
-  if (!user) {
+  const ctx = await getRequestContext(request);
+  if (!ctx) {
     return apiUnauthorized();
   }
 
@@ -20,9 +19,8 @@ export async function GET(request: NextRequest) {
   }
 
   const date = parsed.data.date || new Date().toISOString().split("T")[0];
-  const supabase = await createClient();
-  const dayService = createDayService(supabase);
-  const dayOverview = await dayService.getDayOverview(user.id, date);
+  const dayService = createDayService(ctx.supabase);
+  const dayOverview = await dayService.getDayOverview(ctx.user.id, date);
 
   return apiSuccess(dayOverview);
 }

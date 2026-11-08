@@ -1,6 +1,5 @@
 import { NextRequest } from "next/server";
-import { getAuthenticatedUser } from "@/lib/supabase/auth";
-import { createClient } from "@/lib/supabase/server";
+import { getRequestContext } from "@/lib/supabase/context";
 import { createProjectService } from "@/modules/projects/project.service";
 import { HabitService } from "@/modules/habits/habit.service";
 import { getHabitRepository } from "@/modules/habits/habit.repository";
@@ -9,15 +8,14 @@ import { getRadarRepository } from "@/modules/radar/radar.repository";
 import { apiSuccess, apiError } from "@/lib/api/response";
 
 export async function POST(request: NextRequest) {
-  const user = await getAuthenticatedUser(request);
-  if (!user) {
+  const ctx = await getRequestContext(request);
+  if (!ctx) {
     return apiError("UNAUTHORIZED", "Authentication required to seed enclave", undefined, 401);
   }
 
-  const supabase = await createClient();
-  const projectService = createProjectService(supabase);
-  const habitService = new HabitService(getHabitRepository(supabase));
-  const radarService = new RadarService(getRadarRepository(supabase));
+  const projectService = createProjectService(ctx.supabase);
+  const habitService = new HabitService(getHabitRepository(ctx.supabase));
+  const radarService = new RadarService(getRadarRepository(ctx.supabase));
 
   const results = {
     projectsCreated: 0,
@@ -27,7 +25,7 @@ export async function POST(request: NextRequest) {
 
   try {
     // 1. Seed Projects (NBD, ACoV, Fossil, Friday)
-    const projectRes = await projectService.listProjects(user.id);
+    const projectRes = await projectService.listProjects(ctx.user.id);
     const existingProjectNames = new Set(projectRes.projects.map((p) => p.name.toLowerCase()));
 
     const targetProjects = [
@@ -72,7 +70,7 @@ export async function POST(request: NextRequest) {
 
     for (const p of targetProjects) {
       if (!existingProjectNames.has(p.name.toLowerCase())) {
-        const created = await projectService.createProject(user.id, {
+        const created = await projectService.createProject(ctx.user.id, {
           name: p.name,
           description: p.description,
           color: p.color,
@@ -81,7 +79,7 @@ export async function POST(request: NextRequest) {
 
         for (let i = 0; i < p.milestones.length; i++) {
           try {
-            await projectService.createMilestone(user.id, created.id, {
+            await projectService.createMilestone(ctx.user.id, created.id, {
               title: p.milestones[i].title,
               due_date: p.milestones[i].due_date,
             });
@@ -93,7 +91,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 2. Seed Habits
-    const existingHabits = await habitService.listHabits(user.id);
+    const existingHabits = await habitService.listHabits(ctx.user.id);
     const existingHabitNames = new Set(existingHabits.map((h) => h.name.toLowerCase()));
 
     const targetHabits = [
@@ -129,13 +127,13 @@ export async function POST(request: NextRequest) {
 
     for (const h of targetHabits) {
       if (!existingHabitNames.has(h.name.toLowerCase())) {
-        await habitService.createHabit(user.id, h);
+        await habitService.createHabit(ctx.user.id, h);
         results.habitsCreated++;
       }
     }
 
     // 3. Seed Curated Radar Feeds
-    const existingFeeds = await radarService.listFeeds(user.id);
+    const existingFeeds = await radarService.listFeeds(ctx.user.id);
     const existingFeedUrls = new Set(existingFeeds.map((f) => f.url.toLowerCase()));
 
     const targetFeeds = [
@@ -244,7 +242,7 @@ export async function POST(request: NextRequest) {
     for (const f of targetFeeds) {
       if (!existingFeedUrls.has(f.url.toLowerCase())) {
         try {
-          await radarService.subscribeFeed(user.id, f);
+          await radarService.subscribeFeed(ctx.user.id, f);
           results.feedsCreated++;
         } catch (feedErr) {
           console.warn("Feed seeding non-blocking skip:", f.url, feedErr);

@@ -1,9 +1,11 @@
-import { NextResponse } from "next/server";
-import { getAuthenticatedUser } from "@/lib/supabase/auth";
+import { NextRequest, NextResponse } from "next/server";
+import { getRequestContext } from "@/lib/supabase/context";
+import { createClient } from "@/lib/supabase/server";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const user = await getAuthenticatedUser();
+    const ctx = await getRequestContext(req);
+    const user = ctx?.user ?? null;
     return NextResponse.json({
       authenticated: !!user,
       user: user
@@ -20,9 +22,15 @@ export async function GET() {
 }
 
 export async function POST() {
-  // Sign out endpoint
+  try {
+    const supabase = await createClient();
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
+  } catch {
+    // Non-blocking sign out
+  }
+
   const response = NextResponse.json({ success: true });
-  // Clear Supabase auth cookies
-  response.cookies.delete("sb-yvdzdwzfgozeanwusysh-auth-token");
   return response;
 }

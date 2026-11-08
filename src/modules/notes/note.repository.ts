@@ -1,4 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
+import { InfrastructureError } from "@/lib/errors";
 import {
   Note,
   NoteLink,
@@ -491,6 +492,11 @@ export function getNoteRepository(
 ): INoteRepository {
   if (client) {
     return new SupabaseNoteRepository(client);
+  }
+  if (process.env.NODE_ENV === "production") {
+    throw new InfrastructureError(
+      "Supabase client is required in production. In-memory persistence fallback is disabled."
+    );
   }
   return globalInMemoryNoteRepo;
 }

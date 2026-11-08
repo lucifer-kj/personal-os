@@ -1,6 +1,5 @@
 import { NextRequest } from "next/server";
-import { getAuthenticatedUser } from "@/lib/supabase/auth";
-import { createClient } from "@/lib/supabase/server";
+import { getRequestContext } from "@/lib/supabase/context";
 import { parseBatchIngest } from "@/lib/parser/batchIngest";
 import { getTaskRepository } from "@/modules/tasks/task.repository";
 import { getInboxRepository } from "@/modules/inbox/inbox.repository";
@@ -8,8 +7,8 @@ import { apiSuccess, apiUnauthorized, apiBadRequest } from "@/lib/api/response";
 
 export async function POST(req: NextRequest) {
   try {
-    const user = await getAuthenticatedUser(req);
-    if (!user) return apiUnauthorized();
+    const ctx = await getRequestContext(req);
+    if (!ctx) return apiUnauthorized();
 
     const body = await req.json().catch(() => ({}));
     const rawText = typeof body.rawText === "string" ? body.rawText : "";
@@ -24,15 +23,13 @@ export async function POST(req: NextRequest) {
       return apiBadRequest("No valid items found in provided text");
     }
 
-    const supabase = await createClient();
-
     // If target is inbox, save as unorganized inbox items
     if (target === "inbox") {
-      const inboxRepo = getInboxRepository(supabase);
+      const inboxRepo = getInboxRepository(ctx.supabase);
       const createdInbox = [];
       for (const it of items) {
         const item = await inboxRepo.create({
-          user_id: user.id,
+          user_id: ctx.user.id,
           title: it.title,
           content: it.raw,
           capture_type: "task",
@@ -51,11 +48,11 @@ export async function POST(req: NextRequest) {
     // Default target: tasks
     const projectMap = new Map<string, string>();
     try {
-      if (supabase) {
-        const { data: userProjects } = await supabase
+      if (ctx.supabase) {
+        const { data: userProjects } = await ctx.supabase
           .from("projects")
           .select("id, title")
-          .eq("user_id", user.id);
+          .eq("user_id", ctx.user.id);
 
         if (userProjects) {
           for (const p of userProjects) {
@@ -68,7 +65,7 @@ export async function POST(req: NextRequest) {
       // Ignore project lookup error in mock mode
     }
 
-    const taskRepo = getTaskRepository(supabase);
+    const taskRepo = getTaskRepository(ctx.supabase);
     const createdTasks = [];
 
     for (const it of items) {
@@ -80,7 +77,7 @@ export async function POST(req: NextRequest) {
           null;
       }
 
-      const task = await taskRepo.create(user.id, {
+      const task = await taskRepo.create(ctx.user.id, {
         title: it.title,
         status: it.isCompleted ? "completed" : "todo",
         priority: it.priority || "medium",

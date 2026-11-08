@@ -1,6 +1,5 @@
 import { NextRequest } from "next/server";
-import { getAuthenticatedUser } from "@/lib/supabase/auth";
-import { createClient } from "@/lib/supabase/server";
+import { getRequestContext } from "@/lib/supabase/context";
 import { getNoteRepository } from "@/modules/notes/note.repository";
 import { getProjectRepository } from "@/modules/projects/project.repository";
 import { getTaskRepository } from "@/modules/tasks/task.repository";
@@ -17,8 +16,8 @@ import {
 
 export async function GET(req: NextRequest) {
   try {
-    const user = await getAuthenticatedUser(req);
-    if (!user) return apiUnauthorized();
+    const ctx = await getRequestContext(req);
+    if (!ctx) return apiUnauthorized();
 
     const { searchParams } = new URL(req.url);
     const queryParams = {
@@ -38,13 +37,12 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const supabase = await createClient();
-    const noteRepo = getNoteRepository(supabase);
-    const projectRepo = getProjectRepository(supabase);
-    const taskRepo = getTaskRepository(supabase);
+    const noteRepo = getNoteRepository(ctx.supabase);
+    const projectRepo = getProjectRepository(ctx.supabase);
+    const taskRepo = getTaskRepository(ctx.supabase);
     const service = new NoteService(noteRepo, projectRepo, taskRepo);
 
-    const notes = await service.listNotes(user.id, parseResult.data);
+    const notes = await service.listNotes(ctx.user.id, parseResult.data);
     return apiSuccess(notes, { total_count: notes.length });
   } catch (err: unknown) {
     const message =
@@ -55,8 +53,8 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const user = await getAuthenticatedUser(req);
-    if (!user) return apiUnauthorized();
+    const ctx = await getRequestContext(req);
+    if (!ctx) return apiUnauthorized();
 
     const body = await req.json().catch(() => ({}));
     const parseResult = createNoteSchema.safeParse(body);
@@ -66,13 +64,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const supabase = await createClient();
-    const noteRepo = getNoteRepository(supabase);
-    const projectRepo = getProjectRepository(supabase);
-    const taskRepo = getTaskRepository(supabase);
+    const noteRepo = getNoteRepository(ctx.supabase);
+    const projectRepo = getProjectRepository(ctx.supabase);
+    const taskRepo = getTaskRepository(ctx.supabase);
     const service = new NoteService(noteRepo, projectRepo, taskRepo);
 
-    const note = await service.createNote(user.id, parseResult.data);
+    const note = await service.createNote(ctx.user.id, parseResult.data);
     return apiSuccess(note, undefined, 201);
   } catch (err: unknown) {
     const message =

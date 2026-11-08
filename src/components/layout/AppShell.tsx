@@ -7,6 +7,8 @@ import { Header } from "./Header";
 import { MobileNav } from "./MobileNav";
 import { CommandPalette } from "@/components/search/CommandPalette";
 import { StatePreviewModal } from "@/components/preview/StatePreviewModal";
+import { AppLockScreen } from "@/components/auth/AppLockScreen";
+import { useAppLock } from "@/lib/hooks/useAppLock";
 import { Toaster } from "sonner";
 
 interface AppShellProps {
@@ -17,6 +19,7 @@ function AppShellContent({ children }: AppShellProps) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [statePreviewOpen, setStatePreviewOpen] = React.useState(false);
+  const lockState = useAppLock();
 
   const isAuthPage =
     pathname === "/login" ||
@@ -94,6 +97,15 @@ function AppShellContent({ children }: AppShellProps) {
       <StatePreviewModal
         isOpen={statePreviewOpen}
         onClose={() => setStatePreviewOpen(false)}
+      />
+
+      {/* Biometric Mobile Reauthentication & Privacy Shield */}
+      <AppLockScreen
+        isShielded={lockState.isShielded}
+        isLocked={lockState.isLocked}
+        unlocking={lockState.unlocking}
+        error={lockState.error}
+        onUnlock={lockState.unlock}
       />
 
       {/* Global Notifications */}

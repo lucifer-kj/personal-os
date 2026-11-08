@@ -1,6 +1,5 @@
 import { NextRequest } from "next/server";
-import { getAuthenticatedUser } from "@/lib/supabase/auth";
-import { createClient } from "@/lib/supabase/server";
+import { getRequestContext } from "@/lib/supabase/context";
 import { getInboxRepository } from "@/modules/inbox/inbox.repository";
 import { getTaskRepository } from "@/modules/tasks/task.repository";
 import { InboxService } from "@/modules/inbox/inbox.service";
@@ -14,20 +13,19 @@ import { CaptureType, InboxStatus } from "@/modules/inbox/types";
 
 export async function GET(req: NextRequest) {
   try {
-    const user = await getAuthenticatedUser();
-    if (!user) return apiUnauthorized();
+    const ctx = await getRequestContext(req);
+    if (!ctx) return apiUnauthorized();
 
     const { searchParams } = new URL(req.url);
     const statusParam = searchParams.get("status") as InboxStatus | "all" | null;
     const typeParam = searchParams.get("type") as CaptureType | null;
     const searchParam = searchParams.get("search") || undefined;
 
-    const supabase = await createClient();
-    const inboxRepo = getInboxRepository(supabase);
-    const taskRepo = getTaskRepository(supabase);
+    const inboxRepo = getInboxRepository(ctx.supabase);
+    const taskRepo = getTaskRepository(ctx.supabase);
     const service = new InboxService(inboxRepo, taskRepo);
 
-    const result = await service.listItems(user.id, {
+    const result = await service.listItems(ctx.user.id, {
       status: statusParam || undefined,
       capture_type: typeParam || undefined,
       search: searchParam,
@@ -42,8 +40,8 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const user = await getAuthenticatedUser();
-    if (!user) return apiUnauthorized();
+    const ctx = await getRequestContext(req);
+    if (!ctx) return apiUnauthorized();
 
     const body = await req.json().catch(() => ({}));
     const parseResult = createInboxItemSchema.safeParse(body);
@@ -53,13 +51,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const supabase = await createClient();
-    const inboxRepo = getInboxRepository(supabase);
-    const taskRepo = getTaskRepository(supabase);
+    const inboxRepo = getInboxRepository(ctx.supabase);
+    const taskRepo = getTaskRepository(ctx.supabase);
     const service = new InboxService(inboxRepo, taskRepo);
 
     const item = await service.captureItem({
-      user_id: user.id,
+      user_id: ctx.user.id,
       ...parseResult.data,
     });
 

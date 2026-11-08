@@ -1,6 +1,5 @@
 import { NextRequest } from "next/server";
-import { getAuthenticatedUser } from "@/lib/supabase/auth";
-import { createClient } from "@/lib/supabase/server";
+import { getRequestContext } from "@/lib/supabase/context";
 import { getCalendarRepository } from "@/modules/calendar/calendar.repository";
 import { getTaskRepository } from "@/modules/tasks/task.repository";
 import { CalendarService } from "@/modules/calendar/calendar.service";
@@ -16,8 +15,8 @@ import {
 
 export async function GET(req: NextRequest) {
   try {
-    const user = await getAuthenticatedUser(req);
-    if (!user) return apiUnauthorized();
+    const ctx = await getRequestContext(req);
+    if (!ctx) return apiUnauthorized();
 
     const { searchParams } = new URL(req.url);
     const queryParams = {
@@ -33,12 +32,11 @@ export async function GET(req: NextRequest) {
       return apiBadRequest(parseResult.error.issues[0]?.message || "Invalid query parameters");
     }
 
-    const supabase = await createClient();
-    const calendarRepo = getCalendarRepository(supabase);
-    const taskRepo = getTaskRepository(supabase);
+    const calendarRepo = getCalendarRepository(ctx.supabase);
+    const taskRepo = getTaskRepository(ctx.supabase);
     const service = new CalendarService(calendarRepo, taskRepo);
 
-    const events = await service.listEvents(user.id, {
+    const events = await service.listEvents(ctx.user.id, {
       from: parseResult.data.from,
       to: parseResult.data.to,
       event_type: parseResult.data.type,
@@ -55,8 +53,8 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const user = await getAuthenticatedUser(req);
-    if (!user) return apiUnauthorized();
+    const ctx = await getRequestContext(req);
+    if (!ctx) return apiUnauthorized();
 
     const body = await req.json().catch(() => ({}));
     const parseResult = createCalendarEventSchema.safeParse(body);
@@ -66,13 +64,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const supabase = await createClient();
-    const calendarRepo = getCalendarRepository(supabase);
-    const taskRepo = getTaskRepository(supabase);
+    const calendarRepo = getCalendarRepository(ctx.supabase);
+    const taskRepo = getTaskRepository(ctx.supabase);
     const service = new CalendarService(calendarRepo, taskRepo);
 
     const { event, conflict_advisory } = await service.createEvent(
-      user.id,
+      ctx.user.id,
       parseResult.data
     );
 

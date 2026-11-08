@@ -1,5 +1,6 @@
 import { Task, CreateTaskDTO, UpdateTaskDTO, TaskFilters } from "./types";
 import { SupabaseClient } from "@supabase/supabase-js";
+import { InfrastructureError } from "@/lib/errors";
 
 export interface ITaskRepository {
   findMany(userId: string, filters?: TaskFilters): Promise<{ tasks: Task[]; total: number }>;
@@ -300,6 +301,11 @@ const globalInMemoryRepo = new InMemoryTaskRepository();
 export function getTaskRepository(client?: SupabaseClient | null): ITaskRepository {
   if (client) {
     return new SupabaseTaskRepository(client);
+  }
+  if (process.env.NODE_ENV === "production") {
+    throw new InfrastructureError(
+      "Supabase client is required in production. In-memory persistence fallback is disabled."
+    );
   }
   return globalInMemoryRepo;
 }

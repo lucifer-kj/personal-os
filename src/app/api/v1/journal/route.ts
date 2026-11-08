@@ -1,24 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAuthenticatedUser } from "@/lib/supabase/auth";
-import { createClient } from "@/lib/supabase/server";
+import { getRequestContext } from "@/lib/supabase/context";
 import { JournalService } from "@/modules/journal/journal.service";
 import { getJournalRepository } from "@/modules/journal/journal.repository";
 import { CreateJournalSchema, JournalFilterSchema } from "@/modules/journal/schemas";
 
 export async function GET(request: NextRequest) {
   try {
-    const user = await getAuthenticatedUser(request);
-    if (!user) {
+    const ctx = await getRequestContext(request);
+    if (!ctx) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
     const date = searchParams.get("date");
-    const supabase = await createClient();
-    const service = new JournalService(getJournalRepository(supabase));
+    const service = new JournalService(getJournalRepository(ctx.supabase));
 
     if (date) {
-      const entry = await service.getEntryByDate(user.id, date);
+      const entry = await service.getEntryByDate(ctx.user.id, date);
       return NextResponse.json({ data: entry });
     }
 
@@ -39,7 +37,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const result = await service.listEntries(user.id, filterParsed.data);
+    const result = await service.listEntries(ctx.user.id, filterParsed.data);
 
     return NextResponse.json({
       data: result.entries,
@@ -57,8 +55,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await getAuthenticatedUser(request);
-    if (!user) {
+    const ctx = await getRequestContext(request);
+    if (!ctx) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -72,9 +70,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = await createClient();
-    const service = new JournalService(getJournalRepository(supabase));
-    const entry = await service.saveEntry(user.id, parsed.data);
+    const service = new JournalService(getJournalRepository(ctx.supabase));
+    const entry = await service.saveEntry(ctx.user.id, parsed.data);
 
     return NextResponse.json({ data: entry }, { status: 201 });
   } catch (error) {

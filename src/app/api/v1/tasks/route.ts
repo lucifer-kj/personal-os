@@ -1,13 +1,12 @@
 import { NextRequest } from "next/server";
-import { getAuthenticatedUser } from "@/lib/supabase/auth";
-import { createClient } from "@/lib/supabase/server";
+import { getRequestContext } from "@/lib/supabase/context";
 import { createTaskService } from "@/modules/tasks/task.service";
 import { CreateTaskSchema, TaskQuerySchema } from "@/modules/tasks/schemas";
 import { apiSuccess, apiError } from "@/lib/api/response";
 
 export async function GET(request: NextRequest) {
-  const user = await getAuthenticatedUser(request);
-  if (!user) {
+  const ctx = await getRequestContext(request);
+  if (!ctx) {
     return apiError("UNAUTHORIZED", "Authentication required to access this resource", undefined, 401);
   }
 
@@ -36,9 +35,8 @@ export async function GET(request: NextRequest) {
     return apiError("VALIDATION_ERROR", "Invalid query parameters", details, 400);
   }
 
-  const supabase = await createClient();
-  const service = createTaskService(supabase);
-  const { tasks, total } = await service.listTasks(user.id, parsed.data);
+  const service = createTaskService(ctx.supabase);
+  const { tasks, total } = await service.listTasks(ctx.user.id, parsed.data);
 
   return apiSuccess(tasks, {
     total_count: total,
@@ -48,8 +46,8 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const user = await getAuthenticatedUser(request);
-  if (!user) {
+  const ctx = await getRequestContext(request);
+  if (!ctx) {
     return apiError("UNAUTHORIZED", "Authentication required to access this resource", undefined, 401);
   }
 
@@ -69,9 +67,8 @@ export async function POST(request: NextRequest) {
     return apiError("VALIDATION_ERROR", "The request payload is invalid", details, 422);
   }
 
-  const supabase = await createClient();
-  const service = createTaskService(supabase);
-  const task = await service.createTask(user.id, parsed.data);
+  const service = createTaskService(ctx.supabase);
+  const task = await service.createTask(ctx.user.id, parsed.data);
 
   return apiSuccess(task, undefined, 201);
 }

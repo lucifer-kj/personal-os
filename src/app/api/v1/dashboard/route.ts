@@ -1,13 +1,12 @@
 import { NextRequest } from "next/server";
-import { getAuthenticatedUser } from "@/lib/supabase/auth";
-import { createClient } from "@/lib/supabase/server";
+import { getRequestContext } from "@/lib/supabase/context";
 import { createDashboardService } from "@/modules/dashboard/dashboard.service";
 import { apiSuccess, apiUnauthorized, apiBadRequest } from "@/lib/api/response";
 import { dateQuerySchema } from "@/modules/day/schemas";
 
 export async function GET(request: NextRequest) {
-  const user = await getAuthenticatedUser();
-  if (!user) {
+  const ctx = await getRequestContext(request);
+  if (!ctx) {
     return apiUnauthorized();
   }
 
@@ -19,9 +18,8 @@ export async function GET(request: NextRequest) {
     return apiBadRequest(parsed.error.issues[0]?.message || "Invalid date query parameter");
   }
 
-  const supabase = await createClient();
-  const dashboardService = createDashboardService(supabase);
-  const overview = await dashboardService.getDashboardOverview(user.id, parsed.data.date);
+  const dashboardService = createDashboardService(ctx.supabase);
+  const overview = await dashboardService.getDashboardOverview(ctx.user.id, parsed.data.date);
 
   return apiSuccess(overview);
 }

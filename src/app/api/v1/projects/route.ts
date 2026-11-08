@@ -1,13 +1,12 @@
 import { NextRequest } from "next/server";
-import { getAuthenticatedUser } from "@/lib/supabase/auth";
-import { createClient } from "@/lib/supabase/server";
+import { getRequestContext } from "@/lib/supabase/context";
 import { createProjectService } from "@/modules/projects/project.service";
 import { CreateProjectSchema, ProjectQuerySchema } from "@/modules/projects/schemas";
 import { apiSuccess, apiError } from "@/lib/api/response";
 
 export async function GET(request: NextRequest) {
-  const user = await getAuthenticatedUser(request);
-  if (!user) {
+  const ctx = await getRequestContext(request);
+  if (!ctx) {
     return apiError("UNAUTHORIZED", "Authentication required to access this resource", undefined, 401);
   }
 
@@ -35,9 +34,8 @@ export async function GET(request: NextRequest) {
     return apiError("VALIDATION_ERROR", "Invalid query parameters", details, 400);
   }
 
-  const supabase = await createClient();
-  const service = createProjectService(supabase);
-  const { projects, total } = await service.listProjects(user.id, parsed.data);
+  const service = createProjectService(ctx.supabase);
+  const { projects, total } = await service.listProjects(ctx.user.id, parsed.data);
 
   return apiSuccess(projects, {
     total_count: total,
@@ -47,8 +45,8 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const user = await getAuthenticatedUser(request);
-  if (!user) {
+  const ctx = await getRequestContext(request);
+  if (!ctx) {
     return apiError("UNAUTHORIZED", "Authentication required to access this resource", undefined, 401);
   }
 
@@ -68,9 +66,8 @@ export async function POST(request: NextRequest) {
     return apiError("VALIDATION_ERROR", "The request payload is invalid", details, 422);
   }
 
-  const supabase = await createClient();
-  const service = createProjectService(supabase);
-  const project = await service.createProject(user.id, parsed.data);
+  const service = createProjectService(ctx.supabase);
+  const project = await service.createProject(ctx.user.id, parsed.data);
 
   return apiSuccess(project, undefined, 201);
 }

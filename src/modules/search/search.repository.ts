@@ -1,4 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
+import { InfrastructureError } from "@/lib/errors";
 import { SearchQuery, SearchResultItem, SearchResultType } from "./types";
 
 export interface ISearchRepository {
@@ -286,6 +287,11 @@ export class SupabaseSearchRepository implements ISearchRepository {
 export function getSearchRepository(client?: SupabaseClient | null): ISearchRepository {
   if (client) {
     return new SupabaseSearchRepository(client);
+  }
+  if (process.env.NODE_ENV === "production") {
+    throw new InfrastructureError(
+      "Supabase client is required in production. In-memory persistence fallback is disabled."
+    );
   }
   return new InMemorySearchRepository();
 }
