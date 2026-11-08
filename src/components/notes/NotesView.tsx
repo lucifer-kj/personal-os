@@ -1,6 +1,8 @@
 "use client";
 
 import * as React from "react";
+import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Note, NoteWithLinks } from "@/modules/notes/types";
 import { Project } from "@/modules/projects/types";
 import { Task } from "@/modules/tasks/types";
@@ -218,43 +220,63 @@ export function NotesView({
   };
 
   return (
-    <div className="flex flex-col lg:flex-row flex-1 min-h-[calc(100vh-4rem)] border border-[var(--border)] rounded-xl overflow-hidden bg-[var(--card)] shadow-xs">
-      {/* Sidebar List (hidden on mobile when editor is active) */}
-      <div className={`${mobileShowEditor ? "hidden lg:flex" : "flex"} w-full lg:w-80`}>
-        <NoteSidebar
-          notes={notes}
-          selectedNoteId={selectedNote?.id || null}
-          onSelectNote={handleSelectNote}
-          onNewNote={handleNewNote}
-          activeTag={activeTag}
-          onSelectTag={setActiveTag}
-          availableTags={availableTags}
-          filterMode={filterMode}
-          onFilterModeChange={setFilterMode}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-        />
+    <div className="space-y-6 flex flex-col flex-1 min-h-[calc(100vh-6rem)]">
+      {/* 1. Page Header matching Reference Image 1 */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="space-y-1">
+          <h1 className="text-3xl sm:text-4xl font-serif font-medium tracking-tight text-[var(--foreground)]">
+            Notes
+          </h1>
+          <p className="text-xs sm:text-sm text-[var(--muted-foreground)]">
+            Capture ideas, synthesize reading, and build knowledge.
+          </p>
+        </div>
+
+        <Button
+          size="default"
+          onClick={handleNewNote}
+          className="h-9 px-5 rounded-full bg-white dark:bg-[#FAF7F2] text-[#12100E] dark:text-[#12100E] hover:bg-stone-200 text-xs font-semibold gap-1.5 shadow-xs transition-transform active:scale-95 cursor-pointer self-start sm:self-auto"
+        >
+          <Plus className="h-3.5 w-3.5" />
+          <span>New Note</span>
+        </Button>
       </div>
 
-      {/* Editor & Preview Area */}
-      <div
-        className={`${
-          !mobileShowEditor ? "hidden lg:flex" : "flex"
-        } flex-1 flex-col`}
-      >
-        <NoteEditor
-          note={selectedNote}
-          onUpdateNote={handleUpdateNote}
-          onDeleteNote={handleDeleteNote}
-          onTogglePin={handleTogglePin}
-          onToggleArchive={handleToggleArchive}
-          onLinkNote={handleLinkNote}
-          onUnlinkNote={handleUnlinkNote}
-          allNotes={notes.map((n) => ({ id: n.id, title: n.title }))}
-          projects={initialProjects}
-          tasks={initialTasks}
-          onBackMobile={() => setMobileShowEditor(false)}
-        />
+      {/* 2. Main Two-Column Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 min-h-0">
+        {/* Left Column: Note Stream & Tabs (4 cols) */}
+        <div className={`${mobileShowEditor ? "hidden lg:flex" : "flex"} lg:col-span-4 flex-col`}>
+          <NoteSidebar
+            notes={notes}
+            selectedNoteId={selectedNote?.id || null}
+            onSelectNote={handleSelectNote}
+            onNewNote={handleNewNote}
+            activeTag={activeTag}
+            onSelectTag={setActiveTag}
+            availableTags={availableTags}
+            filterMode={filterMode}
+            onFilterModeChange={setFilterMode}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+          />
+        </div>
+
+        {/* Right Column: Editor & Reader Area (8 cols) */}
+        <div className={`${!mobileShowEditor ? "hidden lg:flex" : "flex"} lg:col-span-8 flex-col`}>
+          <NoteEditor
+            note={selectedNote}
+            onUpdateNote={handleUpdateNote}
+            onDeleteNote={handleDeleteNote}
+            onTogglePin={handleTogglePin}
+            onToggleArchive={handleToggleArchive}
+            onLinkNote={handleLinkNote}
+            onUnlinkNote={handleUnlinkNote}
+            allNotes={notes.map((n) => ({ id: n.id, title: n.title }))}
+            projects={initialProjects}
+            tasks={initialTasks}
+            onBackMobile={() => setMobileShowEditor(false)}
+          />
+        </div>
       </div>
     </div>
   );

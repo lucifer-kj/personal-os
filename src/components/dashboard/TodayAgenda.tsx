@@ -41,7 +41,7 @@ export function TodayAgenda({
   };
 
   return (
-    <Card className={cn("p-5 sm:p-6 bg-white dark:bg-[#161413] border-[#EDE7DE] dark:border-[#2A2624] shadow-[0_2px_12px_rgba(0,0,0,0.03)] rounded-2xl flex flex-col justify-between transition-all", className)}>
+    <Card className={cn("p-5 sm:p-6 bg-white dark:bg-[#161413] border-[#EDE7DE] dark:border-[#2A2624] shadow-[0_2px_12px_rgba(0,0,0,0.03)] rounded-2xl flex flex-col justify-between min-h-[380px] h-full transition-all", className)}>
       {/* Header with Segmented Toggle */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -152,7 +152,7 @@ export function TodayAgenda({
         </div>
       ) : viewMode === "timeline" ? (
         /* Connected Vertical Timeline View */
-        <div className="relative pl-6 space-y-4 before:absolute before:left-2.5 before:top-3 before:bottom-3 before:w-0.5 before:bg-[#EAE4DC] dark:before:bg-[#2E2824]">
+        <div className="relative space-y-3 before:absolute before:left-[11px] before:top-4 before:bottom-4 before:w-0.5 before:bg-[#EAE4DC] dark:before:bg-[#2E2824]">
           {todayTasks.map((task, idx) => {
             const isCompleted = task.status === "completed";
             const firstPendingIdx = todayTasks.findIndex((t) => t.status !== "completed");
@@ -178,34 +178,38 @@ export function TodayAgenda({
               Boolean(task.estimated_minutes && task.estimated_minutes >= 45);
 
             return (
-              <div key={task.id} className="relative group">
+              <div key={task.id} className="relative flex items-start gap-3.5 group">
                 {/* Node Status Dot on the Line */}
-                <button
-                  type="button"
-                  onClick={() => handleTaskCheck(task)}
-                  className={`absolute -left-6 top-3 h-5 w-5 rounded-full flex items-center justify-center transition-all cursor-pointer z-10 ${
-                    isCompleted
-                      ? "bg-[#287A4B] text-white"
-                      : isHighlighted
-                      ? "bg-[#FFF4ED] border-2 border-[#B94A24] text-[#B94A24]"
-                      : "bg-white dark:bg-[#1A1715] border-2 border-[#D8D0C5] dark:border-[#423C37] hover:border-[#B94A24]"
-                  }`}
-                  aria-label={`Mark "${task.title}" as ${isCompleted ? "incomplete" : "completed"}`}
-                >
-                  {isCompleted ? (
-                    <Check className="h-3 w-3 stroke-[2.5]" />
-                  ) : isHighlighted ? (
-                    <div className="h-1.5 w-1.5 rounded-full bg-[#B94A24]" />
-                  ) : null}
-                </button>
+                <div className="pt-2.5 shrink-0 relative z-10">
+                  <button
+                    type="button"
+                    onClick={() => handleTaskCheck(task)}
+                    className={cn(
+                      "h-6 w-6 rounded-full flex items-center justify-center transition-all cursor-pointer ring-4 ring-white dark:ring-[#161413]",
+                      isCompleted
+                        ? "bg-[#287A4B] text-white"
+                        : isHighlighted
+                        ? "bg-[#FFF4ED] dark:bg-[#2A160F] border-2 border-[#B94A24] dark:border-[#E05B27] text-[#B94A24] dark:text-[#E05B27]"
+                        : "bg-white dark:bg-[#1A1715] border-2 border-[#D8D0C5] dark:border-[#423C37] hover:border-[#B94A24]"
+                    )}
+                    aria-label={`Mark "${task.title}" as ${isCompleted ? "incomplete" : "completed"}`}
+                  >
+                    {isCompleted ? (
+                      <Check className="h-3 w-3 stroke-[2.5]" />
+                    ) : isHighlighted ? (
+                      <div className="h-2 w-2 rounded-full bg-[#B94A24] dark:bg-[#E05B27]" />
+                    ) : null}
+                  </button>
+                </div>
 
-                {/* Task Item Body */}
+                {/* Task Item Body with clear, intentional margin */}
                 <div
-                  className={`p-3.5 rounded-xl transition-all ${
+                  className={cn(
+                    "flex-1 min-w-0 p-3.5 rounded-xl transition-all",
                     isHighlighted
                       ? "bg-[#FFF9F5] dark:bg-[#241712] border border-[#F6E1D2] dark:border-[#4B281B] shadow-2xs"
-                      : "hover:bg-[#FAF8F5] dark:hover:bg-[#1A1715]"
-                  }`}
+                      : "hover:bg-[#FAF8F5] dark:hover:bg-[#1A1715] border border-transparent"
+                  )}
                 >
                   <div className="flex items-center gap-2 text-[11px] font-mono text-[#968E85] dark:text-[#8E867C]">
                     <span>{timeLabel}</span>
@@ -226,13 +230,14 @@ export function TodayAgenda({
 
                   <div className="mt-1 flex items-baseline justify-between gap-2">
                     <p
-                      className={`text-sm font-medium tracking-tight ${
+                      className={cn(
+                        "text-sm font-medium tracking-tight",
                         isCompleted
                           ? "line-through text-[#968E85] dark:text-[#7A7269]"
                           : isHighlighted
                           ? "text-[#A84A28] dark:text-[#F39E7D] font-semibold"
                           : "text-[#24211F] dark:text-[#F3EFEA]"
-                      }`}
+                      )}
                     >
                       {task.title}
                     </p>

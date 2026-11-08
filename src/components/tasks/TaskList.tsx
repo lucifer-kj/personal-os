@@ -178,7 +178,7 @@ export function TaskList({ initialTasks }: TaskListProps) {
     <div className="space-y-4">
       {/* Top Controls: Filter Bar & New Task Button */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <TaskFilterBar
             statusFilter={statusFilter}
             onStatusFilterChange={setStatusFilter}
@@ -192,7 +192,7 @@ export function TaskList({ initialTasks }: TaskListProps) {
         <Button
           variant="default"
           onClick={() => setIsCreateOpen(true)}
-          className="h-9 px-4 rounded-lg text-xs font-semibold gap-2 shrink-0 self-start sm:self-auto"
+          className="h-9 px-4 rounded-lg bg-[#E05B27] hover:bg-[#C94D1D] active:scale-95 text-white text-xs font-semibold gap-1.5 shrink-0 flex items-center justify-center shadow-2xs transition-all cursor-pointer"
         >
           <Plus className="h-4 w-4" />
           <span>New Task</span>

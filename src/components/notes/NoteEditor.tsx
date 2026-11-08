@@ -168,7 +168,7 @@ export function NoteEditor({
   };
 
   return (
-    <div className="flex-1 flex flex-col min-h-screen bg-[var(--background)] overflow-hidden">
+    <div className="flex-1 flex flex-col rounded-2xl border border-[var(--border)] bg-[var(--card)] overflow-hidden shadow-xs min-h-[600px]">
       {/* Top Editor Toolbar */}
       <div className="flex items-center justify-between border-b border-[var(--border)] bg-[var(--card)]/40 p-3 sm:px-6">
         <div className="flex items-center gap-2">

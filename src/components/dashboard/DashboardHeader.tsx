@@ -42,6 +42,8 @@ export function DashboardHeader({
         return "working";
       case "dusk":
         return "weaving";
+      case "evening":
+        return "weaving";
       case "night":
         return "solving";
     }
@@ -86,8 +88,8 @@ export function DashboardHeader({
       {/* 1. Time-of-Day Dynamic Scenic Mountain Horizon Background */}
       <DynamicScenery className="h-full" forceTimeOfDay={previewTimeOfDay ?? undefined} />
 
-      {/* 2. Hero Content Region */}
-      <div className="relative z-10 p-6 sm:p-9 space-y-5">
+      {/* 2. Hero Content Region - Compact, Sleek Editorial Proportions */}
+      <div className="relative z-10 p-4 sm:p-5 space-y-3 sm:space-y-3.5">
         {/* Date & Weather Pill + Disguised Scenery Control */}
         <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-mono tracking-wider text-[var(--muted-foreground)]">
           <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--card)]/90 backdrop-blur-md border border-[var(--border)] shadow-2xs text-[var(--foreground)]">
@@ -113,7 +115,7 @@ export function DashboardHeader({
 
             {showSceneryPicker && (
               <div className="absolute right-0 top-full mt-1.5 z-20 flex items-center gap-1 p-1 rounded-full bg-[var(--card)] border border-[var(--border)] shadow-lg">
-                {(["auto", "dawn", "day", "dusk", "night"] as const).map((mode) => {
+                {(["auto", "dawn", "day", "dusk", "evening", "night"] as const).map((mode) => {
                   const isActive =
                     (mode === "auto" && previewTimeOfDay === null) ||
                     previewTimeOfDay === mode;
@@ -141,72 +143,58 @@ export function DashboardHeader({
         </div>
 
         {/* Big Editorial Heading & Subtitle */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="space-y-1">
-            <h1 className="text-3xl sm:text-5xl font-serif font-normal tracking-tight text-[var(--foreground)] leading-tight">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="space-y-0.5">
+            <h1 className="text-2xl sm:text-3xl font-serif font-normal tracking-tight text-[var(--foreground)] leading-snug">
               {greeting}, {userName}.
             </h1>
-            <p className="text-sm sm:text-base text-[var(--muted-foreground)] italic font-serif">
+            <p className="text-xs sm:text-sm text-[var(--muted-foreground)] italic font-serif">
               A focused day builds meaningful progress.
             </p>
           </div>
 
-          {/* Thinking Orb Avatar */}
+          {/* Thinking Orb Avatar (Compact 48px) */}
           <div className="shrink-0 flex items-center justify-center">
-            <AppOrb size={68} state={orbState} interactive />
+            <AppOrb size={48} state={orbState} interactive />
           </div>
         </div>
 
         {/* Primary Action Buttons */}
-        <div className="flex flex-wrap items-center gap-3 pt-1">
+        <div className="flex flex-wrap items-center gap-2.5 pt-0.5">
           <Button
-            size="default"
+            size="sm"
             onClick={onStartFocus}
-            className="h-10 px-5 rounded-full bg-[#E05B27] hover:bg-[#C94D1D] active:scale-95 text-white text-xs font-semibold gap-2 shadow-sm transition-transform cursor-pointer"
+            className="h-8.5 px-4 rounded-full bg-[#E05B27] hover:bg-[#C94D1D] active:scale-95 text-white text-xs font-semibold gap-1.5 shadow-sm transition-transform cursor-pointer"
           >
-            <Play className="h-3.5 w-3.5 fill-current" />
+            <Play className="h-3 w-3 fill-current" />
             <span>Start Deep Work (45m)</span>
           </Button>
 
           <Button
-            size="default"
+            size="sm"
             variant="outline"
             onClick={onPlanDay}
-            className="h-10 px-5 rounded-full bg-[var(--card)] hover:bg-[var(--muted)] active:scale-95 text-[var(--foreground)] border border-[var(--border)] text-xs font-semibold gap-2 shadow-xs transition-all cursor-pointer"
+            className="h-8.5 px-4 rounded-full bg-white/95 dark:bg-[#1C1917]/95 text-[#24211F] dark:text-[#F3EFEA] border border-[#E5DDD3] dark:border-white/15 hover:bg-stone-100 dark:hover:bg-[#282421] active:scale-95 text-xs font-semibold gap-1.5 shadow-xs transition-all cursor-pointer"
           >
-            <CalendarIcon className="h-3.5 w-3.5 text-[#E05B27]" />
-            <span>Plan My Day</span>
+            <CalendarIcon className="h-3 w-3 text-[#E05B27]" />
+            <span className="text-[#24211F] dark:text-[#F3EFEA] font-semibold">Plan My Day</span>
           </Button>
         </div>
 
-        {/* Daily Focus Intention Pill Card */}
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)]/90 backdrop-blur-xs p-4 transition-colors shadow-2xs">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#E05B27]">
-              <Sparkles className="h-3.5 w-3.5" />
-              <span>Daily Focus Intention</span>
-            </div>
-
-            {!isEditing && (
-              <button
-                onClick={() => setIsEditing(true)}
-                className="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] flex items-center gap-1 transition-colors cursor-pointer"
-                title="Edit intention"
-              >
-                <Edit2 className="h-3 w-3" />
-                <span>{intention ? "Edit" : "Set intention"}</span>
-              </button>
-            )}
-          </div>
-
+        {/* Daily Focus Intention Compact Bar */}
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--card)]/90 backdrop-blur-xs px-3.5 py-2 sm:py-2.5 transition-colors shadow-2xs">
           {isEditing ? (
-            <div className="mt-2.5 flex items-center gap-2">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#E05B27] shrink-0">
+                <Sparkles className="h-3.5 w-3.5" />
+                <span>Intention:</span>
+              </div>
               <input
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder="What is your singular priority for today?"
-                className="flex-1 rounded-lg border border-[#E2DAD1] bg-white dark:bg-[#1E1B19] px-3.5 py-2 text-xs sm:text-sm text-[#24211F] dark:text-[#F3EFEA] placeholder:text-[#A0988E] focus:outline-none focus:ring-1 focus:ring-[#B94A24]"
+                className="flex-1 rounded-lg border border-[#E2DAD1] bg-white dark:bg-[#1E1B19] px-3 py-1.5 text-xs text-[#24211F] dark:text-[#F3EFEA] placeholder:text-[#A0988E] focus:outline-none focus:ring-1 focus:ring-[#B94A24]"
                 autoFocus
                 onKeyDown={(e) => {
                   if (e.key === "Enter") handleSave();
@@ -218,28 +206,46 @@ export function DashboardHeader({
                 variant="default"
                 onClick={handleSave}
                 disabled={isSubmitting}
-                className="h-8 px-3 rounded-lg bg-[#B94A24] text-white"
+                className="h-7 px-2.5 rounded-lg bg-[#B94A24] text-white text-xs"
                 aria-label="Save intention"
               >
-                <Check className="h-3.5 w-3.5" />
+                <Check className="h-3 w-3" />
               </Button>
               <Button
                 size="sm"
                 variant="outline"
                 onClick={handleCancel}
                 disabled={isSubmitting}
-                className="h-8 px-3 rounded-lg"
+                className="h-7 px-2.5 rounded-lg text-xs"
                 aria-label="Cancel editing"
               >
-                <X className="h-3.5 w-3.5" />
+                <X className="h-3 w-3" />
               </Button>
             </div>
           ) : (
-            <p className="mt-1.5 text-xs sm:text-sm text-[#24211F] dark:text-[#EDE7DE] italic">
-              {intention
-                ? `“${intention}”`
-                : "No focus intention set for today. Take a moment to define your primary outcome."}
-            </p>
+            <div className="flex items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-2 min-w-0 flex-1">
+                <Sparkles className="h-3.5 w-3.5 text-[#E05B27] shrink-0" />
+                <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#E05B27] shrink-0">
+                  Daily Focus Intention
+                </span>
+                <span className="text-[var(--muted-foreground)] opacity-40 shrink-0">•</span>
+                <span className="text-xs text-[#24211F] dark:text-[#EDE7DE] truncate italic font-serif">
+                  {intention
+                    ? `“${intention}”`
+                    : "No focus intention set for today. Take a moment to define your primary outcome."}
+                </span>
+              </div>
+
+              <button
+                onClick={() => setIsEditing(true)}
+                className="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] flex items-center gap-1 shrink-0 transition-colors cursor-pointer"
+                title="Edit intention"
+              >
+                <Edit2 className="h-3 w-3" />
+                <span>{intention ? "Edit" : "Set intention"}</span>
+              </button>
+            </div>
           )}
         </div>
       </div>

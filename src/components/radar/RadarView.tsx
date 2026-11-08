@@ -145,6 +145,26 @@ export function RadarView({
   const [selectedCategory, setSelectedCategory] = React.useState<string>("all");
   const [selectedFeedId, setSelectedFeedId] = React.useState<string | null>(null);
   const [searchQuery, setSearchQuery] = React.useState("");
+  const [activeTab, setActiveTab] = React.useState<string>("all");
+
+  const unreadTotal = React.useMemo(() => items.filter((i) => !i.is_read).length, [items]);
+
+  const handleSelectTab = (tabId: string) => {
+    setActiveTab(tabId);
+    if (tabId === "all") {
+      setActiveFilter("all");
+      setSelectedCategory("all");
+    } else if (tabId === "unread") {
+      setActiveFilter("unread");
+      setSelectedCategory("all");
+    } else if (tabId === "starred") {
+      setActiveFilter("starred");
+      setSelectedCategory("all");
+    } else {
+      setActiveFilter("all");
+      setSelectedCategory(tabId);
+    }
+  };
 
   // Modals & States
   const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
@@ -159,6 +179,65 @@ export function RadarView({
   const [isFloatingReaderOpen, setIsFloatingReaderOpen] = React.useState(false);
 
   const selectedItem = items.find((i) => i.id === selectedItemId) || null;
+
+  const heroImage = React.useMemo(() => {
+    if (!selectedItem) return null;
+    const match =
+      selectedItem.content?.match(/<img[^>]+src=["']([^"']+)["']/i) ||
+      selectedItem.summary?.match(/<img[^>]+src=["']([^"']+)["']/i);
+    return match ? match[1] : null;
+  }, [selectedItem]);
+
+  const renderFeedLogo = (title: string) => {
+    const t = title.toLowerCase();
+    if (t.includes("hacker news")) {
+      return (
+        <span className="h-5 w-5 rounded flex items-center justify-center font-bold text-[10px] bg-[#FF6600] text-white shrink-0">
+          H
+        </span>
+      );
+    }
+    if (t.includes("techcrunch")) {
+      return (
+        <span className="h-5 w-5 rounded flex items-center justify-center font-bold text-[9px] bg-[#0A9E00] text-white shrink-0">
+          TC
+        </span>
+      );
+    }
+    if (t.includes("verge")) {
+      return (
+        <span className="h-5 w-5 rounded flex items-center justify-center font-bold text-[10px] bg-[#E5127D] text-white shrink-0">
+          V
+        </span>
+      );
+    }
+    if (t.includes("microsoft")) {
+      return (
+        <span className="h-5 w-5 rounded flex items-center justify-center font-bold text-[9px] bg-[#00A4EF] text-white shrink-0">
+          MS
+        </span>
+      );
+    }
+    if (t.includes("openai")) {
+      return (
+        <span className="h-5 w-5 rounded flex items-center justify-center font-bold text-[9px] bg-emerald-600 text-white shrink-0">
+          AI
+        </span>
+      );
+    }
+    if (t.includes("anthropic")) {
+      return (
+        <span className="h-5 w-5 rounded flex items-center justify-center font-bold text-[10px] bg-amber-600 text-white shrink-0">
+          A
+        </span>
+      );
+    }
+    return (
+      <span className="h-5 w-5 rounded flex items-center justify-center font-bold text-[9px] bg-[#2A2420] text-[#A69E94] shrink-0">
+        {title.charAt(0).toUpperCase()}
+      </span>
+    );
+  };
 
   // Auto-Clean Stale Items (older than 7 days)
   const handleCleanStale = async () => {
@@ -451,16 +530,15 @@ export function RadarView({
   const visibleItems = filteredItems.slice(0, 80);
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] max-w-[1600px] mx-auto p-4 sm:p-6 gap-4">
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[var(--border)]">
+    <div className="flex flex-col gap-5">
+      {/* 1. Page Header matching Reference Image 3 */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-serif font-bold tracking-tight text-[var(--foreground)] flex items-center gap-2.5">
-            <Radio className="h-6 w-6 text-rose-500 animate-pulse" />
+          <h1 className="text-3xl sm:text-4xl font-serif font-medium tracking-tight text-[var(--foreground)]">
             The Radar
           </h1>
           <p className="text-xs sm:text-sm text-[var(--muted-foreground)]">
-            Curated high-signal RSS &amp; Atom feeds. 1-click promote to Notes or Social Studio.
+            Curated high-signal RSS and Atom feeds for learning, ideas, and opportunities.
           </p>
         </div>
 
@@ -469,78 +547,92 @@ export function RadarView({
             type="button"
             disabled={isCleaning}
             onClick={handleCleanStale}
-            title="Auto-prune unstarred articles older than 7 days to keep database and client lean"
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-[var(--border)] bg-[var(--card)] hover:bg-[var(--muted)] text-[var(--foreground)] transition-colors shadow-2xs cursor-pointer"
+            title="Auto-prune unstarred articles older than 7 days"
+            className="flex items-center gap-1.5 px-4 py-1.5 text-xs font-medium rounded-full border border-[var(--border)] bg-transparent hover:bg-[var(--muted)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors cursor-pointer"
           >
-            <Sparkles className={`h-3.5 w-3.5 text-amber-500 ${isCleaning ? "animate-spin" : ""}`} />
-            {isCleaning ? "Cleaning..." : "Auto Clean"}
+            <Sparkles className={`h-3 w-3 text-amber-500 ${isCleaning ? "animate-spin" : ""}`} />
+            <span>{isCleaning ? "Cleaning..." : "Auto Clean"}</span>
           </button>
 
           <button
             type="button"
             disabled={isSyncing}
             onClick={() => handleSync()}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-[var(--border)] bg-[var(--card)] hover:bg-[var(--muted)] text-[var(--foreground)] transition-colors shadow-2xs cursor-pointer"
+            className="flex items-center gap-1.5 px-4 py-1.5 text-xs font-medium rounded-full border border-[var(--border)] bg-transparent hover:bg-[var(--muted)] text-[var(--foreground)] transition-colors cursor-pointer"
           >
-            <RefreshCw className={`h-3.5 w-3.5 text-indigo-500 ${isSyncing ? "animate-spin" : ""}`} />
-            {isSyncing ? "Syncing..." : "Sync Feeds"}
+            <RefreshCw className={`h-3 w-3 text-indigo-400 ${isSyncing ? "animate-spin" : ""}`} />
+            <span>{isSyncing ? "Syncing..." : "Sync Feeds"}</span>
           </button>
 
           <button
             type="button"
             onClick={() => setIsAddModalOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 transition-opacity shadow-sm cursor-pointer"
+            className="flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold rounded-full bg-white dark:bg-[#FAF7F2] text-[#12100E] dark:text-[#12100E] hover:bg-stone-200 transition-all shadow-xs cursor-pointer active:scale-95"
           >
-            <Plus className="h-4 w-4" />
-            Add Feed
+            <Plus className="h-3.5 w-3.5" />
+            <span>Add Feed</span>
           </button>
         </div>
       </div>
 
-      {/* Main 3-Column Radar Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 min-h-0 overflow-hidden">
+      {/* 2. Global Category Filter Tabs Row matching Reference Image 3 */}
+      <div className="flex items-center gap-6 border-b border-[var(--border)] pb-0.5 overflow-x-auto scrollbar-none text-xs">
+        {[
+          { id: "all", label: "All" },
+          { id: "unread", label: `Unread ${unreadTotal}` },
+          { id: "starred", label: "Starred" },
+          { id: "Tech", label: "Tech" },
+          { id: "Business", label: "Business" },
+          { id: "Design", label: "Design" },
+          { id: "AI", label: "AI" },
+        ].map((tab) => {
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => handleSelectTab(tab.id)}
+              className={`pb-2.5 text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
+                isActive
+                  ? "border-b-2 border-white dark:border-[#F4EFEA] text-white dark:text-[#F4EFEA] font-semibold"
+                  : "text-[var(--muted-foreground)] hover:text-[var(--foreground)] border-b-2 border-transparent"
+              }`}
+            >
+              {tab.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* 3. Main 3-Column Radar Grid matching Reference Image 3 */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 flex-1 min-h-0 overflow-hidden">
         {/* Left Column: Feeds & Channels (3 cols) */}
         <div className="lg:col-span-3 flex flex-col border border-[var(--border)] rounded-2xl bg-[var(--card)] overflow-hidden shadow-xs">
-          <div className="p-3 border-b border-[var(--border)] space-y-2 bg-[var(--muted)]/30">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-[var(--muted-foreground)] font-semibold">
-              Signal Channels
-            </span>
-
-            {/* Quick Filter Tabs */}
-            <div className="flex items-center gap-1">
-              {(["all", "unread", "starred"] as const).map((tab) => (
-                <button
-                  key={tab}
-                  type="button"
-                  onClick={() => setActiveFilter(tab)}
-                  className={`flex-1 py-1 text-center rounded-lg text-xs capitalize font-medium transition-colors ${
-                    activeFilter === tab
-                      ? "bg-[var(--primary)] text-[var(--primary-foreground)] shadow-xs"
-                      : "bg-[var(--muted)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-                  }`}
-                >
-                  {tab}
-                </button>
-              ))}
+          <div className="p-3.5 border-b border-[var(--border)] flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold text-[var(--foreground)]">Feeds</span>
+              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-[var(--muted)] text-[var(--muted-foreground)]">
+                {feeds.length}
+              </span>
             </div>
           </div>
 
           {/* Feeds List */}
-          <div className="flex-1 overflow-y-auto p-2 space-y-1">
+          <div className="flex-1 overflow-y-auto p-2 space-y-1 scrollbar-thin">
             <button
               type="button"
               onClick={() => setSelectedFeedId(null)}
-              className={`w-full flex items-center justify-between p-2 rounded-xl text-xs text-left transition-all ${
+              className={`w-full flex items-center justify-between p-2 rounded-xl text-xs text-left transition-all cursor-pointer ${
                 selectedFeedId === null
-                  ? "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold shadow-xs"
-                  : "text-[var(--foreground)] hover:bg-[var(--muted)]"
+                  ? "bg-[#241C18] text-[#F4EFEA] font-semibold border border-[#3D261C]"
+                  : "text-[var(--foreground)] hover:bg-[var(--muted)] border border-transparent"
               }`}
             >
-              <div className="flex items-center gap-2">
-                <Layers className="h-3.5 w-3.5" />
+              <div className="flex items-center gap-2.5">
+                <Layers className="h-4 w-4 text-[var(--primary)]" />
                 <span>All Feeds</span>
               </div>
-              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-black/10">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[var(--muted)] text-[var(--muted-foreground)]">
                 {items.length}
               </span>
             </button>
@@ -561,21 +653,19 @@ export function RadarView({
                     key={feed.id}
                     className={`group flex items-center justify-between p-2 rounded-xl text-xs cursor-pointer transition-all ${
                       isSelected
-                        ? "bg-[var(--muted)] border border-[var(--border)] font-semibold"
-                        : "hover:bg-[var(--muted)]/60 text-[var(--foreground)]"
+                        ? "bg-[#241C18] border border-[#3D261C] font-semibold text-[#F4EFEA]"
+                        : "hover:bg-[var(--muted)] text-[var(--foreground)] border border-transparent"
                     }`}
                     onClick={() => setSelectedFeedId(feed.id)}
                   >
-                    <div className="min-w-0 flex-1 pr-2">
-                      <p className="truncate">{feed.title}</p>
-                      <span className="text-[10px] font-mono text-[var(--muted-foreground)]">
-                        #{feed.category}
-                      </span>
+                    <div className="min-w-0 flex items-center gap-2.5 truncate">
+                      {renderFeedLogo(feed.title)}
+                      <span className="truncate">{feed.title}</span>
                     </div>
 
-                    <div className="flex items-center gap-1 shrink-0">
+                    <div className="flex items-center gap-1.5 shrink-0">
                       {unreadCount > 0 && (
-                        <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 font-bold">
+                        <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-[var(--muted)] text-[var(--muted-foreground)]">
                           {unreadCount}
                         </span>
                       )}
@@ -601,41 +691,21 @@ export function RadarView({
         {/* Center Column: Signal Stream (4 cols) */}
         <div className="lg:col-span-4 flex flex-col border border-[var(--border)] rounded-2xl bg-[var(--card)] overflow-hidden shadow-xs">
           {/* Search Bar */}
-          <div className="p-3 border-b border-[var(--border)] bg-[var(--muted)]/30">
+          <div className="p-3 border-b border-[var(--border)]">
             <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-[var(--muted-foreground)]" />
+              <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-[var(--muted-foreground)]" />
               <input
                 type="text"
-                placeholder="Search incoming articles..."
+                placeholder="Search articles..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
+                className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-hidden focus:ring-1 focus:ring-[var(--primary)]"
               />
             </div>
           </div>
 
-          {/* Category Lens Pills (Horizontal Scroll) */}
-          {categories.length > 2 && (
-            <div className="px-3 py-2 border-b border-[var(--border)] bg-[var(--card)] flex items-center gap-1.5 overflow-x-auto scrollbar-none">
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => setSelectedCategory(cat)}
-                  className={`px-2.5 py-1 rounded-md text-[11px] whitespace-nowrap font-medium transition-colors cursor-pointer ${
-                    selectedCategory === cat
-                      ? "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold shadow-2xs"
-                      : "bg-[var(--muted)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-                  }`}
-                >
-                  {cat === "all" ? "All Lenses" : cat}
-                </button>
-              ))}
-            </div>
-          )}
-
           {/* Stream Cards */}
-          <div className="flex-1 overflow-y-auto p-2 space-y-1.5 divide-y divide-[var(--border)]/30">
+          <div className="flex-1 overflow-y-auto p-2.5 space-y-2 scrollbar-thin">
             {visibleItems.length === 0 ? (
               <div className="p-8 text-center text-xs text-[var(--muted-foreground)]">
                 No signal found matching criteria.
@@ -650,16 +720,15 @@ export function RadarView({
                       onClick={() => {
                         setSelectedItemId(item.id);
                         if (!item.is_read) handleToggleRead(item);
-                        setIsFloatingReaderOpen(true);
                       }}
-                      className={`p-3 rounded-xl cursor-pointer transition-all ${
+                      className={`p-3.5 rounded-2xl cursor-pointer transition-all border flex flex-col gap-1.5 ${
                         isSelected
-                          ? "bg-[var(--muted)] border border-[var(--border)] shadow-2xs"
-                          : "hover:bg-[var(--muted)]/50"
+                          ? "bg-[#1E1916] border-[#E05B27]/50 shadow-2xs"
+                          : "bg-[var(--card)] border-[var(--border)] hover:border-[#3D261C] hover:bg-[var(--muted)]/40"
                       }`}
                     >
-                      <div className="flex items-center justify-between gap-1 mb-1">
-                        <span className="text-[10px] font-mono text-[var(--primary)] font-semibold truncate">
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="text-[10px] font-mono text-[#E05B27] font-semibold truncate">
                           {item.feed?.title || "Radar Signal"}
                         </span>
                         <div className="flex items-center gap-1.5">
@@ -698,16 +767,10 @@ export function RadarView({
                         {item.title}
                       </h3>
 
-                      {item.summary && (
-                        <p className="text-[11px] text-[var(--muted-foreground)] line-clamp-2 mt-1 leading-relaxed">
-                          {item.summary}
-                        </p>
-                      )}
-
-                      <div className="mt-2 flex items-center justify-between text-[10px] font-mono text-[var(--muted-foreground)]">
-                        <span>{new Date(item.published_at).toLocaleDateString()}</span>
+                      <div className="mt-1 flex items-center justify-between text-[10px] font-mono text-[var(--muted-foreground)]">
+                        <span>{new Date(item.published_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
                         {!item.is_read && (
-                          <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
+                          <span className="h-2 w-2 rounded-full bg-[#E05B27]" />
                         )}
                       </div>
                     </div>
@@ -716,7 +779,7 @@ export function RadarView({
 
                 {filteredItems.length > 80 && (
                   <div className="p-3 text-center text-[10px] font-mono text-[var(--muted-foreground)] bg-[var(--muted)]/20 rounded-lg">
-                    Showing top 80 of {filteredItems.length} fresh signals (older cached safely)
+                    Showing top 80 of {filteredItems.length} fresh signals
                   </div>
                 )}
               </>
@@ -729,60 +792,74 @@ export function RadarView({
           {selectedItem ? (
             <>
               {/* Fixed Header */}
-              <div className="p-4 sm:p-5 border-b border-[var(--border)] space-y-2 shrink-0 bg-[var(--card)]">
+              <div className="p-4 sm:p-5 border-b border-[var(--border)] space-y-2.5 shrink-0 bg-[var(--card)]">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold uppercase">
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold uppercase tracking-wider">
                     {selectedItem.feed?.category || "Article"}
                   </span>
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
-                      onClick={() => handleToggleRead(selectedItem)}
-                      className={`flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg border transition-colors ${
-                        selectedItem.is_read
-                          ? "border-[var(--border)] text-[var(--muted-foreground)]"
-                          : "border-emerald-500 text-emerald-600 bg-emerald-500/10 font-medium"
-                      }`}
+                      onClick={() => handleToggleStar(selectedItem)}
+                      className="p-1 rounded-md border border-[var(--border)] hover:bg-[var(--muted)] text-[var(--muted-foreground)] hover:text-amber-500 transition-colors"
+                      title="Bookmark"
                     >
-                      <Check className="h-3 w-3" />
-                      {selectedItem.is_read ? "Mark Unread" : "Mark as Read"}
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setIsFloatingReaderOpen(true)}
-                      className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg border border-[var(--border)] bg-[var(--muted)] text-[var(--foreground)] hover:bg-[var(--muted)]/80 transition-colors font-medium cursor-pointer"
-                      title="Open in floating 80% blurred reader"
-                    >
-                      <Maximize2 className="h-3 w-3 text-[#E05B27]" />
-                      <span>Reader</span>
+                      <Star className={`h-3.5 w-3.5 ${selectedItem.is_starred ? "fill-amber-500 text-amber-500" : ""}`} />
                     </button>
 
                     <a
                       href={selectedItem.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 transition-opacity font-medium"
+                      className="p-1 rounded-md border border-[var(--border)] hover:bg-[var(--muted)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+                      title="Open original"
                     >
-                      <span>Original</span>
-                      <ExternalLink className="h-3 w-3" />
+                      <ExternalLink className="h-3.5 w-3.5" />
                     </a>
+
+                    <button
+                      type="button"
+                      onClick={() => handleToggleRead(selectedItem)}
+                      className={`flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg border transition-colors ${
+                        selectedItem.is_read
+                          ? "border-[var(--border)] text-[var(--muted-foreground)]"
+                          : "border-emerald-500 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 font-medium"
+                      }`}
+                    >
+                      <Check className="h-3 w-3" />
+                      <span>{selectedItem.is_read ? "Mark Unread" : "Mark as Read"}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setIsFloatingReaderOpen(true)}
+                      className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg border border-[var(--border)] bg-[var(--muted)] text-[var(--foreground)] hover:bg-[var(--muted)]/80 transition-colors font-medium cursor-pointer"
+                      title="Open in floating reader"
+                    >
+                      <Maximize2 className="h-3 w-3 text-[#E05B27]" />
+                      <span>Reader</span>
+                    </button>
                   </div>
                 </div>
 
-                <h2 className="text-base sm:text-lg font-serif font-bold text-[var(--foreground)] leading-snug">
+                <h2 className="text-xl sm:text-2xl font-serif font-bold text-[var(--foreground)] leading-snug">
                   {selectedItem.title}
                 </h2>
 
                 <div className="flex items-center gap-2 text-[11px] font-mono text-[var(--muted-foreground)]">
-                  {selectedItem.author && <span>By {selectedItem.author}</span>}
-                  {selectedItem.author && <span>•</span>}
-                  <span>{new Date(selectedItem.published_at).toLocaleString()}</span>
+                  <span>{selectedItem.feed?.title || "Radar"}</span>
+                  <span>•</span>
+                  <span>{new Date(selectedItem.published_at).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" })}</span>
                 </div>
               </div>
 
               {/* Scrollable Body Content */}
-              <div className="flex-1 overflow-y-auto p-4 sm:p-5 font-sans text-xs sm:text-sm text-[var(--foreground)] leading-relaxed space-y-3">
+              <div className="flex-1 overflow-y-auto p-4 sm:p-5 font-sans text-xs sm:text-sm text-[var(--foreground)] leading-relaxed space-y-3.5 scrollbar-thin">
+                {heroImage && (
+                  <div className="relative w-full h-52 sm:h-60 rounded-2xl overflow-hidden border border-[var(--border)] bg-[#1A1715]">
+                    <img src={heroImage} alt="" className="w-full h-full object-cover" />
+                  </div>
+                )}
                 <CleanArticleContent item={selectedItem} />
               </div>
 
@@ -807,20 +884,20 @@ export function RadarView({
                       type="button"
                       disabled={isPromoting}
                       onClick={handlePromoteToNote}
-                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition-colors shadow-2xs"
+                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg border border-[#EDE7DE] dark:border-[#2C2724] bg-[#F7F4EF] dark:bg-[#1E1B19] hover:bg-[#EFE9DF] dark:hover:bg-[#282421] text-[#24211F] dark:text-[#F3EFEA] transition-colors shadow-2xs cursor-pointer disabled:opacity-50"
                     >
-                      <BookOpen className="h-3.5 w-3.5" />
-                      Promote to Note
+                      <BookOpen className="h-3.5 w-3.5 text-[#B94A24] dark:text-[#E07A50]" />
+                      <span>Promote to Note</span>
                     </button>
 
                     <button
                       type="button"
                       disabled={isPromoting}
                       onClick={handlePromoteToSocialPost}
-                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white transition-colors shadow-2xs"
+                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg border border-[#EDE7DE] dark:border-[#2C2724] bg-[#F7F4EF] dark:bg-[#1E1B19] hover:bg-[#EFE9DF] dark:hover:bg-[#282421] text-[#24211F] dark:text-[#F3EFEA] transition-colors shadow-2xs cursor-pointer disabled:opacity-50"
                     >
-                      <Share2 className="h-3.5 w-3.5" />
-                      Draft Social Post
+                      <Share2 className="h-3.5 w-3.5 text-[#7857ED] dark:text-[#9B82F3]" />
+                      <span>Draft Social Post</span>
                     </button>
                   </div>
                 </div>

@@ -31,10 +31,7 @@ async function RadarContent() {
 
 export default function RadarPage() {
   return (
-    <PageShell
-      title="The Radar"
-      description="Curated high-signal RSS workstation"
-    >
+    <PageShell className="pb-12 max-w-[1600px]">
       <React.Suspense
         fallback={
           <div className="flex h-[calc(100vh-10rem)] items-center justify-center">

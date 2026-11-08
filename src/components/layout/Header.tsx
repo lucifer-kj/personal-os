@@ -173,7 +173,7 @@ export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
           className="flex items-center gap-2.5 w-64 xl:w-72 rounded-full border border-[#EDE7DE] dark:border-[#2C2724] bg-white/80 dark:bg-[#1A1715]/90 px-3.5 py-1.5 text-xs text-[#968E85] dark:text-[#8E867C] shadow-2xs hover:border-[#D8CFBF] dark:hover:border-[#3D3733] transition-all cursor-pointer"
         >
           <Search className="h-3.5 w-3.5 text-[#A0988E]" />
-          <span className="flex-1 text-left">Search anything...</span>
+          <span className="flex-1 text-left">Search or ask anything...</span>
           <kbd className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#F7F4EF] dark:bg-[#25211E] border border-[#E8E1D7] dark:border-[#332E2A] text-[#7A7269] dark:text-[#A69E94]">
             ⌘K
           </kbd>

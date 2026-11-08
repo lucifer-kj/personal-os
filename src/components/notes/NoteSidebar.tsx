@@ -2,10 +2,8 @@
 
 import * as React from "react";
 import { Note } from "@/modules/notes/types";
-import { Button } from "@/components/ui/button";
 import {
   Search,
-  Plus,
   Pin,
   FileText,
 } from "lucide-react";
@@ -28,7 +26,7 @@ export function NoteSidebar({
   notes,
   selectedNoteId,
   onSelectNote,
-  onNewNote,
+  onNewNote: _onNewNote,
   activeTag,
   onSelectTag,
   availableTags,
@@ -48,118 +46,98 @@ export function NoteSidebar({
   );
 
   return (
-    <aside className="w-full lg:w-80 border-r border-[var(--border)] bg-[var(--card)]/50 flex flex-col shrink-0 min-h-[580px] lg:min-h-[calc(100vh-4rem)]">
-      {/* Top Search & Create Bar */}
-      <div className="p-4 border-b border-[var(--border)] flex flex-col gap-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <FileText className="h-4 w-4 text-[var(--primary)]" />
-            <h2 className="font-serif text-lg font-medium text-[var(--foreground)]">
-              Notes
-            </h2>
-          </div>
-          <Button
-            size="sm"
-            onClick={onNewNote}
-            className="h-8 gap-1.5 text-xs font-medium"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            New Note
-          </Button>
-        </div>
-
-        {/* Search Input */}
-        <div className="relative">
-          <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-[var(--muted-foreground)]" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Search notes or #tags..."
-            className="w-full rounded-md border border-[var(--border)] bg-[var(--background)] pl-8 pr-3 py-1.5 text-xs text-[var(--foreground)] focus:outline-hidden focus:ring-1 focus:ring-[var(--primary)]"
-          />
-        </div>
-
-        {/* Filter Mode Tabs */}
-        <div className="flex items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--background)] p-0.5 text-xs">
-          <button
-            type="button"
-            onClick={() => onFilterModeChange("all")}
-            className={`flex-1 rounded py-1 text-center transition-all ${
-              filterMode === "all"
-                ? "bg-[var(--card)] font-medium text-[var(--foreground)] shadow-2xs"
-                : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-            }`}
-          >
-            All ({notes.length})
-          </button>
-          <button
-            type="button"
-            onClick={() => onFilterModeChange("pinned")}
-            className={`flex-1 rounded py-1 text-center transition-all ${
-              filterMode === "pinned"
-                ? "bg-[var(--card)] font-medium text-[var(--foreground)] shadow-2xs"
-                : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-            }`}
-          >
-            Pinned ({pinnedNotes.length})
-          </button>
-          <button
-            type="button"
-            onClick={() => onFilterModeChange("archived")}
-            className={`flex-1 rounded py-1 text-center transition-all ${
-              filterMode === "archived"
-                ? "bg-[var(--card)] font-medium text-[var(--foreground)] shadow-2xs"
-                : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-            }`}
-          >
-            Archive
-          </button>
-        </div>
-
-        {/* Tag Taxonomy Chips */}
-        {availableTags.length > 0 && (
-          <div className="flex flex-wrap items-center gap-1.5 pt-1">
-            {activeTag && (
-              <button
-                type="button"
-                onClick={() => onSelectTag(null)}
-                className="rounded-full bg-[var(--muted)] px-2 py-0.5 text-[10px] font-mono text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-              >
-                Clear #{activeTag} ✕
-              </button>
-            )}
-            {availableTags.slice(0, 8).map((tag) => (
-              <button
-                key={tag}
-                type="button"
-                onClick={() => onSelectTag(tag === activeTag ? null : tag)}
-                className={`rounded-full px-2 py-0.5 text-[10px] font-mono transition-colors ${
-                  activeTag === tag
-                    ? "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold"
-                    : "bg-[var(--muted)]/50 text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]"
-                }`}
-              >
-                #{tag}
-              </button>
-            ))}
-          </div>
-        )}
+    <aside className="w-full flex flex-col space-y-3 shrink-0">
+      {/* 1. Filter Mode Tabs matching Reference Image 1 */}
+      <div className="flex items-center gap-1 border-b border-[var(--border)] pb-2 text-xs">
+        <button
+          type="button"
+          onClick={() => onFilterModeChange("all")}
+          className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+            filterMode === "all"
+              ? "bg-[#241C18] text-[#F4EFEA] border border-[#3D261C] font-semibold shadow-2xs"
+              : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+          }`}
+        >
+          All ({notes.length})
+        </button>
+        <button
+          type="button"
+          onClick={() => onFilterModeChange("pinned")}
+          className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+            filterMode === "pinned"
+              ? "bg-[#241C18] text-[#F4EFEA] border border-[#3D261C] font-semibold shadow-2xs"
+              : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+          }`}
+        >
+          Pinned ({pinnedNotes.length})
+        </button>
+        <button
+          type="button"
+          onClick={() => onFilterModeChange("archived")}
+          className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+            filterMode === "archived"
+              ? "bg-[#241C18] text-[#F4EFEA] border border-[#3D261C] font-semibold shadow-2xs"
+              : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+          }`}
+        >
+          Archive
+        </button>
       </div>
 
-      {/* Note Cards List */}
-      <div className="flex-1 overflow-y-auto divide-y divide-[var(--border)]">
+      {/* 2. Search Input */}
+      <div className="relative">
+        <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-[var(--muted-foreground)]" />
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => onSearchChange(e.target.value)}
+          placeholder="Search notes or #tags..."
+          className="w-full rounded-xl border border-[var(--border)] bg-[var(--card)] pl-9 pr-3 py-2 text-xs text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-hidden focus:ring-1 focus:ring-[var(--primary)]"
+        />
+      </div>
+
+      {/* 3. Tag Taxonomy Chips */}
+      {availableTags.length > 0 && (
+        <div className="flex flex-wrap items-center gap-1.5 pb-1">
+          {activeTag && (
+            <button
+              type="button"
+              onClick={() => onSelectTag(null)}
+              className="rounded-full bg-[var(--muted)] px-2 py-0.5 text-[10px] font-mono text-[var(--muted-foreground)] hover:text-[var(--foreground)] cursor-pointer"
+            >
+              Clear #{activeTag} ✕
+            </button>
+          )}
+          {availableTags.slice(0, 6).map((tag) => (
+            <button
+              key={tag}
+              type="button"
+              onClick={() => onSelectTag(tag === activeTag ? null : tag)}
+              className={`rounded-full px-2 py-0.5 text-[10px] font-mono transition-colors cursor-pointer ${
+                activeTag === tag
+                  ? "bg-[#E05B27] text-white font-semibold"
+                  : "bg-[var(--muted)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+              }`}
+            >
+              #{tag}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* 4. Note Cards Stream */}
+      <div className="flex-1 overflow-y-auto space-y-2.5 max-h-[calc(100vh-16rem)] pr-0.5 scrollbar-thin">
         {notes.length === 0 ? (
-          <div className="p-8 text-center text-xs text-[var(--muted-foreground)]">
-            No notes found. Click &quot;New Note&quot; to capture your thoughts.
+          <div className="p-8 text-center text-xs text-[var(--muted-foreground)] rounded-2xl border border-dashed border-[var(--border)]">
+            No notes found.
           </div>
         ) : (
           <>
             {/* Pinned Section */}
             {pinnedNotes.length > 0 && filterMode !== "archived" && (
-              <div>
-                <div className="flex items-center gap-1.5 px-4 py-2 bg-[var(--muted)]/10 text-[10px] font-mono uppercase tracking-wider text-[var(--muted-foreground)]">
-                  <Pin className="h-3 w-3" />
+              <div className="space-y-2">
+                <div className="flex items-center gap-1.5 px-1 text-[10px] font-mono uppercase tracking-wider text-[var(--muted-foreground)]">
+                  <Pin className="h-3 w-3 text-[#E05B27]" />
                   <span>Pinned</span>
                 </div>
                 {pinnedNotes.map((note) => (
@@ -175,11 +153,11 @@ export function NoteSidebar({
 
             {/* Other Notes Section */}
             {otherNotes.length > 0 && (
-              <div>
+              <div className="space-y-2">
                 {pinnedNotes.length > 0 && filterMode !== "archived" && (
-                  <div className="flex items-center gap-1.5 px-4 py-2 bg-[var(--muted)]/10 text-[10px] font-mono uppercase tracking-wider text-[var(--muted-foreground)]">
+                  <div className="flex items-center gap-1.5 px-1 pt-1 text-[10px] font-mono uppercase tracking-wider text-[var(--muted-foreground)]">
                     <FileText className="h-3 w-3" />
-                    <span>Notes</span>
+                    <span>All Notes</span>
                   </div>
                 )}
                 {otherNotes.map((note) => (
@@ -210,12 +188,11 @@ function NoteCard({
 }) {
   const previewText = React.useMemo(() => {
     if (!note.content) return "Empty note";
-    // Strip markdown formatting for preview
     return note.content
       .replace(/[#*`~_>[\]()]/g, "")
       .replace(/\n+/g, " ")
       .trim()
-      .slice(0, 100);
+      .slice(0, 110);
   }, [note.content]);
 
   const dateFormatted = React.useMemo(() => {
@@ -223,40 +200,45 @@ function NoteCard({
     return d.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
+      year: "numeric",
     });
   }, [note.updated_at]);
 
   return (
     <div
       onClick={onSelect}
-      className={`p-4 cursor-pointer transition-colors flex flex-col gap-1.5 ${
+      className={`p-4 rounded-2xl cursor-pointer transition-all border flex flex-col gap-2 ${
         isSelected
-          ? "bg-[var(--accent)]/50 border-l-2 border-l-[var(--primary)]"
-          : "hover:bg-[var(--accent)]/20"
+          ? "bg-[#1E1916] border-[#E05B27]/50 shadow-2xs"
+          : "bg-[var(--card)] border-[var(--border)] hover:border-[#3D261C] hover:bg-[var(--muted)]/40"
       }`}
     >
-      <div className="flex items-center justify-between gap-2">
-        <h3 className="font-serif font-medium text-sm text-[var(--foreground)] truncate">
+      <div className="flex items-start justify-between gap-2">
+        <h3
+          className={`font-sans font-semibold text-xs leading-snug line-clamp-1 ${
+            isSelected ? "text-[#F4EFEA]" : "text-[var(--foreground)]"
+          }`}
+        >
           {note.title || "Untitled Note"}
         </h3>
         {note.is_pinned && (
-          <Pin className="h-3 w-3 text-[var(--primary)] shrink-0" />
+          <Pin className="h-3 w-3 text-[#E05B27] shrink-0 fill-[#E05B27]" />
         )}
       </div>
 
-      <p className="text-xs text-[var(--muted-foreground)] line-clamp-2 leading-relaxed">
+      <p className="text-[11px] text-[var(--muted-foreground)] line-clamp-2 leading-relaxed">
         {previewText}
       </p>
 
-      <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-[10px] font-mono text-[var(--muted-foreground)]">
+      <div className="flex items-center justify-between pt-1 text-[10px] font-mono text-[var(--muted-foreground)]">
         <span>{dateFormatted}</span>
 
         {note.tags && note.tags.length > 0 && (
-          <div className="flex items-center gap-1 overflow-hidden">
+          <div className="flex items-center gap-1.5 overflow-hidden">
             {note.tags.slice(0, 2).map((t) => (
               <span
                 key={t}
-                className="rounded bg-[var(--muted)] px-1.5 py-0.5 text-[9px] text-[var(--muted-foreground)]"
+                className="rounded-full bg-[var(--muted)] border border-[var(--border)] px-2 py-0.2 text-[9px] text-[var(--muted-foreground)]"
               >
                 #{t}
               </span>
