@@ -8,12 +8,14 @@ import { fireCelebrationConfetti } from "@/lib/ui/confetti";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface TodayAgendaProps {
   todayTasks: Task[];
   overdueTasks: Task[];
   onToggleTask: (task: Task) => void;
   onOpenCreateTask: () => void;
+  className?: string;
 }
 
 export function TodayAgenda({
@@ -21,6 +23,7 @@ export function TodayAgenda({
   overdueTasks,
   onToggleTask,
   onOpenCreateTask,
+  className,
 }: TodayAgendaProps) {
   const [viewMode, setViewMode] = React.useState<"timeline" | "list">("timeline");
   const [showOverdue, setShowOverdue] = React.useState(true);
@@ -38,7 +41,7 @@ export function TodayAgenda({
   };
 
   return (
-    <Card className="p-5 sm:p-6 bg-white dark:bg-[#161413] border-[#EDE7DE] dark:border-[#2A2624] shadow-[0_2px_12px_rgba(0,0,0,0.03)] rounded-2xl space-y-5 transition-all">
+    <Card className={cn("p-5 sm:p-6 bg-white dark:bg-[#161413] border-[#EDE7DE] dark:border-[#2A2624] shadow-[0_2px_12px_rgba(0,0,0,0.03)] rounded-2xl flex flex-col justify-between transition-all", className)}>
       {/* Header with Segmented Toggle */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -315,7 +318,7 @@ export function TodayAgenda({
       )}
 
       {/* Footer link to full tasks */}
-      <div className="pt-2 border-t border-[#F2EDE6] dark:border-[#221F1D] flex justify-end">
+      <div className="mt-auto pt-3 border-t border-[#EDE7DE] dark:border-[#2A2624] flex justify-end">
         <Link
           href="/tasks"
           className="text-xs font-medium text-[#B94A24] dark:text-[#E07A50] hover:underline flex items-center gap-1"

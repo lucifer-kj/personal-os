@@ -61,7 +61,7 @@ export class RadarService {
     return feed;
   }
 
-  async syncFeeds(userId: string, targetFeedId?: string): Promise<{ synced: number; itemsAdded: number }> {
+  async syncFeeds(userId: string, targetFeedId?: string): Promise<{ synced: number; itemsAdded: number; itemsPruned: number }> {
     const feeds = await this.repo.findFeeds(userId);
     const activeFeeds = feeds.filter((f) => f.is_active && (!targetFeedId || f.id === targetFeedId));
 
@@ -101,7 +101,19 @@ export class RadarService {
       }
     }
 
-    return { synced, itemsAdded };
+    // Auto-clean: Prune unstarred, unpromoted items older than 7 days to prevent database bloat
+    let itemsPruned = 0;
+    try {
+      itemsPruned = await this.repo.pruneOldItems(userId, 7);
+    } catch (pruneErr) {
+      console.warn("Auto-clean prune warning:", pruneErr);
+    }
+
+    return { synced, itemsAdded, itemsPruned };
+  }
+
+  async pruneOldItems(userId: string, retentionDays: number = 7): Promise<number> {
+    return this.repo.pruneOldItems(userId, retentionDays);
   }
 
   async listItems(userId: string, filters?: RadarFilter): Promise<RadarItem[]> {

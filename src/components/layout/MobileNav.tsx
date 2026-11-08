@@ -21,6 +21,7 @@ import {
   Timer,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { loadWorkbenchConfig, WORKBENCH_CHANGE_EVENT } from "@/lib/sidebar-workbench";
 
 interface MobileNavProps {
   isMenuOpen: boolean;
@@ -45,7 +46,7 @@ export function MobileNav({
     { title: "Habits", href: "/habits", icon: Flame },
   ];
 
-  const secondaryDrawerItems = [
+  const initialDrawerItems = [
     { title: "Projects", href: "/projects", icon: FolderKanban },
     { title: "Focus Mode", href: "/focus", icon: Timer },
     { title: "Inbox", href: "/inbox", icon: Inbox },
@@ -56,6 +57,31 @@ export function MobileNav({
     { title: "The Radar", href: "/radar", icon: Radio },
     { title: "Settings", href: "/settings", icon: Settings },
   ];
+
+  const [drawerItems, setDrawerItems] = React.useState(initialDrawerItems);
+
+  React.useEffect(() => {
+    const updateTitles = () => {
+      const config = loadWorkbenchConfig();
+      const allTools = [...config.core, ...config.more, ...config.vault];
+      const nameMap = new Map(allTools.map((t) => [t.href, t.title]));
+
+      setDrawerItems(
+        initialDrawerItems.map((item) => ({
+          ...item,
+          title: nameMap.get(item.href) || item.title,
+        }))
+      );
+    };
+
+    updateTitles();
+    window.addEventListener(WORKBENCH_CHANGE_EVENT, updateTitles);
+    window.addEventListener("storage", updateTitles);
+    return () => {
+      window.removeEventListener(WORKBENCH_CHANGE_EVENT, updateTitles);
+      window.removeEventListener("storage", updateTitles);
+    };
+  }, []);
 
   return (
     <>
@@ -135,7 +161,7 @@ export function MobileNav({
               </div>
 
               <div className="flex flex-col space-y-1">
-                {secondaryDrawerItems.map((item) => {
+                {drawerItems.map((item) => {
                   const isActive = pathname === item.href;
                   const Icon = item.icon;
                   return (

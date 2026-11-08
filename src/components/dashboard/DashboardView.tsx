@@ -13,6 +13,7 @@ import { ActiveProjectsWidget } from "./ActiveProjectsWidget";
 import { QuickCaptureCard } from "./QuickCaptureCard";
 import { TaskCreateDialog } from "@/components/tasks/TaskCreateDialog";
 import { MobileFocusedDashboard } from "./MobileFocusedDashboard";
+import { PlanMyDayModal } from "./PlanMyDayModal";
 
 interface DashboardViewProps {
   initialOverview: DashboardOverviewDTO;
@@ -22,6 +23,7 @@ export function DashboardView({ initialOverview }: DashboardViewProps) {
   const router = useRouter();
   const [overview, setOverview] = React.useState<DashboardOverviewDTO>(initialOverview);
   const [isCreateOpen, setIsCreateOpen] = React.useState(false);
+  const [isPlanDayOpen, setIsPlanDayOpen] = React.useState(false);
 
   // Quick event listener for global quick-capture event
   React.useEffect(() => {
@@ -130,7 +132,7 @@ export function DashboardView({ initialOverview }: DashboardViewProps) {
       <MobileFocusedDashboard
         overview={overview}
         onAddTask={() => setIsCreateOpen(true)}
-        onPlanDay={() => router.push("/calendar")}
+        onPlanDay={() => setIsPlanDayOpen(true)}
         onQuickCapture={() => setIsCreateOpen(true)}
         onSubmitPrompt={(text) => handleQuickAddTodayTask(text)}
       />
@@ -145,7 +147,7 @@ export function DashboardView({ initialOverview }: DashboardViewProps) {
           initialIntention={overview.intention}
           onUpdateIntention={handleUpdateIntention}
           onStartFocus={() => router.push("/focus")}
-          onPlanDay={() => router.push("/calendar")}
+          onPlanDay={() => setIsPlanDayOpen(true)}
         />
 
         {/* 4-Card Calm Summary Metrics */}
@@ -153,35 +155,38 @@ export function DashboardView({ initialOverview }: DashboardViewProps) {
 
         {/* Middle Section: Current Focus & Focus Timer */}
         <div className="grid grid-cols-12 gap-6 items-stretch">
-          <div className="col-span-8">
+          <div className="col-span-12 lg:col-span-8 flex flex-col">
             <CurrentFocusCard
               title={overview.intention || "Complete dashboard design & token architecture"}
               description="Finalize layouts, interaction patterns, and design tokens before spec handoff."
               onOpenDetails={() => router.push("/focus")}
+              className="h-full flex flex-col justify-between"
             />
           </div>
-          <div className="col-span-4">
-            <FocusTimerWidget onSessionComplete={() => router.push("/focus")} />
+          <div className="col-span-12 lg:col-span-4 flex flex-col">
+            <FocusTimerWidget
+              onSessionComplete={() => router.push("/focus")}
+              className="h-full flex flex-col justify-between"
+            />
           </div>
         </div>
 
         {/* Bottom Section: Today's Flow & Active Projects */}
-        <div className="grid grid-cols-12 gap-6 items-start">
-          <div className="col-span-7 space-y-6">
+        <div className="grid grid-cols-12 gap-6 items-stretch">
+          <div className="col-span-12 lg:col-span-7 flex flex-col">
             <TodayAgenda
               todayTasks={overview.today_agenda}
               overdueTasks={overview.overdue_tasks}
               onToggleTask={handleToggleTask}
               onOpenCreateTask={() => setIsCreateOpen(true)}
+              className="h-full flex flex-col justify-between"
             />
           </div>
 
-          <div className="col-span-5 space-y-6">
-            <ActiveProjectsWidget projects={overview.active_projects} />
-
-            <QuickCaptureCard
-              onQuickAddTodayTask={handleQuickAddTodayTask}
-              onOpenCreateDialog={() => setIsCreateOpen(true)}
+          <div className="col-span-12 lg:col-span-5 flex flex-col">
+            <ActiveProjectsWidget
+              projects={overview.active_projects}
+              className="h-full flex flex-col justify-between"
             />
           </div>
         </div>
@@ -193,6 +198,15 @@ export function DashboardView({ initialOverview }: DashboardViewProps) {
         onClose={() => setIsCreateOpen(false)}
         onCreateTask={handleCreateTask}
         initialDueDate={overview.date}
+      />
+
+      {/* Plan My Day Rapid Docket Modal */}
+      <PlanMyDayModal
+        isOpen={isPlanDayOpen}
+        onClose={() => setIsPlanDayOpen(false)}
+        onSuccess={() => {
+          router.refresh();
+        }}
       />
     </div>
   );

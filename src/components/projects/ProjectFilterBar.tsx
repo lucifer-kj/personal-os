@@ -34,16 +34,16 @@ export function ProjectFilterBar({
   ];
 
   return (
-    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-2">
+    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
       {/* Status Segmented Tabs */}
-      <div className="flex rounded-[var(--radius-control)] bg-[var(--muted)] p-1 border border-[var(--border)] shrink-0 self-start sm:self-auto overflow-x-auto max-w-full">
+      <div className="h-9 flex items-center rounded-lg bg-[var(--muted)] p-1 border border-[var(--border)] shrink-0 self-start sm:self-auto overflow-x-auto max-w-full">
         {tabs.map((tab) => (
           <button
             key={tab.value}
             type="button"
             onClick={() => onStatusFilterChange(tab.value)}
             className={cn(
-              "px-3 py-1 rounded-md text-xs font-medium whitespace-nowrap transition-all duration-[var(--motion-fast)]",
+              "h-7 px-3 rounded-md text-xs font-medium whitespace-nowrap flex items-center transition-all duration-[var(--motion-fast)]",
               statusFilter === tab.value
                 ? "bg-[var(--card)] text-[var(--foreground)] shadow-xs font-semibold"
                 : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
@@ -62,7 +62,7 @@ export function ProjectFilterBar({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search projects..."
-            className="pl-8.5 h-8.5 text-xs bg-[var(--card)]"
+            className="pl-8.5 h-9 text-xs bg-[var(--card)] rounded-lg"
           />
         </div>
 
@@ -71,7 +71,7 @@ export function ProjectFilterBar({
             value={priorityFilter}
             onChange={(e) => onPriorityFilterChange(e.target.value as ProjectPriority | "all")}
             aria-label="Filter by priority"
-            className="h-8.5 rounded-[var(--radius-control)] border border-[var(--input)] bg-[var(--card)] px-2.5 py-1 text-xs text-[var(--foreground)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)]"
+            className="h-9 rounded-lg border border-[var(--input)] bg-[var(--card)] px-3 text-xs text-[var(--foreground)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)] flex items-center"
           >
             <option value="all">All Priorities</option>
             <option value="urgent">Urgent</option>

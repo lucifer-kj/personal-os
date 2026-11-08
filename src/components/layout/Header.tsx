@@ -179,19 +179,21 @@ export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
           </kbd>
         </button>
 
-        {/* State Preview Modal Trigger */}
+        {/* Quick Capture Action */}
         <button
           type="button"
           onClick={() => {
-            if (typeof window !== "undefined") {
-              window.dispatchEvent(new CustomEvent("personal-os:state-preview"));
+            if (onQuickCapture) {
+              onQuickCapture();
+            } else if (typeof window !== "undefined") {
+              window.dispatchEvent(new CustomEvent("personal-os:quick-capture"));
             }
           }}
           className="relative h-9 w-9 rounded-full flex items-center justify-center text-[#7A7269] hover:text-[#24211F] dark:text-[#A69E94] dark:hover:text-[#F3EFEA] hover:bg-[#F7F4EF] dark:hover:bg-[#1C1917] transition-colors cursor-pointer"
-          aria-label="Preview app states"
-          title="Preview app states & devices"
+          aria-label="Quick capture"
+          title="Quick capture (N)"
         >
-          <Sparkles className="h-4 w-4 text-[#B94A24] dark:text-[#E07A50]" />
+          <Plus className="h-4 w-4 text-[#B94A24] dark:text-[#E07A50]" />
         </button>
 
         {/* Theme Mode Toggle */}

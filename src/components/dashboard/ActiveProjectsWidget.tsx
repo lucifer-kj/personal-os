@@ -5,45 +5,55 @@ import Link from "next/link";
 import { Layers, ArrowRight, FolderKanban } from "lucide-react";
 import { ProjectWithStats } from "@/modules/projects/types";
 import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface ActiveProjectsWidgetProps {
   projects: ProjectWithStats[];
+  className?: string;
 }
 
-export function ActiveProjectsWidget({ projects }: ActiveProjectsWidgetProps) {
-  // If no projects exist in the DB, provide editorial default projects matching design specs
+export function ActiveProjectsWidget({ projects, className }: ActiveProjectsWidgetProps) {
+  // If no projects exist in the DB, provide ongoing projects matching user directives
   const displayProjects: (ProjectWithStats | { id: string; name: string; subtitle: string; progress_percent: number; color: string; barColor: string })[] =
     projects.length > 0
       ? projects
       : [
           {
-            id: "sample-1",
-            name: "Personal OS",
-            subtitle: "Core Application System",
-            progress_percent: 75,
+            id: "nbd",
+            name: "NBD",
+            subtitle: "Client Deliverable & Operations",
+            progress_percent: 65,
             color: "bg-[#FFF0EB] text-[#C85A32] border-[#FBD9CC]",
             barColor: "bg-[#B94A24]",
           },
           {
-            id: "sample-2",
-            name: "SapphireStudio",
-            subtitle: "Brand & Client Portal",
-            progress_percent: 50,
+            id: "acov",
+            name: "ACoV",
+            subtitle: "Autonomous Agent Telemetry",
+            progress_percent: 80,
             color: "bg-[#F0EEFF] text-[#7857ED] border-[#DDD7FD]",
+            barColor: "bg-[#7857ED]",
+          },
+          {
+            id: "fossil",
+            name: "Fossil",
+            subtitle: "Knowledge Graph & Memory Engine",
+            progress_percent: 45,
+            color: "bg-[#FEF3C7] text-[#D97706] border-[#FDE68A]",
             barColor: "bg-[#D97706]",
           },
           {
-            id: "sample-3",
-            name: "CFStudio Hub",
-            subtitle: "Public Marketing Hub",
-            progress_percent: 85,
+            id: "friday",
+            name: "Friday",
+            subtitle: "Executive Assistant & Workflows",
+            progress_percent: 70,
             color: "bg-[#ECFDF5] text-[#059669] border-[#A7F3D0]",
             barColor: "bg-[#287A4B]",
           },
         ];
 
   return (
-    <Card className="p-5 sm:p-6 bg-white dark:bg-[#161413] border-[#EDE7DE] dark:border-[#2A2624] shadow-[0_2px_12px_rgba(0,0,0,0.03)] rounded-2xl space-y-4 transition-all">
+    <Card className={cn("p-5 sm:p-6 bg-white dark:bg-[#161413] border-[#EDE7DE] dark:border-[#2A2624] shadow-[0_2px_12px_rgba(0,0,0,0.03)] rounded-2xl flex flex-col justify-between transition-all hover:shadow-[0_4px_20px_rgba(0,0,0,0.05)]", className)}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -51,19 +61,22 @@ export function ActiveProjectsWidget({ projects }: ActiveProjectsWidgetProps) {
           <h2 className="text-base sm:text-lg font-serif font-medium tracking-tight text-[#24211F] dark:text-[#F3EFEA]">
             Active Projects
           </h2>
+          <span className="text-xs font-mono text-[#968E85] dark:text-[#8E867C]">
+            ({displayProjects.length})
+          </span>
         </div>
 
         <Link
           href="/projects"
           className="text-xs font-medium text-[#7A7269] hover:text-[#B94A24] dark:text-[#A69E94] dark:hover:text-[#E07A50] flex items-center gap-1 transition-colors"
         >
-          <span>View All</span>
+          <span>Projects</span>
           <ArrowRight className="h-3 w-3" />
         </Link>
       </div>
 
       {/* Project Items List */}
-      <div className="space-y-4 pt-1">
+      <div className="space-y-4 my-auto py-2">
         {displayProjects.map((item, idx) => {
           const isReal = "stats" in item;
           const name = item.name;
@@ -120,6 +133,17 @@ export function ActiveProjectsWidget({ projects }: ActiveProjectsWidgetProps) {
             </Link>
           );
         })}
+      </div>
+
+      {/* Pinned Footer matching TodayAgenda */}
+      <div className="mt-auto pt-3 border-t border-[#EDE7DE] dark:border-[#2A2624] flex justify-end">
+        <Link
+          href="/projects"
+          className="text-xs font-medium text-[#B94A24] dark:text-[#E07A50] hover:underline flex items-center gap-1"
+        >
+          <span>View all projects</span>
+          <ArrowRight className="h-3 w-3" />
+        </Link>
       </div>
     </Card>
   );

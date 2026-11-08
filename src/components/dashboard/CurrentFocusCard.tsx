@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Layers, MoreVertical, Check, Circle } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface SubtaskItem {
   id: string;
@@ -17,6 +18,7 @@ interface CurrentFocusCardProps {
   progressPercent?: number;
   onToggleSubtask?: (id: string) => void;
   onOpenDetails?: () => void;
+  className?: string;
 }
 
 export function CurrentFocusCard({
@@ -30,6 +32,7 @@ export function CurrentFocusCard({
   progressPercent: initialProgress = 75,
   onToggleSubtask,
   onOpenDetails,
+  className,
 }: CurrentFocusCardProps) {
   const [subtasks, setSubtasks] = React.useState<SubtaskItem[]>(initialSubtasks);
 
@@ -45,7 +48,7 @@ export function CurrentFocusCard({
     subtasks.length > 0 ? Math.round((completedCount / subtasks.length) * 100) : initialProgress;
 
   return (
-    <Card className="p-5 sm:p-6 bg-white dark:bg-[#161413] border-[#EDE7DE] dark:border-[#2A2624] shadow-[0_2px_12px_rgba(0,0,0,0.03)] rounded-2xl flex flex-col justify-between transition-all hover:shadow-[0_4px_20px_rgba(0,0,0,0.05)]">
+    <Card className={cn("p-5 sm:p-6 bg-white dark:bg-[#161413] border-[#EDE7DE] dark:border-[#2A2624] shadow-[0_2px_12px_rgba(0,0,0,0.03)] rounded-2xl flex flex-col justify-between transition-all hover:shadow-[0_4px_20px_rgba(0,0,0,0.05)]", className)}>
       {/* Top Header */}
       <div className="flex items-center justify-between">
         <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-[#F7EBE1] text-[#A84A28] dark:bg-[#341F16] dark:text-[#E87A54]">

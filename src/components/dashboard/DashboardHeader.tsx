@@ -89,12 +89,12 @@ export function DashboardHeader({
       {/* 2. Hero Content Region */}
       <div className="relative z-10 p-6 sm:p-9 space-y-5">
         {/* Date & Weather Pill + Disguised Scenery Control */}
-        <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-mono tracking-wider text-[#7A7269] dark:text-[#A69E94]">
-          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/80 dark:bg-black/40 backdrop-blur-md border border-[#E8DFD5] dark:border-white/10 shadow-2xs">
+        <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-mono tracking-wider text-[var(--muted-foreground)]">
+          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--card)]/90 backdrop-blur-md border border-[var(--border)] shadow-2xs text-[var(--foreground)]">
             <span className="h-2 w-2 rounded-full bg-[#E05B27] inline-block animate-pulse" />
-            <span className="font-semibold text-[#24211F] dark:text-[#F3EFEA]">{shortDate}</span>
-            <span className="text-[#C5BCB2] dark:text-neutral-600">•</span>
-            <div className="flex items-center gap-1.5 text-[#24211F] dark:text-[#F3EFEA]">
+            <span className="font-semibold">{shortDate}</span>
+            <span className="text-[var(--muted-foreground)] opacity-50">•</span>
+            <div className="flex items-center gap-1.5">
               <Sun className="h-3.5 w-3.5 text-amber-500" />
               <span>24°C Kolkata</span>
             </div>
@@ -105,14 +105,14 @@ export function DashboardHeader({
             <button
               type="button"
               onClick={() => setShowSceneryPicker(!showSceneryPicker)}
-              className="flex items-center gap-1.5 rounded-full border border-[#E8DFD5] dark:border-white/10 bg-white/70 dark:bg-black/30 backdrop-blur-md px-2.5 py-1 text-[11px] hover:bg-white dark:hover:bg-black/50 transition-colors shadow-2xs"
+              className="flex items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--card)]/90 backdrop-blur-md px-2.5 py-1 text-[11px] text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors shadow-2xs cursor-pointer"
             >
-              <SlidersHorizontal className="h-3 w-3 text-[#A84A28]" />
+              <SlidersHorizontal className="h-3 w-3 text-[#E05B27]" />
               <span className="capitalize">{previewTimeOfDay ?? "Auto"}</span>
             </button>
 
             {showSceneryPicker && (
-              <div className="absolute right-0 top-full mt-1.5 z-20 flex items-center gap-1 p-1 rounded-full bg-white dark:bg-[#1E1B19] border border-[#EDE7DE] dark:border-[#332E2A] shadow-lg">
+              <div className="absolute right-0 top-full mt-1.5 z-20 flex items-center gap-1 p-1 rounded-full bg-[var(--card)] border border-[var(--border)] shadow-lg">
                 {(["auto", "dawn", "day", "dusk", "night"] as const).map((mode) => {
                   const isActive =
                     (mode === "auto" && previewTimeOfDay === null) ||
@@ -125,10 +125,10 @@ export function DashboardHeader({
                         setPreviewTimeOfDay(mode === "auto" ? null : mode);
                         setShowSceneryPicker(false);
                       }}
-                      className={`px-2 py-0.5 rounded-full text-[10px] capitalize transition-all ${
+                      className={`px-2 py-0.5 rounded-full text-[10px] capitalize transition-all cursor-pointer ${
                         isActive
-                          ? "bg-[#B94A24] text-white font-semibold shadow-xs"
-                          : "text-[#7A7269] hover:text-[#24211F] dark:text-[#A69E94]"
+                          ? "bg-[#E05B27] text-white font-semibold shadow-xs"
+                          : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
                       }`}
                     >
                       {mode}
@@ -143,10 +143,10 @@ export function DashboardHeader({
         {/* Big Editorial Heading & Subtitle */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="space-y-1">
-            <h1 className="text-3xl sm:text-5xl font-serif font-normal tracking-tight text-[#24211F] dark:text-[#F3EFEA] leading-tight">
+            <h1 className="text-3xl sm:text-5xl font-serif font-normal tracking-tight text-[var(--foreground)] leading-tight">
               {greeting}, {userName}.
             </h1>
-            <p className="text-sm sm:text-base text-[#7A7269] dark:text-[#A69E94] italic font-serif">
+            <p className="text-sm sm:text-base text-[var(--muted-foreground)] italic font-serif">
               A focused day builds meaningful progress.
             </p>
           </div>
@@ -162,7 +162,7 @@ export function DashboardHeader({
           <Button
             size="default"
             onClick={onStartFocus}
-            className="h-10 px-5 rounded-full bg-[#B94A24] hover:bg-[#A33E1C] active:scale-95 text-white text-xs font-medium gap-2 shadow-sm transition-transform"
+            className="h-10 px-5 rounded-full bg-[#E05B27] hover:bg-[#C94D1D] active:scale-95 text-white text-xs font-semibold gap-2 shadow-sm transition-transform cursor-pointer"
           >
             <Play className="h-3.5 w-3.5 fill-current" />
             <span>Start Deep Work (45m)</span>
@@ -172,17 +172,17 @@ export function DashboardHeader({
             size="default"
             variant="outline"
             onClick={onPlanDay}
-            className="h-10 px-5 rounded-full bg-white/80 hover:bg-white active:scale-95 text-[#24211F] dark:text-[#EDE7DE] border-[#E2DAD1] dark:border-white/10 text-xs font-medium gap-2 shadow-xs transition-transform"
+            className="h-10 px-5 rounded-full bg-[var(--card)] hover:bg-[var(--muted)] active:scale-95 text-[var(--foreground)] border border-[var(--border)] text-xs font-semibold gap-2 shadow-xs transition-all cursor-pointer"
           >
-            <CalendarIcon className="h-3.5 w-3.5 text-[#B94A24]" />
+            <CalendarIcon className="h-3.5 w-3.5 text-[#E05B27]" />
             <span>Plan My Day</span>
           </Button>
         </div>
 
         {/* Daily Focus Intention Pill Card */}
-        <div className="rounded-2xl border border-[#EDE7DE] dark:border-[#2A2624] bg-white/80 dark:bg-black/30 backdrop-blur-xs p-4 transition-colors">
+        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)]/90 backdrop-blur-xs p-4 transition-colors shadow-2xs">
           <div className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#B94A24] dark:text-[#E07A50]">
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#E05B27]">
               <Sparkles className="h-3.5 w-3.5" />
               <span>Daily Focus Intention</span>
             </div>
@@ -190,7 +190,7 @@ export function DashboardHeader({
             {!isEditing && (
               <button
                 onClick={() => setIsEditing(true)}
-                className="text-xs text-[#7A7269] hover:text-[#24211F] dark:text-[#A69E94] dark:hover:text-[#EDE7DE] flex items-center gap-1 transition-colors"
+                className="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] flex items-center gap-1 transition-colors cursor-pointer"
                 title="Edit intention"
               >
                 <Edit2 className="h-3 w-3" />

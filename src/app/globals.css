@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 /*
  * Personal OS — warm editorial design tokens.
  * Compatible with a Tailwind CSS v4 + shadcn-style CSS variable setup.

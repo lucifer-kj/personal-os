@@ -191,9 +191,8 @@ export function TaskList({ initialTasks }: TaskListProps) {
 
         <Button
           variant="default"
-          size="sm"
           onClick={() => setIsCreateOpen(true)}
-          className="gap-2 shrink-0 self-start sm:self-auto mb-2 sm:mb-0"
+          className="h-9 px-4 rounded-lg text-xs font-semibold gap-2 shrink-0 self-start sm:self-auto"
         >
           <Plus className="h-4 w-4" />
           <span>New Task</span>

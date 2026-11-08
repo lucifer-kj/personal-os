@@ -3,17 +3,20 @@
 import * as React from "react";
 import { Clock, Play, Pause, Square, MoreVertical } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface FocusTimerWidgetProps {
   initialSeconds?: number;
   label?: string;
   onSessionComplete?: () => void;
+  className?: string;
 }
 
 export function FocusTimerWidget({
   initialSeconds = 45 * 60, // 45 minutes default
   label = "Deep Work",
   onSessionComplete,
+  className,
 }: FocusTimerWidgetProps) {
   const [totalSeconds, setTotalSeconds] = React.useState(initialSeconds);
   const [secondsRemaining, setSecondsRemaining] = React.useState(initialSeconds);
@@ -56,7 +59,7 @@ export function FocusTimerWidget({
   const strokeDashoffset = circumference - progress * circumference;
 
   return (
-    <Card className="p-5 sm:p-6 bg-white dark:bg-[#161413] border-[#EDE7DE] dark:border-[#2A2624] shadow-[0_2px_12px_rgba(0,0,0,0.03)] rounded-2xl flex flex-col justify-between transition-all hover:shadow-[0_4px_20px_rgba(0,0,0,0.05)]">
+    <Card className={cn("p-5 sm:p-6 bg-white dark:bg-[#161413] border-[#EDE7DE] dark:border-[#2A2624] shadow-[0_2px_12px_rgba(0,0,0,0.03)] rounded-2xl flex flex-col justify-between transition-all hover:shadow-[0_4px_20px_rgba(0,0,0,0.05)]", className)}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#7A7269] dark:text-[#A69E94]">
@@ -73,7 +76,7 @@ export function FocusTimerWidget({
       </div>
 
       {/* Radial Timer Ring + Controls */}
-      <div className="my-4 flex items-center justify-around gap-4">
+      <div className="my-auto py-2 flex items-center justify-around gap-4">
         {/* SVG Radial Gauge */}
         <div className="relative flex items-center justify-center">
           <svg className="w-36 h-36 -rotate-90 transform" viewBox="0 0 128 128">
@@ -154,6 +157,17 @@ export function FocusTimerWidget({
             <Square className="h-3.5 w-3.5" />
           </button>
         </div>
+      </div>
+
+      {/* Footer Status Bar matching CurrentFocusCard */}
+      <div className="mt-auto pt-3 border-t border-[#F4EFEA] dark:border-[#221F1D] flex items-center justify-between text-xs text-[#7A7269] dark:text-[#A69E94]">
+        <div className="flex items-center gap-1.5 font-mono text-[11px]">
+          <span className={`inline-block h-2 w-2 rounded-full ${isActive ? "bg-emerald-500 animate-pulse" : "bg-[#B94A24]"}`} />
+          <span>{isActive ? "Deep work active" : "Timer ready"}</span>
+        </div>
+        <span className="font-mono text-xs font-medium text-[#24211F] dark:text-[#F3EFEA]">
+          {Math.round(totalSeconds / 60)}m target
+        </span>
       </div>
     </Card>
   );

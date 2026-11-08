@@ -18,14 +18,115 @@ import {
   Layers,
   Sparkles,
   X,
+  Maximize2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { fireCelebrationConfetti } from "@/lib/ui/confetti";
 import { useRouter } from "next/navigation";
+import { RadarFloatingReaderModal } from "./RadarFloatingReaderModal";
 
 interface RadarViewProps {
   initialFeeds?: RSSFeed[];
   initialItems?: RadarItem[];
+}
+
+function CleanArticleContent({ item }: { item: RadarItem }) {
+  const rawText = item.content || item.summary || "";
+
+  if (!rawText.trim()) {
+    return (
+      <div className="p-6 text-center space-y-2 border border-dashed border-[var(--border)] rounded-xl">
+        <p className="text-xs text-[var(--muted-foreground)]">No preview body supplied by feed.</p>
+        <a
+          href={item.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-xs text-[var(--primary)] font-medium underline underline-offset-4"
+        >
+          Open original article <ExternalLink className="h-3 w-3" />
+        </a>
+      </div>
+    );
+  }
+
+  // If text is purely an anchor like <a href="...">Comments</a> (e.g., Hacker News)
+  const isJustCommentsLink = /^\s*<a\s+href="([^"]+)"[^>]*>(.*?)<\/a>\s*$/i.exec(rawText);
+  if (isJustCommentsLink) {
+    const linkUrl = isJustCommentsLink[1];
+    const linkLabel = isJustCommentsLink[2] || "Discussion / Comments";
+    return (
+      <div className="space-y-4">
+        <p className="text-xs text-[var(--muted-foreground)] leading-relaxed">
+          This article links directly to an external discussion thread or publication.
+        </p>
+        <div className="flex flex-col gap-2 p-3.5 rounded-xl border border-[var(--border)] bg-[var(--muted)]/40">
+          <span className="text-[10px] font-mono text-[var(--muted-foreground)] uppercase">
+            Discussion &amp; Comments
+          </span>
+          <a
+            href={linkUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 text-xs text-[var(--primary)] font-medium hover:underline break-all"
+          >
+            <ExternalLink className="h-3.5 w-3.5 shrink-0" />
+            {linkLabel}
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  // Clean HTML: extract text, convert <a href="...">text</a> to markdown links [text](url)
+  const cleanProse = rawText
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p>/gi, "\n\n")
+    .replace(/<p[^>]*>/gi, "")
+    .replace(/<a\s+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi, "[$2]($1)")
+    .replace(/<[^>]+>/g, "")
+    .trim();
+
+  const paragraphs = cleanProse.split(/\n\s*\n/).filter(Boolean);
+
+  return (
+    <div className="space-y-3">
+      {paragraphs.map((p, idx) => {
+        const parts = [];
+        let lastIdx = 0;
+        const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+        let match;
+
+        while ((match = linkRegex.exec(p)) !== null) {
+          if (match.index > lastIdx) {
+            parts.push(p.slice(lastIdx, match.index));
+          }
+          parts.push(
+            <a
+              key={match.index}
+              href={match[2]}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[var(--primary)] underline hover:opacity-80 inline-flex items-center gap-0.5"
+            >
+              {match[1]}
+              <ExternalLink className="h-2.5 w-2.5 inline" />
+            </a>
+          );
+          lastIdx = match.index + match[0].length;
+        }
+
+        if (lastIdx < p.length) {
+          parts.push(p.slice(lastIdx));
+        }
+
+        return (
+          <p key={idx} className="leading-relaxed whitespace-pre-wrap">
+            {parts.length > 0 ? parts : p}
+          </p>
+        );
+      })}
+    </div>
+  );
 }
 
 export function RadarView({
@@ -41,6 +142,7 @@ export function RadarView({
 
   // Filters
   const [activeFilter, setActiveFilter] = React.useState<"all" | "unread" | "starred">("all");
+  const [selectedCategory, setSelectedCategory] = React.useState<string>("all");
   const [selectedFeedId, setSelectedFeedId] = React.useState<string | null>(null);
   const [searchQuery, setSearchQuery] = React.useState("");
 
@@ -50,10 +152,68 @@ export function RadarView({
   const [newFeedCategory, setNewFeedCategory] = React.useState("Tech");
   const [isSubscribing, setIsSubscribing] = React.useState(false);
   const [isSyncing, setIsSyncing] = React.useState(false);
+  const [isCleaning, setIsCleaning] = React.useState(false);
+  const [isSeeding, setIsSeeding] = React.useState(false);
   const [personalNotes, setPersonalNotes] = React.useState("");
   const [isPromoting, setIsPromoting] = React.useState(false);
+  const [isFloatingReaderOpen, setIsFloatingReaderOpen] = React.useState(false);
 
   const selectedItem = items.find((i) => i.id === selectedItemId) || null;
+
+  // Auto-Clean Stale Items (older than 7 days)
+  const handleCleanStale = async () => {
+    setIsCleaning(true);
+    try {
+      const res = await fetch("/api/v1/radar/clean", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ retention_days: 7 }),
+      });
+      if (!res.ok) throw new Error("Cleaning failed");
+      const json = await res.json();
+
+      const itemsRes = await fetch("/api/v1/radar/items");
+      if (itemsRes.ok) {
+        const itemsJson = await itemsRes.json();
+        setItems(itemsJson.data);
+      }
+      toast.success(json.data.message || `Pruned ${json.data.pruned} stale signals`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Clean failed";
+      toast.error(msg);
+    } finally {
+      setIsCleaning(false);
+    }
+  };
+
+  // Seed Curated Feeds Suite
+  const handleSeedCurated = async () => {
+    setIsSeeding(true);
+    try {
+      const res = await fetch("/api/v1/enclave/seed", { method: "POST" });
+      if (!res.ok) throw new Error("Seed failed");
+      const json = await res.json();
+
+      // Refresh feeds & items
+      const feedsRes = await fetch("/api/v1/radar/feeds");
+      if (feedsRes.ok) {
+        const feedsJson = await feedsRes.json();
+        setFeeds(feedsJson.data);
+      }
+      const itemsRes = await fetch("/api/v1/radar/items");
+      if (itemsRes.ok) {
+        const itemsJson = await itemsRes.json();
+        setItems(itemsJson.data);
+      }
+      toast.success(`Curated feeds synchronized (+${json.data.results.feedsCreated} new feeds)`);
+      setIsAddModalOpen(false);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Curated seed failed";
+      toast.error(msg);
+    } finally {
+      setIsSeeding(false);
+    }
+  };
 
   // Add Feed Handler
   const handleAddFeed = async (e: React.FormEvent) => {
@@ -260,11 +420,24 @@ export function RadarView({
     }
   };
 
+  // Distinct Categories for Lens filtering
+  const categories = React.useMemo(() => {
+    const set = new Set<string>();
+    feeds.forEach((f) => {
+      if (f.category) set.add(f.category);
+    });
+    return ["all", ...Array.from(set)];
+  }, [feeds]);
+
   // Filter Items
   const filteredItems = items.filter((item) => {
     if (selectedFeedId && item.feed_id !== selectedFeedId) return false;
     if (activeFilter === "unread" && item.is_read) return false;
     if (activeFilter === "starred" && !item.is_starred) return false;
+    if (selectedCategory !== "all") {
+      const feed = feeds.find((f) => f.id === item.feed_id);
+      if (feed && feed.category !== selectedCategory) return false;
+    }
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       const matchTitle = item.title.toLowerCase().includes(q);
@@ -273,6 +446,9 @@ export function RadarView({
     }
     return true;
   });
+
+  // Client-side Memory & DOM Protection: render max 80 signals
+  const visibleItems = filteredItems.slice(0, 80);
 
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] max-w-[1600px] mx-auto p-4 sm:p-6 gap-4">
@@ -291,9 +467,20 @@ export function RadarView({
         <div className="flex items-center gap-2">
           <button
             type="button"
+            disabled={isCleaning}
+            onClick={handleCleanStale}
+            title="Auto-prune unstarred articles older than 7 days to keep database and client lean"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-[var(--border)] bg-[var(--card)] hover:bg-[var(--muted)] text-[var(--foreground)] transition-colors shadow-2xs cursor-pointer"
+          >
+            <Sparkles className={`h-3.5 w-3.5 text-amber-500 ${isCleaning ? "animate-spin" : ""}`} />
+            {isCleaning ? "Cleaning..." : "Auto Clean"}
+          </button>
+
+          <button
+            type="button"
             disabled={isSyncing}
             onClick={() => handleSync()}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-[var(--border)] bg-[var(--card)] hover:bg-[var(--muted)] text-[var(--foreground)] transition-colors shadow-2xs"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-[var(--border)] bg-[var(--card)] hover:bg-[var(--muted)] text-[var(--foreground)] transition-colors shadow-2xs cursor-pointer"
           >
             <RefreshCw className={`h-3.5 w-3.5 text-indigo-500 ${isSyncing ? "animate-spin" : ""}`} />
             {isSyncing ? "Syncing..." : "Sync Feeds"}
@@ -302,7 +489,7 @@ export function RadarView({
           <button
             type="button"
             onClick={() => setIsAddModalOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 transition-opacity shadow-sm"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 transition-opacity shadow-sm cursor-pointer"
           >
             <Plus className="h-4 w-4" />
             Add Feed
@@ -427,93 +614,122 @@ export function RadarView({
             </div>
           </div>
 
+          {/* Category Lens Pills (Horizontal Scroll) */}
+          {categories.length > 2 && (
+            <div className="px-3 py-2 border-b border-[var(--border)] bg-[var(--card)] flex items-center gap-1.5 overflow-x-auto scrollbar-none">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-2.5 py-1 rounded-md text-[11px] whitespace-nowrap font-medium transition-colors cursor-pointer ${
+                    selectedCategory === cat
+                      ? "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold shadow-2xs"
+                      : "bg-[var(--muted)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+                  }`}
+                >
+                  {cat === "all" ? "All Lenses" : cat}
+                </button>
+              ))}
+            </div>
+          )}
+
           {/* Stream Cards */}
           <div className="flex-1 overflow-y-auto p-2 space-y-1.5 divide-y divide-[var(--border)]/30">
-            {filteredItems.length === 0 ? (
+            {visibleItems.length === 0 ? (
               <div className="p-8 text-center text-xs text-[var(--muted-foreground)]">
                 No signal found matching criteria.
               </div>
             ) : (
-              filteredItems.map((item) => {
-                const isSelected = item.id === selectedItemId;
-                return (
-                  <div
-                    key={item.id}
-                    onClick={() => {
-                      setSelectedItemId(item.id);
-                      if (!item.is_read) handleToggleRead(item);
-                    }}
-                    className={`p-3 rounded-xl cursor-pointer transition-all ${
-                      isSelected
-                        ? "bg-[var(--muted)] border border-[var(--border)] shadow-2xs"
-                        : "hover:bg-[var(--muted)]/50"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between gap-1 mb-1">
-                      <span className="text-[10px] font-mono text-[var(--primary)] font-semibold truncate">
-                        {item.feed?.title || "Radar Signal"}
-                      </span>
-                      <div className="flex items-center gap-1.5">
-                        {item.promoted_to_note_id && (
-                          <span title="Promoted to Note" className="text-emerald-500">
-                            <BookOpen className="h-3 w-3" />
-                          </span>
-                        )}
-                        {item.promoted_to_post_id && (
-                          <span title="Promoted to Social Draft" className="text-indigo-500">
-                            <Share2 className="h-3 w-3" />
-                          </span>
-                        )}
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleToggleStar(item);
-                          }}
-                          className={`p-0.5 rounded transition-colors ${
-                            item.is_starred
-                              ? "text-amber-500 fill-current"
-                              : "text-[var(--muted-foreground)] hover:text-amber-500"
-                          }`}
-                        >
-                          <Star className={`h-3.5 w-3.5 ${item.is_starred ? "fill-amber-500" : ""}`} />
-                        </button>
-                      </div>
-                    </div>
-
-                    <h3
-                      className={`text-xs font-semibold leading-snug line-clamp-2 ${
-                        item.is_read ? "text-[var(--muted-foreground)]" : "text-[var(--foreground)]"
+              <>
+                {visibleItems.map((item) => {
+                  const isSelected = item.id === selectedItemId;
+                  return (
+                    <div
+                      key={item.id}
+                      onClick={() => {
+                        setSelectedItemId(item.id);
+                        if (!item.is_read) handleToggleRead(item);
+                        setIsFloatingReaderOpen(true);
+                      }}
+                      className={`p-3 rounded-xl cursor-pointer transition-all ${
+                        isSelected
+                          ? "bg-[var(--muted)] border border-[var(--border)] shadow-2xs"
+                          : "hover:bg-[var(--muted)]/50"
                       }`}
                     >
-                      {item.title}
-                    </h3>
+                      <div className="flex items-center justify-between gap-1 mb-1">
+                        <span className="text-[10px] font-mono text-[var(--primary)] font-semibold truncate">
+                          {item.feed?.title || "Radar Signal"}
+                        </span>
+                        <div className="flex items-center gap-1.5">
+                          {item.promoted_to_note_id && (
+                            <span title="Promoted to Note" className="text-emerald-500">
+                              <BookOpen className="h-3 w-3" />
+                            </span>
+                          )}
+                          {item.promoted_to_post_id && (
+                            <span title="Promoted to Social Draft" className="text-indigo-500">
+                              <Share2 className="h-3 w-3" />
+                            </span>
+                          )}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleToggleStar(item);
+                            }}
+                            className={`p-0.5 rounded transition-colors ${
+                              item.is_starred
+                                ? "text-amber-500 fill-current"
+                                : "text-[var(--muted-foreground)] hover:text-amber-500"
+                            }`}
+                          >
+                            <Star className={`h-3.5 w-3.5 ${item.is_starred ? "fill-amber-500" : ""}`} />
+                          </button>
+                        </div>
+                      </div>
 
-                    {item.summary && (
-                      <p className="text-[11px] text-[var(--muted-foreground)] line-clamp-2 mt-1 leading-relaxed">
-                        {item.summary}
-                      </p>
-                    )}
+                      <h3
+                        className={`text-xs font-semibold leading-snug line-clamp-2 ${
+                          item.is_read ? "text-[var(--muted-foreground)]" : "text-[var(--foreground)]"
+                        }`}
+                      >
+                        {item.title}
+                      </h3>
 
-                    <div className="mt-2 flex items-center justify-between text-[10px] font-mono text-[var(--muted-foreground)]">
-                      <span>{new Date(item.published_at).toLocaleDateString()}</span>
-                      {!item.is_read && (
-                        <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
+                      {item.summary && (
+                        <p className="text-[11px] text-[var(--muted-foreground)] line-clamp-2 mt-1 leading-relaxed">
+                          {item.summary}
+                        </p>
                       )}
+
+                      <div className="mt-2 flex items-center justify-between text-[10px] font-mono text-[var(--muted-foreground)]">
+                        <span>{new Date(item.published_at).toLocaleDateString()}</span>
+                        {!item.is_read && (
+                          <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
+                        )}
+                      </div>
                     </div>
+                  );
+                })}
+
+                {filteredItems.length > 80 && (
+                  <div className="p-3 text-center text-[10px] font-mono text-[var(--muted-foreground)] bg-[var(--muted)]/20 rounded-lg">
+                    Showing top 80 of {filteredItems.length} fresh signals (older cached safely)
                   </div>
-                );
-              })
+                )}
+              </>
             )}
           </div>
         </div>
 
         {/* Right Column: Full Signal Reader & Promotion Deck (5 cols) */}
-        <div className="lg:col-span-5 flex flex-col border border-[var(--border)] rounded-2xl bg-[var(--card)] p-5 overflow-y-auto space-y-4 shadow-xs">
+        <div className="lg:col-span-5 flex flex-col border border-[var(--border)] rounded-2xl bg-[var(--card)] overflow-hidden shadow-xs">
           {selectedItem ? (
             <>
-              {/* Header */}
-              <div className="space-y-2 pb-3 border-b border-[var(--border)]">
+              {/* Fixed Header */}
+              <div className="p-4 sm:p-5 border-b border-[var(--border)] space-y-2 shrink-0 bg-[var(--card)]">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold uppercase">
                     {selectedItem.feed?.category || "Article"}
@@ -522,7 +738,7 @@ export function RadarView({
                     <button
                       type="button"
                       onClick={() => handleToggleRead(selectedItem)}
-                      className={`flex items-center gap-1 text-xs px-2 py-1 rounded-lg border transition-colors ${
+                      className={`flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg border transition-colors ${
                         selectedItem.is_read
                           ? "border-[var(--border)] text-[var(--muted-foreground)]"
                           : "border-emerald-500 text-emerald-600 bg-emerald-500/10 font-medium"
@@ -532,11 +748,21 @@ export function RadarView({
                       {selectedItem.is_read ? "Mark Unread" : "Mark as Read"}
                     </button>
 
+                    <button
+                      type="button"
+                      onClick={() => setIsFloatingReaderOpen(true)}
+                      className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg border border-[var(--border)] bg-[var(--muted)] text-[var(--foreground)] hover:bg-[var(--muted)]/80 transition-colors font-medium cursor-pointer"
+                      title="Open in floating 80% blurred reader"
+                    >
+                      <Maximize2 className="h-3 w-3 text-[#E05B27]" />
+                      <span>Reader</span>
+                    </button>
+
                     <a
                       href={selectedItem.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1 text-xs px-2 py-1 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 transition-opacity"
+                      className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 transition-opacity font-medium"
                     >
                       <span>Original</span>
                       <ExternalLink className="h-3 w-3" />
@@ -550,24 +776,18 @@ export function RadarView({
 
                 <div className="flex items-center gap-2 text-[11px] font-mono text-[var(--muted-foreground)]">
                   {selectedItem.author && <span>By {selectedItem.author}</span>}
-                  <span>•</span>
+                  {selectedItem.author && <span>•</span>}
                   <span>{new Date(selectedItem.published_at).toLocaleString()}</span>
                 </div>
               </div>
 
-              {/* Body Content */}
-              <div className="text-xs sm:text-sm text-[var(--foreground)] leading-relaxed space-y-3 font-sans">
-                {selectedItem.content || selectedItem.summary ? (
-                  <p className="whitespace-pre-wrap">{selectedItem.content || selectedItem.summary}</p>
-                ) : (
-                  <p className="text-[var(--muted-foreground)] italic">
-                    Click &ldquo;Original&rdquo; to read the full source article.
-                  </p>
-                )}
+              {/* Scrollable Body Content */}
+              <div className="flex-1 overflow-y-auto p-4 sm:p-5 font-sans text-xs sm:text-sm text-[var(--foreground)] leading-relaxed space-y-3">
+                <CleanArticleContent item={selectedItem} />
               </div>
 
-              {/* 1-Click Knowledge & Social Promotion Action Deck */}
-              <div className="mt-auto pt-4 border-t border-[var(--border)] space-y-3">
+              {/* Fixed 1-Click Knowledge & Social Promotion Action Deck */}
+              <div className="p-4 sm:p-5 border-t border-[var(--border)] space-y-3 shrink-0 bg-[var(--card)]/80 backdrop-blur-xs">
                 <span className="text-[10px] font-mono uppercase tracking-wider text-[var(--muted-foreground)] font-semibold flex items-center gap-1.5">
                   <Sparkles className="h-3.5 w-3.5 text-indigo-500" />
                   Signal Synthesis &amp; Broadcast
@@ -674,15 +894,47 @@ export function RadarView({
                 <button
                   type="submit"
                   disabled={isSubscribing}
-                  className="px-3 py-1.5 text-xs font-medium rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90"
+                  className="px-3 py-1.5 text-xs font-medium rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 cursor-pointer"
                 >
                   {isSubscribing ? "Validating & Subscribing..." : "Subscribe"}
                 </button>
               </div>
             </form>
+
+            {/* 1-Click Curated Suite Injector */}
+            <div className="pt-3 border-t border-[var(--border)] space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-semibold text-[var(--foreground)] flex items-center gap-1.5">
+                  <Sparkles className="h-3.5 w-3.5 text-indigo-500" />
+                  Curated Enclave Feeds
+                </span>
+                <span className="text-[10px] font-mono text-[var(--muted-foreground)]">19 Verified Feeds</span>
+              </div>
+              <p className="text-[11px] text-[var(--muted-foreground)] leading-relaxed">
+                Inject the full multi-agent verified suite for Autonomous Systems (ACoV/Friday), Venture Strategy (NBD), and Knowledge Craft (Fossil).
+              </p>
+              <button
+                type="button"
+                disabled={isSeeding}
+                onClick={handleSeedCurated}
+                className="w-full py-2 px-3 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-xs disabled:opacity-50"
+              >
+                <Sparkles className={`h-3.5 w-3.5 ${isSeeding ? "animate-spin" : ""}`} />
+                {isSeeding ? "Injecting Curated Feeds..." : "Inject All Curated Feeds (1-Click)"}
+              </button>
+            </div>
           </div>
         </div>
       )}
+
+      {/* Floating 80% Blurred Big Readable Reader Modal */}
+      <RadarFloatingReaderModal
+        isOpen={isFloatingReaderOpen}
+        onClose={() => setIsFloatingReaderOpen(false)}
+        item={selectedItem}
+        onToggleRead={handleToggleRead}
+        onToggleStar={handleToggleStar}
+      />
     </div>
   );
 }

@@ -123,4 +123,40 @@ describe("RadarService", () => {
     const updatedItem = await service.getItem(userId, itemId);
     expect(updatedItem?.promoted_to_post_id).toBe(post.id);
   });
+
+  it("auto-prunes stale unstarred items while keeping starred and promoted items", async () => {
+    const eightDaysAgo = new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString();
+    const today = new Date().toISOString();
+
+    await repo.upsertItems(userId, "feed-1", [
+      {
+        title: "Old Unstarred Article",
+        url: "https://example.com/old-unstarred",
+        published_at: eightDaysAgo,
+      },
+      {
+        title: "Old Starred Article",
+        url: "https://example.com/old-starred",
+        published_at: eightDaysAgo,
+      },
+      {
+        title: "Recent Article",
+        url: "https://example.com/recent",
+        published_at: today,
+      },
+    ]);
+
+    const items = await service.listItems(userId);
+    const starredItem = items.find((i) => i.url === "https://example.com/old-starred")!;
+    await service.toggleItemStarred(userId, starredItem.id);
+
+    const prunedCount = await service.pruneOldItems(userId, 7);
+    expect(prunedCount).toBe(1);
+
+    const remainingItems = await service.listItems(userId);
+    expect(remainingItems.length).toBe(2);
+    expect(remainingItems.some((i) => i.url === "https://example.com/old-unstarred")).toBe(false);
+    expect(remainingItems.some((i) => i.url === "https://example.com/old-starred")).toBe(true);
+    expect(remainingItems.some((i) => i.url === "https://example.com/recent")).toBe(true);
+  });
 });

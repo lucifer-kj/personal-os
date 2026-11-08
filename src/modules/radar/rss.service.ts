@@ -25,7 +25,8 @@ const parser = new Parser({
 export async function fetchAndParseFeed(feedUrl: string): Promise<ParsedFeedResult> {
   const feed = await parser.parseURL(feedUrl);
 
-  const items = (feed.items || []).map((item) => {
+  // Cap at 30 most recent items to avoid swamping the database
+  const items = (feed.items || []).slice(0, 30).map((item) => {
     const publishedAt = item.isoDate || item.pubDate
       ? new Date(item.isoDate || item.pubDate || Date.now()).toISOString()
       : new Date().toISOString();
@@ -33,13 +34,16 @@ export async function fetchAndParseFeed(feedUrl: string): Promise<ParsedFeedResu
     const summary = item.contentSnippet || item.summary || item.content || "";
     // Clean snippet
     const cleanSummary = summary.replace(/<[^>]*>?/gm, "").trim().slice(0, 500);
+    // Sanitize and cap content body to 15,000 chars to prevent storage bloat
+    const rawContent = item.content || item["content:encoded"] || cleanSummary;
+    const cleanContent = typeof rawContent === "string" ? rawContent.slice(0, 15000) : cleanSummary;
 
     return {
       title: item.title || "Untitled Item",
       url: item.link || feedUrl,
       author: item.creator || (item as unknown as { author?: string }).author || feed.title || null,
       summary: cleanSummary,
-      content: item.content || item["content:encoded"] || cleanSummary,
+      content: cleanContent,
       publishedAt,
     };
   });

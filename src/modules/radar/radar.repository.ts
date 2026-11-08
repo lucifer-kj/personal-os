@@ -39,6 +39,7 @@ export interface IRadarRepository {
     id: string,
     data: Partial<RadarItem>
   ): Promise<RadarItem | null>;
+  pruneOldItems(userId: string, retentionDays?: number): Promise<number>;
 }
 
 export class InMemoryRadarRepository implements IRadarRepository {
@@ -228,6 +229,24 @@ export class InMemoryRadarRepository implements IRadarRepository {
     this.items.set(id, updated);
     return updated;
   }
+
+  async pruneOldItems(userId: string, retentionDays: number = 7): Promise<number> {
+    const cutoffDate = new Date(Date.now() - retentionDays * 24 * 60 * 60 * 1000).toISOString();
+    let count = 0;
+    for (const [id, item] of this.items.entries()) {
+      if (
+        item.user_id === userId &&
+        !item.is_starred &&
+        !item.promoted_to_note_id &&
+        !item.promoted_to_post_id &&
+        item.published_at < cutoffDate
+      ) {
+        this.items.delete(id);
+        count++;
+      }
+    }
+    return count;
+  }
 }
 
 export class SupabaseRadarRepository implements IRadarRepository {
@@ -398,6 +417,25 @@ export class SupabaseRadarRepository implements IRadarRepository {
 
     if (error || !updated) return null;
     return updated as RadarItem;
+  }
+
+  async pruneOldItems(userId: string, retentionDays: number = 7): Promise<number> {
+    const cutoffDate = new Date(Date.now() - retentionDays * 24 * 60 * 60 * 1000).toISOString();
+    const { data, error } = await this.client
+      .from("radar_items")
+      .delete()
+      .eq("user_id", userId)
+      .eq("is_starred", false)
+      .is("promoted_to_note_id", null)
+      .is("promoted_to_post_id", null)
+      .lt("published_at", cutoffDate)
+      .select("id");
+
+    if (error) {
+      console.error("Failed to prune old radar items:", error);
+      return 0;
+    }
+    return data?.length || 0;
   }
 }
 

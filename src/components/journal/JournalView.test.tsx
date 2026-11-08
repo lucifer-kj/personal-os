@@ -2,8 +2,9 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { JournalView } from "./JournalView";
 import { JournalEntry } from "@/modules/journal/types";
+import { format } from "date-fns";
 
-const todayStr = new Date().toISOString().split("T")[0];
+const todayStr = format(new Date(), "yyyy-MM-dd");
 
 const mockEntry: JournalEntry = {
   id: "j-1",
