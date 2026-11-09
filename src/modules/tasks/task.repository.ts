@@ -218,9 +218,13 @@ class SupabaseTaskRepository implements ITaskRepository {
       .select("*")
       .eq("user_id", userId)
       .eq("id", taskId)
-      .single();
+      .maybeSingle();
 
-    if (error || !data) {
+    if (error) {
+      throw new InfrastructureError(`Database error querying task: ${error.message}`);
+    }
+
+    if (!data) {
       return null;
     }
 
@@ -244,7 +248,7 @@ class SupabaseTaskRepository implements ITaskRepository {
       .single();
 
     if (error) {
-      throw new Error(`Failed to create task: ${error.message}`);
+      throw new InfrastructureError(`Failed to create task: ${error.message}`);
     }
 
     return created as Task;
@@ -266,9 +270,13 @@ class SupabaseTaskRepository implements ITaskRepository {
       .eq("user_id", userId)
       .eq("id", taskId)
       .select()
-      .single();
+      .maybeSingle();
 
     if (error) {
+      throw new InfrastructureError(`Failed to update task: ${error.message}`);
+    }
+
+    if (!updated) {
       return null;
     }
 

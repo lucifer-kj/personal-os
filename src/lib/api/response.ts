@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { AppError } from "@/lib/errors";
+import { z } from "zod";
 
 export interface ApiResponseMeta {
   request_id?: string;
@@ -92,4 +94,41 @@ export function apiNotFound(
   requestId = generateRequestId()
 ): NextResponse<ApiErrorEnvelope> {
   return apiError("NOT_FOUND", message, undefined, 404, requestId);
+}
+
+/**
+ * Standardized error dispatcher converting domain and infrastructure errors
+ * into consistent HTTP envelopes.
+ */
+export function handleApiError(
+  err: unknown,
+  fallbackMessage = "An unexpected error occurred",
+  requestId = generateRequestId()
+): NextResponse<ApiErrorEnvelope> {
+  if (err instanceof AppError) {
+    const details = (err as any).details;
+    const formattedDetails = Array.isArray(details)
+      ? details
+      : undefined;
+    return apiError(err.code, err.message, formattedDetails, err.statusCode, requestId);
+  }
+
+  if (err instanceof z.ZodError) {
+    const details: ApiErrorDetail[] = err.issues.map((i) => ({
+      field: i.path.join("."),
+      message: i.message,
+      code: i.code,
+    }));
+    return apiError("VALIDATION_ERROR", "Validation failed", details, 400, requestId);
+  }
+
+  const message = err instanceof Error ? err.message : fallbackMessage;
+  const isProd = process.env.NODE_ENV === "production";
+  return apiError(
+    "INTERNAL_ERROR",
+    isProd ? fallbackMessage : message,
+    undefined,
+    500,
+    requestId
+  );
 }

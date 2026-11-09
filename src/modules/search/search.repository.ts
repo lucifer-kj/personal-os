@@ -103,6 +103,25 @@ export class SupabaseSearchRepository implements ISearchRepository {
     const allowedTypes = query.types && query.types.length > 0 ? query.types : null;
     const limit = query.limit || 20;
 
+    // 1. Try High-Performance PostgreSQL Full-Text Search (FTS) with rank scoring & headlines
+    try {
+      const { data: ftsData, error: ftsError } = await this.client.rpc("universal_fts_search", {
+        p_user_id: userId,
+        p_query: term,
+        p_limit: limit,
+      });
+
+      if (!ftsError && Array.isArray(ftsData) && ftsData.length > 0) {
+        let results = ftsData as SearchResultItem[];
+        if (allowedTypes) {
+          results = results.filter((r) => allowedTypes.includes(r.type));
+        }
+        return results;
+      }
+    } catch {
+      // Fall back to multi-table scan if RPC is unavailable
+    }
+
     const promises: Promise<SearchResultItem[]>[] = [];
 
     // Search tasks
