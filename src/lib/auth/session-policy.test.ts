@@ -5,10 +5,13 @@ import {
   deserializeSessionMeta,
   evaluateSessionValidity,
   refreshSessionActivity,
+  getSessionTimeRemaining,
+  isWarningThresholdReached,
   UNTRUSTED_INACTIVITY_MAX_MS,
   UNTRUSTED_ABSOLUTE_MAX_MS,
   TRUSTED_INACTIVITY_MAX_MS,
   TRUSTED_ABSOLUTE_MAX_MS,
+  INACTIVITY_WARNING_THRESHOLD_MS,
 } from "./session-policy";
 
 describe("Session Policy & Lifetime Engine", () => {
@@ -98,6 +101,43 @@ describe("Session Policy & Lifetime Engine", () => {
       const refreshed = refreshSessionActivity(meta, baseTime + 50000);
       expect(refreshed.createdAt).toBe(baseTime);
       expect(refreshed.lastActiveAt).toBe(baseTime + 50000);
+    });
+
+    describe("Time Remaining & Inactivity Warning", () => {
+      it("calculates remaining session time accurately", () => {
+        const meta = createSessionMeta(false, "d1", baseTime);
+        const elapsed = 60 * 60 * 1000; // 1 hour elapsed
+        const remaining = getSessionTimeRemaining(meta, baseTime + elapsed);
+
+        // 3h limit - 1h = 2h inactivity remaining
+        expect(remaining.inactivityRemainingMs).toBe(2 * 60 * 60 * 1000);
+        // 12h absolute - 1h = 11h absolute remaining
+        expect(remaining.absoluteRemainingMs).toBe(11 * 60 * 60 * 1000);
+        expect(remaining.effectiveRemainingMs).toBe(2 * 60 * 60 * 1000);
+        expect(remaining.isWarning).toBe(false);
+      });
+
+      it("identifies when session enters 5-minute warning window", () => {
+        const meta = createSessionMeta(false, "d1", baseTime);
+        // 2 hours 56 minutes elapsed (4 minutes remaining before 3h inactivity)
+        const fourMinutesRemainingTime =
+          baseTime + UNTRUSTED_INACTIVITY_MAX_MS - 4 * 60 * 1000;
+
+        const remaining = getSessionTimeRemaining(meta, fourMinutesRemainingTime);
+        expect(remaining.isWarning).toBe(true);
+        expect(remaining.effectiveRemainingMs).toBe(4 * 60 * 1000);
+        expect(isWarningThresholdReached(meta, fourMinutesRemainingTime)).toBe(true);
+      });
+
+      it("returns zero remaining and false warning when session has fully expired", () => {
+        const meta = createSessionMeta(false, "d1", baseTime);
+        const expiredTime = baseTime + UNTRUSTED_INACTIVITY_MAX_MS + 10000;
+
+        const remaining = getSessionTimeRemaining(meta, expiredTime);
+        expect(remaining.effectiveRemainingMs).toBe(0);
+        expect(remaining.isWarning).toBe(false);
+        expect(isWarningThresholdReached(meta, expiredTime)).toBe(false);
+      });
     });
   });
 });

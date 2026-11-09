@@ -33,6 +33,28 @@ describe("Auth Session Policy API (/api/v1/auth/session)", () => {
     expect(json.data.user).toBeDefined();
     expect(json.data.sessionMeta.isTrusted).toBe(true);
     expect(json.data.evaluation.isValid).toBe(true);
+    expect(json.data.timeRemaining).toBeDefined();
+    expect(typeof json.data.timeRemaining.effectiveRemainingMs).toBe("number");
+  });
+
+  it("extends an active session via POST with action: 'extend'", async () => {
+    const meta = createSessionMeta(false, "d1", 100000);
+    const serialized = serializeSessionMeta(meta);
+
+    const req = new NextRequest("http://localhost:3000/api/v1/auth/session", {
+      method: "POST",
+      headers: {
+        cookie: `${SESSION_COOKIE_NAME}=${serialized}`,
+      },
+      body: JSON.stringify({ action: "extend" }),
+    });
+
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.data.message).toBe("Session extended");
+    expect(json.data.meta.lastActiveAt).toBeGreaterThanOrEqual(100000);
+    expect(json.data.timeRemaining).toBeDefined();
   });
 
   it("establishes trusted desktop session via POST", async () => {

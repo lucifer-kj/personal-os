@@ -8,7 +8,9 @@ import { MobileNav } from "./MobileNav";
 import { CommandPalette } from "@/components/search/CommandPalette";
 import { StatePreviewModal } from "@/components/preview/StatePreviewModal";
 import { AppLockScreen } from "@/components/auth/AppLockScreen";
+import { SessionExpirationModal } from "@/components/auth/SessionExpirationModal";
 import { useAppLock } from "@/lib/hooks/useAppLock";
+import { useSessionMonitor } from "@/lib/hooks/useSessionMonitor";
 import { Toaster } from "sonner";
 
 interface AppShellProps {
@@ -19,13 +21,15 @@ function AppShellContent({ children }: AppShellProps) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [statePreviewOpen, setStatePreviewOpen] = React.useState(false);
-  const lockState = useAppLock();
 
   const isAuthPage =
     pathname === "/login" ||
     pathname === "/signup" ||
     pathname === "/forgot-password" ||
     pathname === "/reset-password";
+
+  const lockState = useAppLock();
+  const sessionMonitor = useSessionMonitor({ enabled: !isAuthPage });
 
   React.useEffect(() => {
     const handleOpenPreview = () => setStatePreviewOpen(true);
@@ -106,6 +110,15 @@ function AppShellContent({ children }: AppShellProps) {
         unlocking={lockState.unlocking}
         error={lockState.error}
         onUnlock={lockState.unlock}
+      />
+
+      {/* Inactivity & Expiration Warning Modal */}
+      <SessionExpirationModal
+        isOpen={sessionMonitor.showWarning}
+        timeRemainingMs={sessionMonitor.timeRemainingMs}
+        isExtending={sessionMonitor.isExtending}
+        onExtend={sessionMonitor.extendSession}
+        onSignOut={sessionMonitor.signOut}
       />
 
       {/* Global Notifications */}

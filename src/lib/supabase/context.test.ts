@@ -1,5 +1,11 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { getRequestContext, DEFAULT_DEV_USER_ID } from "./context";
+import {
+  SESSION_COOKIE_NAME,
+  createSessionMeta,
+  serializeSessionMeta,
+  UNTRUSTED_INACTIVITY_MAX_MS,
+} from "@/lib/auth/session-policy";
 
 describe("getRequestContext Single-Pass Context & Security Guard Tests", () => {
   afterEach(() => {
@@ -21,6 +27,18 @@ describe("getRequestContext Single-Pass Context & Security Guard Tests", () => {
     it("strictly rejects test headers and returns null", async () => {
       const req = new Request("http://localhost:3000/api/v1/tasks", {
         headers: { "x-test-user-id": "fake-admin-uuid" },
+      });
+      const ctx = await getRequestContext(req);
+      expect(ctx).toBeNull();
+    });
+
+    it("rejects session if pos_session_meta cookie has expired", async () => {
+      const expiredMeta = createSessionMeta(false, "d1", Date.now() - UNTRUSTED_INACTIVITY_MAX_MS - 5000);
+      const serialized = serializeSessionMeta(expiredMeta);
+      const req = new Request("http://localhost:3000/api/v1/tasks", {
+        headers: {
+          cookie: `${SESSION_COOKIE_NAME}=${serialized}`,
+        },
       });
       const ctx = await getRequestContext(req);
       expect(ctx).toBeNull();

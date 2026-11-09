@@ -15,6 +15,9 @@ export const UNTRUSTED_ABSOLUTE_MAX_MS = 12 * 60 * 60 * 1000; // 12 hours
 export const TRUSTED_INACTIVITY_MAX_MS = 24 * 60 * 60 * 1000; // 24 hours
 export const TRUSTED_ABSOLUTE_MAX_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
+// Default warning prompt shown 5 minutes before inactivity timeout
+export const INACTIVITY_WARNING_THRESHOLD_MS = 5 * 60 * 1000; // 5 minutes
+
 export type SessionInvalidReason =
   | "expired_inactivity"
   | "expired_absolute"
@@ -24,6 +27,13 @@ export interface SessionEvaluation {
   isValid: boolean;
   reason?: SessionInvalidReason;
   meta: SessionMeta | null;
+}
+
+export interface SessionTimeRemaining {
+  inactivityRemainingMs: number;
+  absoluteRemainingMs: number;
+  effectiveRemainingMs: number;
+  isWarning: boolean;
 }
 
 /**
@@ -137,4 +147,55 @@ export function refreshSessionActivity(
     ...meta,
     lastActiveAt: now,
   };
+}
+
+/**
+ * Calculates remaining time before inactivity and absolute session limits expire.
+ */
+export function getSessionTimeRemaining(
+  meta: SessionMeta | null,
+  now: number = Date.now(),
+  warningThresholdMs: number = INACTIVITY_WARNING_THRESHOLD_MS
+): SessionTimeRemaining {
+  if (!meta) {
+    return {
+      inactivityRemainingMs: 0,
+      absoluteRemainingMs: 0,
+      effectiveRemainingMs: 0,
+      isWarning: false,
+    };
+  }
+
+  const inactivityLimit = meta.isTrusted
+    ? TRUSTED_INACTIVITY_MAX_MS
+    : UNTRUSTED_INACTIVITY_MAX_MS;
+
+  const absoluteLimit = meta.isTrusted
+    ? TRUSTED_ABSOLUTE_MAX_MS
+    : UNTRUSTED_ABSOLUTE_MAX_MS;
+
+  const inactivityRemainingMs = Math.max(0, inactivityLimit - (now - meta.lastActiveAt));
+  const absoluteRemainingMs = Math.max(0, absoluteLimit - (now - meta.createdAt));
+  const effectiveRemainingMs = Math.min(inactivityRemainingMs, absoluteRemainingMs);
+
+  const isWarning =
+    effectiveRemainingMs > 0 && effectiveRemainingMs <= warningThresholdMs;
+
+  return {
+    inactivityRemainingMs,
+    absoluteRemainingMs,
+    effectiveRemainingMs,
+    isWarning,
+  };
+}
+
+/**
+ * Checks whether session is within warning threshold.
+ */
+export function isWarningThresholdReached(
+  meta: SessionMeta | null,
+  now: number = Date.now(),
+  warningThresholdMs: number = INACTIVITY_WARNING_THRESHOLD_MS
+): boolean {
+  return getSessionTimeRemaining(meta, now, warningThresholdMs).isWarning;
 }

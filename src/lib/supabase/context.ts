@@ -1,5 +1,10 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "./server";
+import {
+  SESSION_COOKIE_NAME,
+  deserializeSessionMeta,
+  evaluateSessionValidity,
+} from "@/lib/auth/session-policy";
 
 export interface AuthenticatedUser {
   id: string;
@@ -70,6 +75,23 @@ export async function getRequestContext(
       } = await supabase.auth.getUser();
 
       if (!error && user) {
+        // Enforce session metadata expiration if cookie is present
+        if (request) {
+          const cookieHeader = request.headers.get("cookie") || "";
+          const match = cookieHeader.match(
+            new RegExp(`(?:^|;\\s*)${SESSION_COOKIE_NAME}=([^;]+)`)
+          );
+          if (match) {
+            const sessionMeta = deserializeSessionMeta(decodeURIComponent(match[1]));
+            if (sessionMeta) {
+              const evaluation = evaluateSessionValidity(sessionMeta);
+              if (!evaluation.isValid) {
+                return null;
+              }
+            }
+          }
+        }
+
         return {
           user: {
             id: user.id,
