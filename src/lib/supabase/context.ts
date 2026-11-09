@@ -88,6 +88,23 @@ export async function getRequestContext(
               if (!evaluation.isValid) {
                 return null;
               }
+
+              // Check if session was explicitly revoked
+              if (sessionMeta.deviceId && supabase) {
+                try {
+                  const { data: revRow } = await supabase
+                    .from("auth_sessions")
+                    .select("revoked_at")
+                    .eq("session_id", sessionMeta.deviceId)
+                    .maybeSingle();
+
+                  if (revRow?.revoked_at) {
+                    return null;
+                  }
+                } catch {
+                  // Non-blocking query failure
+                }
+              }
             }
           }
         }

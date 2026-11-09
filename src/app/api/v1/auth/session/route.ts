@@ -11,6 +11,7 @@ import {
   TRUSTED_ABSOLUTE_MAX_MS,
   UNTRUSTED_ABSOLUTE_MAX_MS,
 } from "@/lib/auth/session-policy";
+import { parseUserAgent } from "@/lib/auth/device";
 import { apiSuccess, apiError } from "@/lib/api/response";
 
 export async function GET(req: NextRequest) {
@@ -83,13 +84,50 @@ export async function POST(req: NextRequest) {
     maxAge: maxAgeSeconds,
   });
 
+  // Track / refresh device record in auth_sessions
+  if (ctx.supabase) {
+    try {
+      const ua = req.headers.get("user-agent") || "";
+      const forwardedFor =
+        req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "127.0.0.1";
+      const ip = forwardedFor.split(",")[0].trim();
+      const devInfo = parseUserAgent(ua);
+
+      await ctx.supabase.from("auth_sessions").upsert(
+        {
+          user_id: ctx.user.id,
+          session_id: meta.deviceId,
+          device_name: devInfo.deviceName,
+          browser: devInfo.browser,
+          os: devInfo.os,
+          ip_address: ip,
+          is_trusted: meta.isTrusted,
+          last_active_at: new Date(meta.lastActiveAt).toISOString(),
+          created_at: new Date(meta.createdAt).toISOString(),
+        },
+        { onConflict: "session_id" }
+      );
+    } catch {
+      // Non-blocking device session registration
+    }
+  }
+
   return response;
 }
 
 export async function DELETE(req: NextRequest) {
   const ctx = await getRequestContext(req);
+  const rawExisting = req.cookies.get(SESSION_COOKIE_NAME)?.value;
+  const existingMeta = deserializeSessionMeta(rawExisting);
+
   if (ctx?.supabase) {
     try {
+      if (existingMeta?.deviceId) {
+        await ctx.supabase
+          .from("auth_sessions")
+          .update({ revoked_at: new Date().toISOString() })
+          .eq("session_id", existingMeta.deviceId);
+      }
       await ctx.supabase.auth.signOut();
     } catch {
       // Non-blocking sign out
