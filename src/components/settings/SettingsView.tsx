@@ -17,6 +17,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { toast } from "sonner";
+import { SecuritySettingsCard } from "./SecuritySettingsCard";
 
 export function SettingsView() {
   const [isSeeding, setIsSeeding] = React.useState(false);
@@ -67,7 +68,10 @@ export function SettingsView() {
         </div>
       </Card>
 
-      {/* 2. One-Click Database Seeding Card */}
+      {/* 2. Two-Factor & Biometric Security Card */}
+      <SecuritySettingsCard />
+
+      {/* 3. One-Click Database Seeding Card */}
       <Card className="p-6 bg-white dark:bg-[#161413] border-[#EDE7DE] dark:border-[#262220] shadow-2xs rounded-2xl space-y-4">
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-1">
