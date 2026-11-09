@@ -68,6 +68,33 @@ describe("Inbox API Route Handlers", () => {
     expect(processJson.data.target_type).toBe("task");
     expect(processJson.data.created_entity_id).toBeDefined();
 
+    // 5b. Idempotency replay check: Processing again must return same entity with idempotent=true
+    const replayReq = new NextRequest(`http://localhost:3000/api/v1/inbox/${itemId}/process`, {
+      method: "POST",
+      body: JSON.stringify({
+        target_type: "task",
+        priority: "high",
+        due_date: "2026-11-20",
+      }),
+    });
+    const replayRes = await processRoute(replayReq, {
+      params: Promise.resolve({ id: itemId }),
+    });
+    expect(replayRes.status).toBe(200);
+    const replayJson = await replayRes.json();
+    expect(replayJson.data.created_entity_id).toBe(processJson.data.created_entity_id);
+    expect(replayJson.data.idempotent).toBe(true);
+
+    // 5c. Validation check: Unsupported conversion target must return 400
+    const invalidTargetReq = new NextRequest(`http://localhost:3000/api/v1/inbox/${itemId}/process`, {
+      method: "POST",
+      body: JSON.stringify({ target_type: "project" }),
+    });
+    const invalidRes = await processRoute(invalidTargetReq, {
+      params: Promise.resolve({ id: itemId }),
+    });
+    expect(invalidRes.status).toBe(400);
+
     // 6. Delete item
     const deleteRes = await deleteRoute(new NextRequest(`http://localhost:3000/api/v1/inbox/${itemId}`), {
       params: Promise.resolve({ id: itemId }),

@@ -4,6 +4,7 @@ import {
   InboxItem,
   CreateInboxItemDTO,
   UpdateInboxItemDTO,
+  ProcessInboxItemDTO,
   ConvertedEntityType,
   InboxFilters,
   IInboxRepository,
@@ -248,6 +249,35 @@ export class SupabaseInboxRepository implements IInboxRepository {
     }
 
     return item as InboxItem;
+  }
+
+  async processItemToTaskAtomic(
+    userId: string,
+    id: string,
+    dto: ProcessInboxItemDTO,
+    title: string,
+    description?: string
+  ): Promise<{ item: InboxItem; created_entity_id: string; target_type: string; idempotent: boolean }> {
+    const { data, error } = await this.supabase.rpc("process_inbox_item_to_task", {
+      p_user_id: userId,
+      p_inbox_id: id,
+      p_title: title,
+      p_description: description || null,
+      p_priority: dto.priority || "medium",
+      p_due_date: dto.due_date || null,
+      p_project_id: dto.project_id || null,
+    });
+
+    if (error || !data) {
+      throw new Error(`Failed to process inbox item atomically: ${error?.message}`);
+    }
+
+    return {
+      item: data.item as InboxItem,
+      created_entity_id: data.created_entity_id,
+      target_type: data.target_type,
+      idempotent: Boolean(data.idempotent),
+    };
   }
 
   async delete(userId: string, id: string): Promise<boolean> {

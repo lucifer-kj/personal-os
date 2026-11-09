@@ -56,6 +56,7 @@ export interface ProcessInboxItemDTO {
   due_date?: string | null;
   priority?: "low" | "medium" | "high" | "urgent";
   project_id?: string | null;
+  idempotency_key?: string;
 }
 
 export interface InboxFilters {
@@ -86,6 +87,14 @@ export interface IInboxRepository {
     entityType: ConvertedEntityType,
     entityId: string
   ): Promise<InboxItem>;
+
+  processItemToTaskAtomic?(
+    userId: string,
+    id: string,
+    dto: ProcessInboxItemDTO,
+    title: string,
+    description?: string
+  ): Promise<{ item: InboxItem; created_entity_id: string; target_type: string; idempotent: boolean }>;
 
   delete(userId: string, id: string): Promise<boolean>;
 }

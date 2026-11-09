@@ -36,4 +36,5 @@ export const processInboxItemSchema = z.object({
   due_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD").nullable().optional(),
   priority: z.enum(["low", "medium", "high", "urgent"]).optional(),
   project_id: z.string().uuid().nullable().optional(),
+  idempotency_key: z.string().max(100).optional(),
 });
