@@ -19,6 +19,7 @@ import {
   Share2,
   Radio,
   Timer,
+  Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { loadWorkbenchConfig, WORKBENCH_CHANGE_EVENT } from "@/lib/sidebar-workbench";
@@ -48,6 +49,7 @@ export function MobileNav({
 
   const initialDrawerItems = [
     { title: "Projects", href: "/projects", icon: FolderKanban },
+    { title: "Leads & CRM", href: "/leads", icon: Users },
     { title: "Focus Mode", href: "/focus", icon: Timer },
     { title: "Inbox", href: "/inbox", icon: Inbox },
     { title: "Notes", href: "/notes", icon: FileText },

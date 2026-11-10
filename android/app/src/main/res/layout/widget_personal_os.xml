@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#121316"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Header Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/widget_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Personal OS"
+            android:textColor="#F4EFEA"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/widget_btn_capture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#22252A"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
+            android:text="+ Quick Capture"
+            android:textColor="#C29B38"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginVertical="8dp"
+        android:background="#2A2D35" />
+
+    <!-- Active Focus / Today State -->
+    <TextView
+        android:id="@+id/widget_focus_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Daily Intention"
+        android:textColor="#9E9B95"
+        android:textSize="11sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/widget_focus_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:text="Review CRM pipeline &amp; outreach"
+        android:textColor="#F4EFEA"
+        android:textSize="13sp"
+        android:maxLines="2" />
+
+    <!-- Open App Action Area -->
+    <TextView
+        android:id="@+id/widget_action_open"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Tap to open workstation →"
+        android:textColor="#857C74"
+        android:textSize="10sp" />
+</LinearLayout>

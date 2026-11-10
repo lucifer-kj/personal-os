@@ -67,6 +67,14 @@ export const DEFAULT_WORKBENCH: WorkbenchConfig = {
       description: "Active initiatives (NBD, ACoV, Fossil, Friday)",
     },
     {
+      id: "leads",
+      title: "Leads & CRM",
+      defaultTitle: "Leads & CRM",
+      href: "/leads",
+      iconName: "Users",
+      description: "Client pipeline, lead scoring & conversion",
+    },
+    {
       id: "studio",
       title: "Social Studio",
       defaultTitle: "Social Studio",

@@ -39,28 +39,36 @@ interface SpeechRecognitionConstructor {
 interface UseSpeechToTextOptions {
   onTranscriptChange?: (text: string, isFinal: boolean) => void;
   lang?: string;
+  edgeWorkerUrl?: string;
 }
 
 export function useSpeechToText(options: UseSpeechToTextOptions = {}) {
-  const { onTranscriptChange, lang = "en-US" } = options;
+  const { onTranscriptChange, lang = "en-US", edgeWorkerUrl } = options;
   const [isListening, setIsListening] = React.useState(false);
   const [transcript, setTranscript] = React.useState("");
   const [error, setError] = React.useState<string | null>(null);
-
   const [isSupported, setIsSupported] = React.useState(false);
+  const [isEdgeFallback, setIsEdgeFallback] = React.useState(false);
+
+  const recognitionRef = React.useRef<IWindowSpeechRecognition | null>(null);
+  const mediaRecorderRef = React.useRef<MediaRecorder | null>(null);
+  const audioChunksRef = React.useRef<Blob[]>([]);
 
   React.useEffect(() => {
     if (typeof window !== "undefined") {
-      const supported = !!(
+      const hasWebSpeech = !!(
         (window as unknown as { SpeechRecognition?: unknown }).SpeechRecognition ||
         (window as unknown as { webkitSpeechRecognition?: unknown }).webkitSpeechRecognition
       );
-      setIsSupported(supported);
+      const hasMediaDevices = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+
+      // Supported if either Web Speech or getUserMedia is available
+      setIsSupported(hasWebSpeech || hasMediaDevices);
+      setIsEdgeFallback(!hasWebSpeech && hasMediaDevices);
     }
   }, []);
 
-  const recognitionRef = React.useRef<IWindowSpeechRecognition | null>(null);
-
+  // Initialize native Web Speech API if available
   React.useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -122,30 +130,95 @@ export function useSpeechToText(options: UseSpeechToTextOptions = {}) {
         try {
           recognitionRef.current.abort();
         } catch {
-          // ignore error on abort during unmount
+          // ignore error on abort
         }
       }
     };
   }, [lang, onTranscriptChange]);
 
-  const startListening = React.useCallback(() => {
-    if (!recognitionRef.current) return;
+  const startListening = React.useCallback(async () => {
     setError(null);
     setTranscript("");
-    try {
-      recognitionRef.current.start();
-    } catch {
-      // already running or blocked
+
+    // If native speech recognition is available, use it
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.start();
+        return;
+      } catch {
+        // Fallback to MediaRecorder
+      }
     }
-  }, []);
+
+    // MediaRecorder / Edge fallback
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      try {
+        audioChunksRef.current = [];
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
+          ? "audio/webm;codecs=opus"
+          : "audio/ogg;codecs=opus";
+
+        const recorder = new MediaRecorder(stream, { mimeType });
+        mediaRecorderRef.current = recorder;
+
+        recorder.ondataavailable = (e) => {
+          if (e.data.size > 0) audioChunksRef.current.push(e.data);
+        };
+
+        recorder.onstop = async () => {
+          stream.getTracks().forEach((t) => t.stop());
+          const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
+          if (audioBlob.size === 0) return;
+
+          try {
+            const endpoint =
+              edgeWorkerUrl ||
+              process.env.NEXT_PUBLIC_EDGE_API_URL ||
+              "/api/v1/voice/transcribe";
+
+            const res = await fetch(`${endpoint.replace(/\/$/, "")}/api/v1/voice/transcribe`, {
+              method: "POST",
+              headers: { "Content-Type": audioBlob.type },
+              body: audioBlob,
+            });
+
+            if (res.ok) {
+              const data = await res.json();
+              const resultText = data.text || data.transcript || "";
+              setTranscript(resultText);
+              onTranscriptChange?.(resultText, true);
+            }
+          } catch (err: unknown) {
+            const msg = err instanceof Error ? err.message : "Voice transcription failed";
+            setError(msg);
+          } finally {
+            setIsListening(false);
+          }
+        };
+
+        recorder.start(250);
+        setIsListening(true);
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : "Microphone access denied";
+        setError(msg);
+        setIsListening(false);
+      }
+    }
+  }, [edgeWorkerUrl, onTranscriptChange]);
 
   const stopListening = React.useCallback(() => {
-    if (!recognitionRef.current) return;
-    try {
-      recognitionRef.current.stop();
-    } catch {
-      // already stopped
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch {
+        // ignore
+      }
     }
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+      mediaRecorderRef.current.stop();
+    }
+    setIsListening(false);
   }, []);
 
   const toggleListening = React.useCallback(() => {
@@ -161,10 +234,11 @@ export function useSpeechToText(options: UseSpeechToTextOptions = {}) {
   }, []);
 
   return {
-    isSupported,
     isListening,
     transcript,
     error,
+    isSupported,
+    isEdgeFallback,
     startListening,
     stopListening,
     toggleListening,

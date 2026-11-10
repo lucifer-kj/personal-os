@@ -16,6 +16,7 @@ import {
   Sparkles,
   Layers,
   HelpCircle,
+  Users,
 } from "lucide-react";
 
 export const SIDEBAR_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -34,6 +35,7 @@ export const SIDEBAR_ICONS: Record<string, React.ComponentType<{ className?: str
   Sliders,
   Sparkles,
   Layers,
+  Users,
 };
 
 export function getSidebarIcon(iconName: string): React.ComponentType<{ className?: string }> {
