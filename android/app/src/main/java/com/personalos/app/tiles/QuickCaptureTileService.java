@@ -24,6 +24,7 @@ public class QuickCaptureTileService extends TileService {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void onClick() {
         super.onClick();
         
