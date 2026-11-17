@@ -105,6 +105,10 @@
   /* Layout */
   --sidebar-width: 15rem;
   --header-height: 4.25rem;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
   --content-max-width: 90rem;
   --content-padding-desktop: 2rem;
   --content-padding-tablet: 1.5rem;

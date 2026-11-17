@@ -70,7 +70,7 @@ function AppShellContent({ children }: AppShellProps) {
 
       {/* Main Column */}
       <div className="flex flex-1 flex-col min-w-0">
-        <React.Suspense fallback={<header className="h-14 border-b border-[var(--border)] bg-[var(--background)]" />}>
+        <React.Suspense fallback={<header className="pt-[env(safe-area-inset-top,0px)] h-[calc(var(--header-height)+env(safe-area-inset-top,0px))] border-b border-[var(--border)] bg-[var(--background)]" />}>
           <Header
             onOpenMobileMenu={toggleMobileMenu}
             onQuickCapture={handleQuickCapture}

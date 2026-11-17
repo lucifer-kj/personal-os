@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createDashboardService } from "@/modules/dashboard/dashboard.service";
 import { PageShell } from "@/components/layout/PageShell";
 import { DashboardView } from "@/components/dashboard/DashboardView";
+import { MobileDashboardSkeleton } from "@/components/dashboard/MobileDashboardSkeleton";
 
 export const metadata: Metadata = {
   title: "Today — Personal OS",
@@ -29,18 +30,24 @@ export default function HomePage() {
     <PageShell className="pb-16 max-w-6xl">
       <React.Suspense
         fallback={
-          <div className="space-y-6 pt-2">
-            <div className="h-20 rounded-xl bg-[var(--card)] border border-[var(--border)] animate-pulse" />
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="h-24 rounded-lg bg-[var(--card)] border border-[var(--border)] animate-pulse" />
-              <div className="h-24 rounded-lg bg-[var(--card)] border border-[var(--border)] animate-pulse" />
-              <div className="h-24 rounded-lg bg-[var(--card)] border border-[var(--border)] animate-pulse" />
+          <>
+            {/* Mobile-first skeleton matching MobileFocusedDashboard */}
+            <MobileDashboardSkeleton />
+
+            {/* Desktop Workstation skeleton */}
+            <div className="hidden lg:flex flex-col space-y-6 pt-2">
+              <div className="h-20 rounded-xl bg-[var(--card)] border border-[var(--border)] animate-pulse" />
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="h-24 rounded-lg bg-[var(--card)] border border-[var(--border)] animate-pulse" />
+                <div className="h-24 rounded-lg bg-[var(--card)] border border-[var(--border)] animate-pulse" />
+                <div className="h-24 rounded-lg bg-[var(--card)] border border-[var(--border)] animate-pulse" />
+              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div className="lg:col-span-7 h-64 rounded-lg bg-[var(--card)] border border-[var(--border)] animate-pulse" />
+                <div className="lg:col-span-5 h-64 rounded-lg bg-[var(--card)] border border-[var(--border)] animate-pulse" />
+              </div>
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              <div className="lg:col-span-7 h-64 rounded-lg bg-[var(--card)] border border-[var(--border)] animate-pulse" />
-              <div className="lg:col-span-5 h-64 rounded-lg bg-[var(--card)] border border-[var(--border)] animate-pulse" />
-            </div>
-          </div>
+          </>
         }
       >
         <DashboardContent />

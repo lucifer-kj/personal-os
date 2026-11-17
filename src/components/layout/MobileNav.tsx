@@ -88,7 +88,7 @@ export function MobileNav({
   return (
     <>
       {/* Floating Apple-Style Mobile Dock (< 1024px) */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 px-4 pb-3 pt-1 pointer-events-none flex flex-col items-center">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] pt-1 pointer-events-none flex flex-col items-center">
         <nav
           aria-label="Mobile Navigation"
           className="pointer-events-auto w-full max-w-md flex items-center justify-between rounded-full border border-white/10 bg-[#161311]/92 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-3 py-1.5 transition-all text-[#8E867C]"
@@ -118,23 +118,20 @@ export function MobileNav({
                 key={tab.title}
                 href={tab.href!}
                 className={cn(
-                  "flex items-center gap-1.5 rounded-xl transition-all duration-200 active:scale-95",
+                  "flex flex-col items-center justify-center p-1.5 min-w-[50px] rounded-xl transition-all duration-200 active:scale-95",
                   isActive
-                    ? "bg-[#D25828] text-white px-3 py-1.5 shadow-sm font-semibold text-xs rounded-xl"
-                    : "flex-col p-2 text-[#8E867C] hover:text-white rounded-xl"
+                    ? "bg-[#D25828] text-white shadow-sm font-semibold"
+                    : "text-[#8E867C] hover:text-white"
                 )}
               >
                 <Icon className={cn("h-4.5 w-4.5", isActive ? "stroke-[2.5]" : "")} />
-                <span className={cn(isActive ? "text-xs font-semibold" : "text-[10px] mt-0.5")}>
+                <span className={cn("text-[10px] mt-0.5", isActive ? "font-semibold text-white" : "text-[#8E867C]")}>
                   {tab.title}
                 </span>
               </Link>
             );
           })}
         </nav>
-
-        {/* iOS Home Indicator Bar */}
-        <div className="w-32 h-1 rounded-full bg-neutral-300 dark:bg-neutral-700 mt-2 opacity-60" />
       </div>
 
       {/* Secondary Drawer Sheet for "More" */}

@@ -99,7 +99,7 @@ export function MobileFocusedDashboard({
   }, [overview.date]);
 
   return (
-    <div className="lg:hidden min-h-[calc(100vh-var(--header-height))] bg-[#0D0B0A] text-white -mx-4 -mt-4 px-4 pt-5 pb-28 relative overflow-hidden font-sans">
+    <div className="lg:hidden min-h-[calc(100vh-var(--header-height))] bg-[#0D0B0A] text-white -mx-4 -mt-4 px-4 pt-5 pb-36 relative overflow-hidden font-sans">
       {/* 1. Mountain Sunset Horizon Backdrop */}
       <div className="absolute top-0 left-0 right-0 h-80 pointer-events-none select-none opacity-60">
         <Image
@@ -278,12 +278,12 @@ export function MobileFocusedDashboard({
 
         {/* TODAY AT A GLANCE Section */}
         <div className="space-y-3 pt-2">
-          <h2 className="text-[10px] font-mono tracking-widest uppercase text-[#8A8278] text-center">
+          <h2 className="text-[10px] font-mono tracking-widest uppercase text-[#A69E94] text-center font-medium">
             Today At A Glance
           </h2>
 
-          {/* 4 Cards Grid */}
-          <div className="grid grid-cols-4 gap-2">
+          {/* 4 Cards Responsive Grid */}
+          <div className="grid grid-cols-2 min-[380px]:grid-cols-4 gap-2">
             {/* Card 1: Focus */}
             <div className="p-2.5 rounded-2xl border border-white/8 bg-[#181412] flex flex-col justify-between">
               <Clock className="h-3.5 w-3.5 text-orange-400" />
