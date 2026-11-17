@@ -1,7 +1,9 @@
 name: Build Android APK (Cloud CI)
 
-# Manual trigger only to preserve GitHub Actions minutes
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       build_type:
