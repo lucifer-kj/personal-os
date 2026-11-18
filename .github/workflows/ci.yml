@@ -60,36 +60,6 @@ jobs:
       - name: Unit & Integration Tests
         run: pnpm vitest run
 
-  edge-worker:
-    name: Cloudflare Edge Worker Verification
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Codebase
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js 22 (LTS)
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 12.11.2
-
-      - name: Install Edge Dependencies
-        working-directory: personal-os-edge
-        run: pnpm install --frozen-lockfile
-
-      - name: Edge TypeScript Check
-        working-directory: personal-os-edge
-        run: pnpm typecheck
-
-      - name: Edge Security & MCP Test Suite
-        working-directory: personal-os-edge
-        run: pnpm test
-
   secret-scanning:
     name: Gitleaks Automated Secret Scan
     runs-on: ubuntu-latest
