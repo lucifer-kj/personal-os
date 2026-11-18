@@ -117,79 +117,94 @@ export function LeadCard({ lead, onStatusChange, onConvert }: LeadCardProps) {
   }, [cleanPhone, lead.tailored_pitch]);
 
   return (
-    <div className="group relative rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 sm:p-5 shadow-xs transition-all duration-200 hover:border-[var(--primary)]/30 hover:shadow-md hover:-translate-y-0.5">
-      {/* Top Bar: Identity & Badges */}
-      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-        <div className="flex-1 space-y-2">
-          <div className="flex flex-wrap items-center gap-2">
-            <h3 className="font-serif font-medium text-base sm:text-lg text-[var(--foreground)] tracking-tight">
+    <div className="group relative rounded-xl border border-[var(--border)] bg-[var(--card)] p-3 sm:p-3.5 shadow-2xs transition-all duration-150 hover:border-[var(--primary)]/40 hover:shadow-xs active:scale-[0.997]">
+      {/* Primary Row: Identity, Badges, and Quick Controls */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-3">
+        {/* Left Section: Title & Inline Badges */}
+        <div className="flex-1 min-w-0 space-y-1">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+            <h3 className="font-serif font-medium text-sm sm:text-base text-[var(--foreground)] tracking-tight truncate max-w-xs sm:max-w-md">
               {displayName}
             </h3>
+
             {getStatusBadge(lead.status)}
+
             <span
-              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-mono tabular-nums font-semibold border ${getScoreColor(
+              className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-mono tabular-nums font-semibold border ${getScoreColor(
                 lead.score
               )}`}
               title="Calculated Lead Quality Score"
             >
-              <Sparkles className="w-3 h-3" />
+              <Sparkles className="w-2.5 h-2.5" />
               {lead.score}/100
             </span>
 
             {/* Lighthouse Mobile Gauge */}
             {lead.lighthouse_mobile !== undefined && lead.lighthouse_mobile !== null && (
               <span
-                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-mono tabular-nums font-medium border ${getLighthouseColor(
+                className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-mono tabular-nums font-medium border ${getLighthouseColor(
                   lead.lighthouse_mobile
                 )}`}
                 title="Google Lighthouse Mobile Performance Score"
               >
-                <Smartphone className="w-3 h-3" />
+                <Smartphone className="w-2.5 h-2.5" />
                 Mobile: {lead.lighthouse_mobile}/100
               </span>
             )}
           </div>
 
-          {/* Decision Maker & Niche Metadata */}
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-[var(--muted-foreground)]">
+          {/* Secondary Metadata Row */}
+          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px] sm:text-xs text-[var(--muted-foreground)]">
             {decisionMaker && (
               <span className="inline-flex items-center gap-1 text-[var(--foreground)] font-medium">
-                <UserCheck className="w-3.5 h-3.5 text-emerald-500" />
+                <UserCheck className="w-3 h-3 text-emerald-500" />
                 {decisionMaker}
               </span>
             )}
             {(lead.category || lead.subcategory) && (
-              <span className="inline-flex items-center gap-1">
-                <Tag className="w-3 h-3 opacity-60" />
+              <span className="inline-flex items-center gap-1 font-mono text-[10.5px]">
+                <Tag className="w-2.5 h-2.5 opacity-60" />
                 {lead.category}{lead.subcategory ? ` > ${lead.subcategory}` : ""}
               </span>
             )}
             {lead.location && (
               <span className="inline-flex items-center gap-1">
-                <MapPin className="w-3 h-3 opacity-60" />
+                <MapPin className="w-2.5 h-2.5 opacity-60" />
                 {lead.location}
               </span>
             )}
             {lead.cms_detected && (
-              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[var(--muted)] text-[11px] font-mono border border-[var(--border)]">
+              <span className="inline-flex items-center gap-0.5 px-1 py-0.2 rounded bg-[var(--muted)] text-[10px] font-mono border border-[var(--border)]">
                 {lead.cms_detected}
               </span>
             )}
             {lead.has_ssl && (
-              <span className="inline-flex items-center gap-0.5 text-emerald-600 dark:text-emerald-400 text-[11px] font-mono">
-                <ShieldCheck className="w-3 h-3" /> SSL
+              <span className="inline-flex items-center gap-0.5 text-emerald-600 dark:text-emerald-400 text-[10px] font-mono">
+                <ShieldCheck className="w-2.5 h-2.5" /> SSL
               </span>
             )}
           </div>
         </div>
 
-        {/* Action Controls: Status & Convert */}
-        <div className="flex items-center gap-2 self-start sm:self-auto shrink-0 pt-1 sm:pt-0">
+        {/* Right Section: Compact Tactile Actions */}
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 shrink-0 pt-1 md:pt-0">
+          {whatsappHref && (
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/25 text-emerald-700 dark:text-emerald-300 text-xs font-medium active:scale-95 transition-all shadow-2xs cursor-pointer"
+            >
+              <MessageCircle className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+              1-Click WhatsApp
+            </a>
+          )}
+
           <select
             value={lead.status}
             onChange={handleStatusSelect}
             disabled={isUpdatingStatus}
-            className="text-xs rounded-lg border border-[var(--border)] bg-[var(--background)] px-2.5 py-1.5 font-medium text-[var(--foreground)] shadow-2xs hover:border-[var(--primary)]/40 focus:outline-none focus:ring-1 focus:ring-[var(--primary)] transition-all cursor-pointer"
+            className="text-xs rounded-lg border border-[var(--border)] bg-[var(--background)] px-2 py-1 font-medium text-[var(--foreground)] shadow-2xs hover:border-[var(--primary)]/40 focus:outline-none focus:ring-1 focus:ring-[var(--primary)] transition-all cursor-pointer h-7"
           >
             <option value="lead">Pitch Ready</option>
             <option value="contacted">Contacted</option>
@@ -204,92 +219,82 @@ export function LeadCard({ lead, onStatusChange, onConvert }: LeadCardProps) {
               variant="outline"
               disabled={isConverting}
               onClick={handleConvert}
-              className="text-xs h-8 gap-1.5 rounded-lg border-emerald-500/30 text-emerald-600 hover:bg-emerald-500/10 active:scale-95 dark:text-emerald-400 transition-all cursor-pointer"
+              className="text-xs h-7 px-2.5 gap-1 rounded-lg border-emerald-500/30 text-emerald-600 hover:bg-emerald-500/10 active:scale-95 dark:text-emerald-400 transition-all cursor-pointer font-medium"
             >
-              <ArrowRightCircle className="w-3.5 h-3.5" />
+              <ArrowRightCircle className="w-3 h-3" />
               {isConverting ? "Converting..." : "Convert"}
             </Button>
           ) : (
-            <span className="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-medium px-2 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
+            <span className="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-medium px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
               Active Client
             </span>
+          )}
+
+          {lead.tailored_pitch && (
+            <button
+              type="button"
+              onClick={() => setShowPitch(!showPitch)}
+              className="inline-flex items-center gap-1 px-2 py-1 rounded-lg border border-[var(--border)] bg-[var(--background)] hover:border-[var(--primary)]/30 text-xs text-[var(--foreground)] active:scale-95 transition-all cursor-pointer h-7 font-medium"
+            >
+              {showPitch ? "Hide Pitch" : "View Pitch"}
+              {showPitch ? <ChevronUp className="w-3 h-3 text-[var(--muted-foreground)]" /> : <ChevronDown className="w-3 h-3 text-[var(--muted-foreground)]" />}
+            </button>
           )}
         </div>
       </div>
 
-      {/* Contact Quicklinks Bar */}
-      <div className="mt-3.5 pt-3 border-t border-[var(--border)]/60 flex flex-wrap items-center gap-2 text-xs">
-        {whatsappHref && (
-          <a
-            href={whatsappHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-medium active:scale-95 transition-all shadow-2xs"
-          >
-            <MessageCircle className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            1-Click WhatsApp
-          </a>
-        )}
+      {/* Tertiary Contact Bar (Phone, Email, Web) */}
+      {(lead.phone || lead.email || lead.website) && (
+        <div className="mt-2 pt-2 border-t border-[var(--border)]/50 flex flex-wrap items-center gap-1.5 text-xs">
+          {lead.phone && (
+            <a
+              href={`tel:${lead.phone}`}
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[var(--muted)]/70 hover:bg-[var(--accent)] border border-[var(--border)]/70 text-[11px] text-[var(--foreground)] active:scale-95 transition-all"
+            >
+              <Phone className="w-2.5 h-2.5 opacity-60" />
+              {lead.phone}
+            </a>
+          )}
 
-        {lead.phone && (
-          <a
-            href={`tel:${lead.phone}`}
-            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[var(--muted)] hover:bg-[var(--accent)] border border-[var(--border)] text-[var(--foreground)] active:scale-95 transition-all"
-          >
-            <Phone className="w-3 h-3 opacity-60" />
-            {lead.phone}
-          </a>
-        )}
+          {lead.email && (
+            <a
+              href={`mailto:${lead.email}`}
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[var(--muted)]/70 hover:bg-[var(--accent)] border border-[var(--border)]/70 text-[11px] text-[var(--foreground)] active:scale-95 transition-all"
+            >
+              <Mail className="w-2.5 h-2.5 opacity-60" />
+              {lead.email}
+            </a>
+          )}
 
-        {lead.email && (
-          <a
-            href={`mailto:${lead.email}`}
-            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[var(--muted)] hover:bg-[var(--accent)] border border-[var(--border)] text-[var(--foreground)] active:scale-95 transition-all"
-          >
-            <Mail className="w-3 h-3 opacity-60" />
-            {lead.email}
-          </a>
-        )}
-
-        {lead.website && (
-          <a
-            href={lead.website.startsWith("http") ? lead.website : `https://${lead.website}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[var(--muted)] hover:bg-[var(--accent)] border border-[var(--border)] text-[var(--foreground)] active:scale-95 transition-all"
-          >
-            <Globe className="w-3 h-3 opacity-60" />
-            Website
-            <ExternalLink className="w-2.5 h-2.5 opacity-50" />
-          </a>
-        )}
-
-        {lead.tailored_pitch && (
-          <button
-            type="button"
-            onClick={() => setShowPitch(!showPitch)}
-            className="inline-flex items-center gap-1 ml-auto text-xs text-[var(--primary)] hover:underline font-medium cursor-pointer"
-          >
-            {showPitch ? "Hide Pitch" : "View Pitch"}
-            {showPitch ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-          </button>
-        )}
-      </div>
+          {lead.website && (
+            <a
+              href={lead.website.startsWith("http") ? lead.website : `https://${lead.website}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[var(--muted)]/70 hover:bg-[var(--accent)] border border-[var(--border)]/70 text-[11px] text-[var(--foreground)] active:scale-95 transition-all"
+            >
+              <Globe className="w-2.5 h-2.5 opacity-60" />
+              Website
+              <ExternalLink className="w-2 h-2 opacity-50" />
+            </a>
+          )}
+        </div>
+      )}
 
       {/* Consultative Pitch Drawer */}
       {showPitch && lead.tailored_pitch && (
-        <div className="mt-3 p-3.5 rounded-xl border border-[var(--border)] bg-[var(--muted)]/40 space-y-2 animate-in fade-in slide-in-from-top-1 duration-200">
+        <div className="mt-2 p-2.5 rounded-lg border border-[var(--border)] bg-[var(--muted)]/50 space-y-1.5 animate-in fade-in slide-in-from-top-1 duration-150">
           <div className="flex items-center justify-between text-xs text-[var(--muted-foreground)] font-medium">
-            <span className="flex items-center gap-1.5 font-mono">
-              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+            <span className="flex items-center gap-1.5 font-mono text-[11px]">
+              <Sparkles className="w-3 h-3 text-amber-500" />
               Tailored Consultative Copy ({lead.recommended_service || "Automated Solution"})
             </span>
             <button
               type="button"
               onClick={handleCopyPitch}
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md hover:bg-[var(--card)] border border-transparent hover:border-[var(--border)] text-[var(--foreground)] active:scale-95 transition-all cursor-pointer"
+              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded hover:bg-[var(--card)] border border-transparent hover:border-[var(--border)] text-[11px] text-[var(--foreground)] active:scale-95 transition-all cursor-pointer font-medium"
             >
-              {copiedPitch ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
+              {copiedPitch ? <Check className="w-2.5 h-2.5 text-emerald-500" /> : <Copy className="w-2.5 h-2.5" />}
               {copiedPitch ? "Copied" : "Copy"}
             </button>
           </div>
