@@ -25,6 +25,10 @@ import {
   Upload,
   X,
   ExternalLink,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -42,6 +46,11 @@ export function SocialStudioView({ initialPosts = [] }: SocialStudioViewProps) {
   const [statusFilter, setStatusFilter] = React.useState<PostStatus | "all">("all");
   const [platformFilter, setPlatformFilter] = React.useState<PlatformType | "all">("all");
   const [searchQuery, setSearchQuery] = React.useState("");
+
+  // Collapsible layout panels state for spacious focus
+  const [showLibrary, setShowLibrary] = React.useState(true);
+  const [showPreview, setShowPreview] = React.useState(true);
+  const [mobileTab, setMobileTab] = React.useState<"compose" | "library" | "preview">("compose");
 
   // Editor state
   const [editorTitle, setEditorTitle] = React.useState("");
@@ -112,6 +121,7 @@ export function SocialStudioView({ initialPosts = [] }: SocialStudioViewProps) {
 
   const handleCreateNew = () => {
     resetEditor();
+    setMobileTab("compose");
   };
 
   // Character limit calculations
@@ -302,7 +312,7 @@ export function SocialStudioView({ initialPosts = [] }: SocialStudioViewProps) {
   });
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] max-w-[1600px] mx-auto p-4 sm:p-6 gap-4">
+    <div className="flex flex-col h-auto min-h-full lg:h-[calc(100vh-4rem)] max-w-[1600px] mx-auto p-3 sm:p-6 gap-3 sm:gap-4 pb-28 lg:pb-4">
       {/* Studio Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[var(--border)]">
         <div>
@@ -316,136 +326,209 @@ export function SocialStudioView({ initialPosts = [] }: SocialStudioViewProps) {
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Panel Visibility Toggles (Desktop only) */}
+          <button
+            type="button"
+            onClick={() => setShowLibrary(!showLibrary)}
+            className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-[var(--border)] bg-[var(--card)] hover:bg-[var(--muted)] text-[var(--foreground)] transition-all cursor-pointer active:scale-95 shadow-2xs"
+            title={showLibrary ? "Hide Library" : "Show Library"}
+          >
+            {showLibrary ? <PanelLeftClose className="h-3.5 w-3.5 text-[var(--muted-foreground)]" /> : <PanelLeftOpen className="h-3.5 w-3.5 text-[var(--primary)]" />}
+            <span>{showLibrary ? "Hide Library" : "Library"}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setShowPreview(!showPreview)}
+            className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-[var(--border)] bg-[var(--card)] hover:bg-[var(--muted)] text-[var(--foreground)] transition-all cursor-pointer active:scale-95 shadow-2xs"
+            title={showPreview ? "Hide Preview" : "Show Preview"}
+          >
+            {showPreview ? <EyeOff className="h-3.5 w-3.5 text-[var(--muted-foreground)]" /> : <Eye className="h-3.5 w-3.5 text-[var(--primary)]" />}
+            <span>{showPreview ? "Hide Preview" : "Preview"}</span>
+          </button>
+
           <button
             type="button"
             onClick={handleCreateNew}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 transition-opacity shadow-sm"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] hover:brightness-105 active:scale-95 transition-all shadow-xs cursor-pointer"
           >
             <Plus className="h-4 w-4" />
-            New Post
+            <span>New Post</span>
           </button>
         </div>
       </div>
 
-      {/* Main 3-Column Studio Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 min-h-0 overflow-hidden">
-        {/* Left Column: Post Library (3 cols) */}
-        <div className="lg:col-span-3 flex flex-col border border-[var(--border)] rounded-2xl bg-[var(--card)] overflow-hidden shadow-xs">
-          <div className="p-3 border-b border-[var(--border)] space-y-2.5 bg-[var(--muted)]/30">
-            {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-[var(--muted-foreground)]" />
-              <input
-                type="text"
-                placeholder="Search drafts &amp; posts..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
-              />
-            </div>
+      {/* Mobile Segmented View Switcher (< lg) */}
+      <div className="lg:hidden flex items-center p-1 rounded-xl bg-[var(--muted)] border border-[var(--border)] gap-1 shrink-0">
+        <button
+          type="button"
+          onClick={() => setMobileTab("compose")}
+          className={`flex-1 py-1.5 text-xs font-medium rounded-lg text-center transition-all cursor-pointer active:scale-98 ${
+            mobileTab === "compose"
+              ? "bg-[var(--card)] text-[var(--foreground)] shadow-xs font-semibold"
+              : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+          }`}
+        >
+          Compose
+        </button>
+        <button
+          type="button"
+          onClick={() => setMobileTab("library")}
+          className={`flex-1 py-1.5 text-xs font-medium rounded-lg text-center transition-all cursor-pointer active:scale-98 ${
+            mobileTab === "library"
+              ? "bg-[var(--card)] text-[var(--foreground)] shadow-xs font-semibold"
+              : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+          }`}
+        >
+          Drafts ({filteredPosts.length})
+        </button>
+        <button
+          type="button"
+          onClick={() => setMobileTab("preview")}
+          className={`flex-1 py-1.5 text-xs font-medium rounded-lg text-center transition-all cursor-pointer active:scale-98 ${
+            mobileTab === "preview"
+              ? "bg-[var(--card)] text-[var(--foreground)] shadow-xs font-semibold"
+              : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+          }`}
+        >
+          Preview
+        </button>
+      </div>
 
-            {/* Status Pills */}
-            <div className="flex items-center gap-1 overflow-x-auto text-[11px] pb-1 scrollbar-none">
-              {(["all", "draft", "scheduled", "published"] as const).map((st) => (
-                <button
-                  key={st}
-                  type="button"
-                  onClick={() => setStatusFilter(st)}
-                  className={`px-2 py-0.5 rounded-full capitalize font-medium transition-colors ${
-                    statusFilter === st
-                      ? "bg-[var(--primary)] text-[var(--primary-foreground)]"
-                      : "bg-[var(--muted)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-                  }`}
-                >
-                  {st}
-                </button>
-              ))}
-            </div>
-
-            {/* Platform Filter */}
-            <div className="flex items-center gap-1 overflow-x-auto text-[11px] scrollbar-none">
-              {(["all", "x", "linkedin", "threads"] as const).map((plat) => (
-                <button
-                  key={plat}
-                  type="button"
-                  onClick={() => setPlatformFilter(plat)}
-                  className={`px-2 py-0.5 rounded-md uppercase font-mono text-[10px] transition-colors ${
-                    platformFilter === plat
-                      ? "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold border border-indigo-500/20"
-                      : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-                  }`}
-                >
-                  {plat}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Posts List */}
-          <div className="flex-1 overflow-y-auto p-2 space-y-1.5 divide-y divide-[var(--border)]/30">
-            {filteredPosts.length === 0 ? (
-              <div className="p-8 text-center text-xs text-[var(--muted-foreground)]">
-                No posts found.
+      {/* Main Collapsible Studio Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 flex-1 min-h-0 overflow-hidden">
+        {/* Left Column: Post Library */}
+        {showLibrary && (
+          <div className={`${showPreview ? "lg:col-span-3" : "lg:col-span-4"} ${mobileTab === "library" ? "flex" : "hidden lg:flex"} flex-col border border-[var(--border)] rounded-2xl bg-[var(--card)] overflow-hidden shadow-xs animate-in fade-in slide-in-from-left-2 duration-200`}>
+            <div className="p-3 border-b border-[var(--border)] space-y-2.5 bg-[var(--muted)]/30">
+              {/* Search */}
+              <div className="relative">
+                <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-[var(--muted-foreground)]" />
+                <input
+                  type="text"
+                  placeholder="Search drafts &amp; posts..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
+                />
               </div>
-            ) : (
-              filteredPosts.map((post) => {
-                const isSelected = post.id === selectedPostId;
-                return (
-                  <div
-                    key={post.id}
-                    onClick={() => setSelectedPostId(post.id)}
-                    className={`p-2.5 rounded-xl cursor-pointer transition-all ${
-                      isSelected
-                        ? "bg-[var(--muted)] shadow-xs border border-[var(--border)]"
-                        : "hover:bg-[var(--muted)]/50"
+
+              {/* Status Pills */}
+              <div className="flex items-center gap-1 overflow-x-auto text-[11px] pb-1 no-scrollbar">
+                {(["all", "draft", "scheduled", "published"] as const).map((st) => (
+                  <button
+                    key={st}
+                    type="button"
+                    onClick={() => setStatusFilter(st)}
+                    className={`px-2.5 py-0.5 rounded-full capitalize font-medium transition-all active:scale-95 cursor-pointer ${
+                      statusFilter === st
+                        ? "bg-[var(--primary)] text-[var(--primary-foreground)] shadow-xs"
+                        : "bg-[var(--muted)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
                     }`}
                   >
-                    <div className="flex items-center justify-between gap-1 mb-1">
-                      <span className="text-[10px] font-mono uppercase px-1.5 py-0.2 rounded bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold">
-                        {post.platform}
-                      </span>
-                      <span
-                        className={`text-[10px] font-mono px-1.5 py-0.2 rounded capitalize ${
-                          post.status === "published"
-                            ? "bg-emerald-500/10 text-emerald-600"
-                            : post.status === "scheduled"
-                            ? "bg-amber-500/10 text-amber-600"
-                            : "bg-slate-500/10 text-[var(--muted-foreground)]"
-                        }`}
-                      >
-                        {post.status}
-                      </span>
-                    </div>
-                    <p className="font-medium text-xs text-[var(--foreground)] truncate">
-                      {post.title || post.content.slice(0, 30)}
-                    </p>
-                    <p className="text-[11px] text-[var(--muted-foreground)] line-clamp-2 mt-0.5">
-                      {post.content}
-                    </p>
-                    {post.media_urls.length > 0 && (
-                      <div className="mt-1 flex items-center gap-1 text-[10px] text-indigo-500">
-                        {post.media_type === "video" ? <Video className="h-3 w-3" /> : <ImageIcon className="h-3 w-3" />}
-                        <span>{post.media_urls.length} media asset(s)</span>
-                      </div>
-                    )}
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </div>
+                    {st}
+                  </button>
+                ))}
+              </div>
 
-        {/* Center Column: Workbench & Composer (5 cols) */}
-        <div className="lg:col-span-5 flex flex-col border border-[var(--border)] rounded-2xl bg-[var(--card)] p-4 overflow-y-auto space-y-4 shadow-xs">
+              {/* Platform Filter */}
+              <div className="flex items-center gap-1 overflow-x-auto text-[11px] no-scrollbar">
+                {(["all", "x", "linkedin", "threads"] as const).map((plat) => (
+                  <button
+                    key={plat}
+                    type="button"
+                    onClick={() => setPlatformFilter(plat)}
+                    className={`px-2 py-0.5 rounded-md uppercase font-mono text-[10px] transition-colors cursor-pointer ${
+                      platformFilter === plat
+                        ? "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold border border-indigo-500/20"
+                        : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+                    }`}
+                  >
+                    {plat}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Posts List with Gravitational Scroll */}
+            <div className="flex-1 gravitational-scroll p-2 space-y-1.5 divide-y divide-[var(--border)]/30">
+              {filteredPosts.length === 0 ? (
+                <div className="p-8 text-center text-xs text-[var(--muted-foreground)] font-serif italic">
+                  No posts found. Start drafting above.
+                </div>
+              ) : (
+                filteredPosts.map((post) => {
+                  const isSelected = post.id === selectedPostId;
+                  return (
+                    <div
+                      key={post.id}
+                      onClick={() => {
+                        setSelectedPostId(post.id);
+                        setMobileTab("compose");
+                      }}
+                      className={`p-2.5 rounded-xl cursor-pointer transition-all active:scale-[0.99] ${
+                        isSelected
+                          ? "bg-[var(--muted)] shadow-xs border border-[var(--border)]"
+                          : "hover:bg-[var(--muted)]/50 border border-transparent"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-1 mb-1">
+                        <span className="text-[10px] font-mono uppercase px-1.5 py-0.2 rounded bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold">
+                          {post.platform}
+                        </span>
+                        <span
+                          className={`text-[10px] font-mono px-1.5 py-0.2 rounded capitalize ${
+                            post.status === "published"
+                              ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium"
+                              : post.status === "scheduled"
+                              ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 font-medium"
+                              : "bg-slate-500/10 text-[var(--muted-foreground)]"
+                          }`}
+                        >
+                          {post.status}
+                        </span>
+                      </div>
+                      <p className="font-serif font-medium text-xs text-[var(--foreground)] truncate">
+                        {post.title || post.content.slice(0, 30)}
+                      </p>
+                      <p className="text-[11px] text-[var(--muted-foreground)] line-clamp-2 mt-0.5 leading-relaxed">
+                        {post.content}
+                      </p>
+                      {post.media_urls.length > 0 && (
+                        <div className="mt-1 flex items-center gap-1 text-[10px] text-indigo-500 font-mono">
+                          {post.media_type === "video" ? <Video className="h-3 w-3" /> : <ImageIcon className="h-3 w-3" />}
+                          <span>{post.media_urls.length} media asset(s)</span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Center Column: Workbench & Composer */}
+        <div
+          className={`${
+            showLibrary && showPreview
+              ? "lg:col-span-5"
+              : !showLibrary && showPreview
+              ? "lg:col-span-7"
+              : showLibrary && !showPreview
+              ? "lg:col-span-8"
+              : "lg:col-span-12"
+          } ${mobileTab === "compose" ? "flex" : "hidden lg:flex"} flex-col border border-[var(--border)] rounded-2xl bg-[var(--card)] p-3.5 sm:p-4 gravitational-scroll space-y-4 shadow-xs transition-all duration-200`}
+        >
           {/* Platform Switcher & Character Meter */}
-          <div className="flex items-center justify-between pb-3 border-b border-[var(--border)]">
-            <div className="flex items-center gap-1.5">
+          <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 pb-3 border-b border-[var(--border)]">
+            <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto no-scrollbar">
               {(["x", "linkedin", "threads", "generic"] as const).map((plat) => (
                 <button
                   key={plat}
                   type="button"
                   onClick={() => setEditorPlatform(plat)}
-                  className={`px-2.5 py-1 text-xs font-semibold rounded-lg uppercase font-mono transition-all ${
+                  className={`px-2 py-0.5 sm:px-2.5 sm:py-1 text-[11px] sm:text-xs font-semibold rounded-lg uppercase font-mono transition-all ${
                     editorPlatform === plat
                       ? "bg-[var(--primary)] text-[var(--primary-foreground)] shadow-xs"
                       : "bg-[var(--muted)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
@@ -457,9 +540,9 @@ export function SocialStudioView({ initialPosts = [] }: SocialStudioViewProps) {
             </div>
 
             {/* Character meter */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 shrink-0 ml-auto sm:ml-0">
               <span
-                className={`text-xs font-mono font-medium ${
+                className={`text-[11px] sm:text-xs font-mono tabular-nums font-medium ${
                   isOverLimit
                     ? "text-rose-600 dark:text-rose-400 font-bold"
                     : charsRemaining < 30
@@ -469,7 +552,7 @@ export function SocialStudioView({ initialPosts = [] }: SocialStudioViewProps) {
               >
                 {charsUsed} / {charLimit}
               </span>
-              <div className="w-12 h-1.5 bg-[var(--muted)] rounded-full overflow-hidden">
+              <div className="w-10 sm:w-12 h-1.5 bg-[var(--muted)] rounded-full overflow-hidden">
                 <div
                   className={`h-full transition-all ${
                     isOverLimit ? "bg-rose-500" : percentUsed > 85 ? "bg-amber-500" : "bg-emerald-500"
@@ -674,27 +757,29 @@ export function SocialStudioView({ initialPosts = [] }: SocialStudioViewProps) {
           </div>
         </div>
 
-        {/* Right Column: Live Simulated Preview (4 cols) */}
-        <div className="lg:col-span-4 flex flex-col border border-[var(--border)] rounded-2xl bg-[var(--card)] p-4 overflow-y-auto space-y-3 shadow-xs">
-          <div className="flex items-center justify-between pb-2 border-b border-[var(--border)]">
-            <span className="text-xs font-mono uppercase font-semibold text-[var(--muted-foreground)] flex items-center gap-1.5">
-              <Sparkles className="h-3.5 w-3.5 text-indigo-500" />
-              Simulated Preview
-            </span>
-            <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-[var(--muted)] text-[var(--foreground)] uppercase">
-              {editorPlatform}
-            </span>
-          </div>
+        {/* Right Column: Live Simulated Preview */}
+        {showPreview && (
+          <div className={`${showLibrary ? "lg:col-span-4" : "lg:col-span-5"} ${mobileTab === "preview" ? "flex" : "hidden lg:flex"} flex-col border border-[var(--border)] rounded-2xl bg-[var(--card)] p-3.5 sm:p-4 gravitational-scroll space-y-3 shadow-xs animate-in fade-in slide-in-from-right-2 duration-200`}>
+            <div className="flex items-center justify-between pb-2 border-b border-[var(--border)]">
+              <span className="text-xs font-mono uppercase font-semibold text-[var(--muted-foreground)] flex items-center gap-1.5">
+                <Sparkles className="h-3.5 w-3.5 text-indigo-500" />
+                Simulated Preview
+              </span>
+              <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-[var(--muted)] text-[var(--foreground)] uppercase">
+                {editorPlatform}
+              </span>
+            </div>
 
-          <div className="flex-1 flex flex-col justify-start">
-            <PostPreviewCard
-              platform={editorPlatform}
-              content={editorContent}
-              mediaUrls={editorMediaUrls}
-              scheduledAt={editorScheduledAt || null}
-            />
+            <div className="flex-1 flex flex-col justify-start">
+              <PostPreviewCard
+                platform={editorPlatform}
+                content={editorContent}
+                mediaUrls={editorMediaUrls}
+                scheduledAt={editorScheduledAt || null}
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

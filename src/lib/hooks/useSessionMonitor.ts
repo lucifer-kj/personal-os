@@ -66,10 +66,16 @@ export function useSessionMonitor(options: SessionMonitorOptions = {}) {
 
   // Periodic check against session endpoint
   const checkSessionStatus = React.useCallback(async () => {
+    if (typeof window !== "undefined" && (document.cookie.includes("dev_preview=true") || window.location.search.includes("preview=true"))) {
+      return;
+    }
     try {
       const res = await fetch("/api/v1/auth/session");
       if (!res.ok) {
         if (res.status === 401) {
+          if (typeof document !== "undefined" && document.cookie.includes("dev_preview=true")) {
+            return;
+          }
           router.push("/login?reason=expired_inactivity");
           router.refresh();
         }
@@ -83,6 +89,9 @@ export function useSessionMonitor(options: SessionMonitorOptions = {}) {
         setTimeRemainingMs(remaining);
 
         if (remaining <= 0) {
+          if (typeof document !== "undefined" && document.cookie.includes("dev_preview=true")) {
+            return;
+          }
           router.push("/login?reason=expired_inactivity");
           router.refresh();
         } else if (remaining <= warningThresholdMs) {

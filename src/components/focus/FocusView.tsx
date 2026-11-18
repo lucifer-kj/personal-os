@@ -323,7 +323,7 @@ export function FocusView({
           <button
             type="button"
             onClick={() => handleStartNewSession("deep_work", 45 * 60)}
-            className="flex flex-col text-left p-5 rounded-2xl border border-[var(--border)] bg-[var(--card)] hover:border-[var(--primary)] hover:shadow-xs transition-all group"
+            className="flex flex-col text-left p-5 rounded-2xl border border-[var(--border)] bg-[var(--card)] hover:border-[var(--primary)] hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] transition-all group cursor-pointer"
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold uppercase tracking-wider text-[var(--primary)]">Deep Work</span>
@@ -337,7 +337,7 @@ export function FocusView({
           <button
             type="button"
             onClick={() => handleStartNewSession("pomodoro", 25 * 60)}
-            className="flex flex-col text-left p-5 rounded-2xl border border-[var(--border)] bg-[var(--card)] hover:border-[var(--primary)] hover:shadow-xs transition-all group"
+            className="flex flex-col text-left p-5 rounded-2xl border border-[var(--border)] bg-[var(--card)] hover:border-[var(--primary)] hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] transition-all group cursor-pointer"
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold uppercase tracking-wider text-[var(--primary)]">Pomodoro</span>
@@ -436,7 +436,7 @@ export function FocusView({
       </div>
 
       {/* Control Action Buttons */}
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center justify-center gap-2.5 w-full max-w-sm">
         {isPaused ? (
           <Button
             size="lg"

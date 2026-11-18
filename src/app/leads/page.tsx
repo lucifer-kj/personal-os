@@ -1,21 +1,21 @@
 import { Metadata } from "next";
 import { PageShell } from "@/components/layout/PageShell";
-import { LeadList } from "@/components/leads/LeadList";
+import { LeadsView } from "@/components/leads/LeadsView";
 
 export const metadata: Metadata = {
-  title: "Leads & CRM — Personal OS",
-  description: "Client acquisition pipeline, lead scoring, and automated conversion.",
+  title: "Leads & Clients — Personal OS",
+  description: "Autonomous lead generation, technical audits, consultative pitches, and client conversion.",
 };
 
 export default function LeadsPage() {
   return (
     <PageShell
-      eyebrow="CRM &amp; Growth"
-      title="Leads &amp; Clients"
-      description="Manage prospective clients, track acquisition scores, and convert qualified leads into active projects."
+      eyebrow="Growth & Revenue"
+      title="Leads & Clients"
+      description="Autonomous B2B discovery, technical Lighthouse audits, consultative WhatsApp pitches, and client pipeline conversion."
     >
       <div className="pt-2">
-        <LeadList />
+        <LeadsView />
       </div>
     </PageShell>
   );

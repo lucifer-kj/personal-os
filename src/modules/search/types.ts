@@ -5,7 +5,9 @@ export type SearchResultType =
   | "habit"
   | "inbox"
   | "navigation"
-  | "action";
+  | "action"
+  | "lead";
+
 
 export interface SearchResultItem {
   id: string;

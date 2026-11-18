@@ -19,6 +19,9 @@ import {
   Sparkles,
   X,
   Maximize2,
+  PanelLeftClose,
+  PanelLeftOpen,
+  ArrowLeft,
 } from "lucide-react";
 import { toast } from "sonner";
 import { fireCelebrationConfetti } from "@/lib/ui/confetti";
@@ -146,6 +149,7 @@ export function RadarView({
   const [selectedFeedId, setSelectedFeedId] = React.useState<string | null>(null);
   const [searchQuery, setSearchQuery] = React.useState("");
   const [activeTab, setActiveTab] = React.useState<string>("all");
+  const [mobileTab, setMobileTab] = React.useState<"stream" | "feeds" | "reader">("stream");
 
   const unreadTotal = React.useMemo(() => items.filter((i) => !i.is_read).length, [items]);
 
@@ -177,6 +181,7 @@ export function RadarView({
   const [personalNotes, setPersonalNotes] = React.useState("");
   const [isPromoting, setIsPromoting] = React.useState(false);
   const [isFloatingReaderOpen, setIsFloatingReaderOpen] = React.useState(false);
+  const [isFeedsCollapsed, setIsFeedsCollapsed] = React.useState(false);
 
   const selectedItem = items.find((i) => i.id === selectedItemId) || null;
 
@@ -542,32 +547,47 @@ export function RadarView({
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          {/* Feeds Sidebar Collapse Toggle (Desktop only) */}
+          <button
+            type="button"
+            onClick={() => setIsFeedsCollapsed(!isFeedsCollapsed)}
+            className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full border border-[var(--border)] bg-transparent hover:bg-[var(--muted)] text-[var(--foreground)] transition-all cursor-pointer active:scale-95"
+            title={isFeedsCollapsed ? "Show Feeds list" : "Hide Feeds list for wider reading"}
+          >
+            {isFeedsCollapsed ? (
+              <PanelLeftOpen className="h-3.5 w-3.5 text-[var(--primary)]" />
+            ) : (
+              <PanelLeftClose className="h-3.5 w-3.5 text-[var(--muted-foreground)]" />
+            )}
+            <span>{isFeedsCollapsed ? "Show Feeds" : "Hide Feeds"}</span>
+          </button>
+
           <button
             type="button"
             disabled={isCleaning}
             onClick={handleCleanStale}
             title="Auto-prune unstarred articles older than 7 days"
-            className="flex items-center gap-1.5 px-4 py-1.5 text-xs font-medium rounded-full border border-[var(--border)] bg-transparent hover:bg-[var(--muted)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 text-xs font-medium rounded-full border border-[var(--border)] bg-transparent hover:bg-[var(--muted)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors cursor-pointer"
           >
             <Sparkles className={`h-3 w-3 text-amber-500 ${isCleaning ? "animate-spin" : ""}`} />
-            <span>{isCleaning ? "Cleaning..." : "Auto Clean"}</span>
+            <span className="hidden sm:inline">{isCleaning ? "Cleaning..." : "Auto Clean"}</span>
           </button>
 
           <button
             type="button"
             disabled={isSyncing}
             onClick={() => handleSync()}
-            className="flex items-center gap-1.5 px-4 py-1.5 text-xs font-medium rounded-full border border-[var(--border)] bg-transparent hover:bg-[var(--muted)] text-[var(--foreground)] transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 text-xs font-medium rounded-full border border-[var(--border)] bg-transparent hover:bg-[var(--muted)] text-[var(--foreground)] transition-colors cursor-pointer"
           >
             <RefreshCw className={`h-3 w-3 text-indigo-400 ${isSyncing ? "animate-spin" : ""}`} />
-            <span>{isSyncing ? "Syncing..." : "Sync Feeds"}</span>
+            <span className="hidden sm:inline">{isSyncing ? "Syncing..." : "Sync Feeds"}</span>
           </button>
 
           <button
             type="button"
             onClick={() => setIsAddModalOpen(true)}
-            className="flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold rounded-full bg-white dark:bg-[#FAF7F2] text-[#12100E] dark:text-[#12100E] hover:bg-stone-200 transition-all shadow-xs cursor-pointer active:scale-95"
+            className="flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 text-xs font-semibold rounded-full bg-[var(--primary)] text-[var(--primary-foreground)] hover:brightness-105 transition-all shadow-xs cursor-pointer active:scale-95"
           >
             <Plus className="h-3.5 w-3.5" />
             <span>Add Feed</span>
@@ -575,11 +595,11 @@ export function RadarView({
         </div>
       </div>
 
-      {/* 2. Global Category Filter Tabs Row matching Reference Image 3 */}
-      <div className="flex items-center gap-6 border-b border-[var(--border)] pb-0.5 overflow-x-auto scrollbar-none text-xs">
+      {/* 2. Global Category Filter Tabs Row */}
+      <div className="flex items-center gap-6 border-b border-[var(--border)] pb-0.5 overflow-x-auto no-scrollbar text-xs">
         {[
           { id: "all", label: "All" },
-          { id: "unread", label: `Unread ${unreadTotal}` },
+          { id: "unread", label: "Unread", count: unreadTotal },
           { id: "starred", label: "Starred" },
           { id: "Tech", label: "Tech" },
           { id: "Business", label: "Business" },
@@ -592,104 +612,154 @@ export function RadarView({
               key={tab.id}
               type="button"
               onClick={() => handleSelectTab(tab.id)}
-              className={`pb-2.5 text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
+              className={`pb-2.5 text-xs font-medium transition-all whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
                 isActive
-                  ? "border-b-2 border-white dark:border-[#F4EFEA] text-white dark:text-[#F4EFEA] font-semibold"
+                  ? "border-b-2 border-[var(--primary)] text-[var(--foreground)] font-semibold"
                   : "text-[var(--muted-foreground)] hover:text-[var(--foreground)] border-b-2 border-transparent"
               }`}
             >
-              {tab.label}
+              <span>{tab.label}</span>
+              {tab.count !== undefined && tab.count > 0 && (
+                <span className="text-[10px] font-mono tabular-nums px-1.5 py-0.2 rounded-full bg-[var(--muted)] text-[var(--muted-foreground)] font-semibold">
+                  {tab.count}
+                </span>
+              )}
             </button>
           );
         })}
       </div>
 
-      {/* 3. Main 3-Column Radar Grid matching Reference Image 3 */}
+      {/* Mobile Segmented View Switcher (< lg) */}
+      <div className="lg:hidden flex items-center p-1 rounded-xl bg-[var(--muted)] border border-[var(--border)] gap-1 shrink-0">
+        <button
+          type="button"
+          onClick={() => setMobileTab("stream")}
+          className={`flex-1 py-1.5 text-xs font-medium rounded-lg text-center transition-all cursor-pointer active:scale-98 ${
+            mobileTab === "stream"
+              ? "bg-[var(--card)] text-[var(--foreground)] shadow-xs font-semibold"
+              : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+          }`}
+        >
+          Signals ({filteredItems.length})
+        </button>
+        <button
+          type="button"
+          onClick={() => setMobileTab("feeds")}
+          className={`flex-1 py-1.5 text-xs font-medium rounded-lg text-center transition-all cursor-pointer active:scale-98 ${
+            mobileTab === "feeds"
+              ? "bg-[var(--card)] text-[var(--foreground)] shadow-xs font-semibold"
+              : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+          }`}
+        >
+          Feeds ({feeds.length})
+        </button>
+        <button
+          type="button"
+          onClick={() => setMobileTab("reader")}
+          className={`flex-1 py-1.5 text-xs font-medium rounded-lg text-center transition-all cursor-pointer active:scale-98 ${
+            mobileTab === "reader"
+              ? "bg-[var(--card)] text-[var(--foreground)] shadow-xs font-semibold"
+              : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+          }`}
+        >
+          Reader
+        </button>
+      </div>
+
+      {/* 3. Main Collapsible Radar Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 flex-1 min-h-0 overflow-hidden">
-        {/* Left Column: Feeds & Channels (3 cols) */}
-        <div className="lg:col-span-3 flex flex-col border border-[var(--border)] rounded-2xl bg-[var(--card)] overflow-hidden shadow-xs">
-          <div className="p-3.5 border-b border-[var(--border)] flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-[var(--foreground)]">Feeds</span>
-              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-[var(--muted)] text-[var(--muted-foreground)]">
-                {feeds.length}
-              </span>
+        {/* Left Column: Feeds & Channels */}
+        {!isFeedsCollapsed && (
+          <div className={`${isFeedsCollapsed ? "hidden" : "lg:col-span-3"} ${mobileTab === "feeds" ? "flex" : "hidden lg:flex"} flex-col border border-[var(--border)] rounded-2xl bg-[var(--card)] overflow-hidden shadow-xs animate-in fade-in slide-in-from-left-2 duration-200`}>
+            <div className="p-3.5 border-b border-[var(--border)] flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold text-[var(--foreground)]">Feeds</span>
+                <span className="text-[10px] font-mono tabular-nums px-1.5 py-0.2 rounded-full bg-[var(--muted)] text-[var(--muted-foreground)] font-semibold">
+                  {feeds.length}
+                </span>
+              </div>
+            </div>
+
+            {/* Feeds List with Gravitational Scroll */}
+            <div className="flex-1 gravitational-scroll p-2 space-y-1">
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedFeedId(null);
+                  setMobileTab("stream");
+                }}
+                className={`w-full flex items-center justify-between p-2 rounded-xl text-xs text-left transition-all cursor-pointer ${
+                  selectedFeedId === null
+                    ? "bg-[var(--muted)] text-[var(--foreground)] font-semibold border border-[var(--border)]"
+                    : "text-[var(--foreground)] hover:bg-[var(--muted)]/60 border border-transparent"
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Layers className="h-4 w-4 text-[var(--primary)]" />
+                  <span>All Feeds</span>
+                </div>
+                <span className="text-[10px] font-mono tabular-nums px-2 py-0.5 rounded-full bg-[var(--muted)] text-[var(--muted-foreground)]">
+                  {items.length}
+                </span>
+              </button>
+
+              {feeds.length === 0 ? (
+                <div className="p-6 text-center text-xs text-[var(--muted-foreground)] font-serif italic">
+                  No feeds subscribed yet. Click &ldquo;Add Feed&rdquo; to begin tracking signal.
+                </div>
+              ) : (
+                feeds.map((feed) => {
+                  const isSelected = selectedFeedId === feed.id;
+                  const unreadCount = items.filter(
+                    (i) => i.feed_id === feed.id && !i.is_read
+                  ).length;
+
+                  return (
+                    <div
+                      key={feed.id}
+                      className={`group flex items-center justify-between p-2 rounded-xl text-xs cursor-pointer transition-all active:scale-[0.99] ${
+                        isSelected
+                          ? "bg-[var(--muted)] border border-[var(--border)] font-semibold text-[var(--foreground)] shadow-2xs"
+                          : "hover:bg-[var(--muted)]/60 text-[var(--foreground)] border border-transparent"
+                      }`}
+                      onClick={() => {
+                        setSelectedFeedId(feed.id);
+                        setMobileTab("stream");
+                      }}
+                    >
+                      <div className="min-w-0 flex items-center gap-2.5 truncate">
+                        {renderFeedLogo(feed.title)}
+                        <span className="truncate">{feed.title}</span>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {unreadCount > 0 && (
+                          <span className="text-[10px] font-mono tabular-nums px-1.5 py-0.2 rounded-full bg-[var(--muted)] text-[var(--primary)] font-semibold">
+                            {unreadCount}
+                          </span>
+                        )}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteFeed(feed.id, feed.title);
+                          }}
+                          className="opacity-0 group-hover:opacity-100 p-1 text-[var(--muted-foreground)] hover:text-rose-500 transition-opacity"
+                          title="Unsubscribe"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
+        )}
 
-          {/* Feeds List */}
-          <div className="flex-1 overflow-y-auto p-2 space-y-1 scrollbar-thin">
-            <button
-              type="button"
-              onClick={() => setSelectedFeedId(null)}
-              className={`w-full flex items-center justify-between p-2 rounded-xl text-xs text-left transition-all cursor-pointer ${
-                selectedFeedId === null
-                  ? "bg-[#241C18] text-[#F4EFEA] font-semibold border border-[#3D261C]"
-                  : "text-[var(--foreground)] hover:bg-[var(--muted)] border border-transparent"
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <Layers className="h-4 w-4 text-[var(--primary)]" />
-                <span>All Feeds</span>
-              </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[var(--muted)] text-[var(--muted-foreground)]">
-                {items.length}
-              </span>
-            </button>
-
-            {feeds.length === 0 ? (
-              <div className="p-6 text-center text-xs text-[var(--muted-foreground)]">
-                No feeds subscribed yet. Click &ldquo;Add Feed&rdquo; to begin tracking signal.
-              </div>
-            ) : (
-              feeds.map((feed) => {
-                const isSelected = selectedFeedId === feed.id;
-                const unreadCount = items.filter(
-                  (i) => i.feed_id === feed.id && !i.is_read
-                ).length;
-
-                return (
-                  <div
-                    key={feed.id}
-                    className={`group flex items-center justify-between p-2 rounded-xl text-xs cursor-pointer transition-all ${
-                      isSelected
-                        ? "bg-[#241C18] border border-[#3D261C] font-semibold text-[#F4EFEA]"
-                        : "hover:bg-[var(--muted)] text-[var(--foreground)] border border-transparent"
-                    }`}
-                    onClick={() => setSelectedFeedId(feed.id)}
-                  >
-                    <div className="min-w-0 flex items-center gap-2.5 truncate">
-                      {renderFeedLogo(feed.title)}
-                      <span className="truncate">{feed.title}</span>
-                    </div>
-
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      {unreadCount > 0 && (
-                        <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-[var(--muted)] text-[var(--muted-foreground)]">
-                          {unreadCount}
-                        </span>
-                      )}
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteFeed(feed.id, feed.title);
-                        }}
-                        className="opacity-0 group-hover:opacity-100 p-1 text-[var(--muted-foreground)] hover:text-rose-500 transition-opacity"
-                        title="Unsubscribe"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </div>
-
-        {/* Center Column: Signal Stream (4 cols) */}
-        <div className="lg:col-span-4 flex flex-col border border-[var(--border)] rounded-2xl bg-[var(--card)] overflow-hidden shadow-xs">
+        {/* Center Column: Signal Stream */}
+        <div className={`${isFeedsCollapsed ? "lg:col-span-5" : "lg:col-span-4"} ${mobileTab === "stream" ? "flex" : "hidden lg:flex"} flex-col border border-[var(--border)] rounded-2xl bg-[var(--card)] overflow-hidden shadow-xs transition-all duration-200`}>
           {/* Search Bar */}
           <div className="p-3 border-b border-[var(--border)]">
             <div className="relative">
@@ -704,8 +774,8 @@ export function RadarView({
             </div>
           </div>
 
-          {/* Stream Cards */}
-          <div className="flex-1 overflow-y-auto p-2.5 space-y-2 scrollbar-thin">
+          {/* Stream Cards with Gravitational Scroll */}
+          <div className="flex-1 gravitational-scroll p-2.5 space-y-2">
             {visibleItems.length === 0 ? (
               <div className="p-8 text-center text-xs text-[var(--muted-foreground)]">
                 No signal found matching criteria.
@@ -720,6 +790,7 @@ export function RadarView({
                       onClick={() => {
                         setSelectedItemId(item.id);
                         if (!item.is_read) handleToggleRead(item);
+                        setMobileTab("reader");
                       }}
                       className={`p-3.5 rounded-2xl cursor-pointer transition-all border flex flex-col gap-1.5 ${
                         isSelected
@@ -787,12 +858,22 @@ export function RadarView({
           </div>
         </div>
 
-        {/* Right Column: Full Signal Reader & Promotion Deck (5 cols) */}
-        <div className="lg:col-span-5 flex flex-col border border-[var(--border)] rounded-2xl bg-[var(--card)] overflow-hidden shadow-xs">
+        {/* Right Column: Full Signal Reader & Promotion Deck */}
+        <div className={`${isFeedsCollapsed ? "lg:col-span-7" : "lg:col-span-5"} ${mobileTab === "reader" ? "flex" : "hidden lg:flex"} flex-col border border-[var(--border)] rounded-2xl bg-[var(--card)] overflow-hidden shadow-xs transition-all duration-200`}>
           {selectedItem ? (
             <>
               {/* Fixed Header */}
               <div className="p-4 sm:p-5 border-b border-[var(--border)] space-y-2.5 shrink-0 bg-[var(--card)]">
+                {/* Mobile Back Button */}
+                <button
+                  type="button"
+                  onClick={() => setMobileTab("stream")}
+                  className="lg:hidden flex items-center gap-1.5 text-xs text-[var(--primary)] font-medium pb-2 border-b border-[var(--border)] w-full cursor-pointer active:scale-95"
+                >
+                  <ArrowLeft className="h-3.5 w-3.5" />
+                  <span>Back to Signals</span>
+                </button>
+
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold uppercase tracking-wider">
                     {selectedItem.feed?.category || "Article"}
@@ -801,7 +882,7 @@ export function RadarView({
                     <button
                       type="button"
                       onClick={() => handleToggleStar(selectedItem)}
-                      className="p-1 rounded-md border border-[var(--border)] hover:bg-[var(--muted)] text-[var(--muted-foreground)] hover:text-amber-500 transition-colors"
+                      className="p-1 rounded-md border border-[var(--border)] hover:bg-[var(--muted)] text-[var(--muted-foreground)] hover:text-amber-500 transition-colors cursor-pointer"
                       title="Bookmark"
                     >
                       <Star className={`h-3.5 w-3.5 ${selectedItem.is_starred ? "fill-amber-500 text-amber-500" : ""}`} />
@@ -811,7 +892,7 @@ export function RadarView({
                       href={selectedItem.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-1 rounded-md border border-[var(--border)] hover:bg-[var(--muted)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+                      className="p-1 rounded-md border border-[var(--border)] hover:bg-[var(--muted)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors cursor-pointer"
                       title="Open original"
                     >
                       <ExternalLink className="h-3.5 w-3.5" />
@@ -820,7 +901,7 @@ export function RadarView({
                     <button
                       type="button"
                       onClick={() => handleToggleRead(selectedItem)}
-                      className={`flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg border transition-colors ${
+                      className={`flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg border transition-colors cursor-pointer active:scale-95 ${
                         selectedItem.is_read
                           ? "border-[var(--border)] text-[var(--muted-foreground)]"
                           : "border-emerald-500 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 font-medium"
@@ -833,7 +914,7 @@ export function RadarView({
                     <button
                       type="button"
                       onClick={() => setIsFloatingReaderOpen(true)}
-                      className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg border border-[var(--border)] bg-[var(--muted)] text-[var(--foreground)] hover:bg-[var(--muted)]/80 transition-colors font-medium cursor-pointer"
+                      className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg border border-[var(--border)] bg-[var(--muted)] text-[var(--foreground)] hover:bg-[var(--muted)]/80 transition-colors font-medium cursor-pointer active:scale-95"
                       title="Open in floating reader"
                     >
                       <Maximize2 className="h-3 w-3 text-[#E05B27]" />
@@ -846,15 +927,15 @@ export function RadarView({
                   {selectedItem.title}
                 </h2>
 
-                <div className="flex items-center gap-2 text-[11px] font-mono text-[var(--muted-foreground)]">
+                <div className="flex items-center gap-2 text-[11px] font-mono tabular-nums text-[var(--muted-foreground)]">
                   <span>{selectedItem.feed?.title || "Radar"}</span>
                   <span>•</span>
                   <span>{new Date(selectedItem.published_at).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" })}</span>
                 </div>
               </div>
 
-              {/* Scrollable Body Content */}
-              <div className="flex-1 overflow-y-auto p-4 sm:p-5 font-sans text-xs sm:text-sm text-[var(--foreground)] leading-relaxed space-y-3.5 scrollbar-thin">
+              {/* Scrollable Body Content with Gravitational Scroll */}
+              <div className="flex-1 gravitational-scroll p-4 sm:p-5 font-sans text-xs sm:text-sm text-[var(--foreground)] leading-relaxed space-y-3.5">
                 {heroImage && (
                   <div className="relative w-full h-52 sm:h-60 rounded-2xl overflow-hidden border border-[var(--border)] bg-[#1A1715]">
                     <img src={heroImage} alt="" className="w-full h-full object-cover" />

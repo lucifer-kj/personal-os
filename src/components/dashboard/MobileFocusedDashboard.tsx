@@ -99,7 +99,7 @@ export function MobileFocusedDashboard({
   }, [overview.date]);
 
   return (
-    <div className="lg:hidden min-h-[calc(100vh-var(--header-height))] bg-[#0D0B0A] text-white -mx-4 -mt-4 px-4 pt-5 pb-28 relative overflow-hidden font-sans">
+    <div className="lg:hidden min-h-[calc(100vh-var(--header-height))] bg-[#0D0B0A] text-white -mx-4 -mt-4 px-4 pt-5 pb-36 relative overflow-x-clip font-sans">
       {/* 1. Mountain Sunset Horizon Backdrop */}
       <div className="absolute top-0 left-0 right-0 h-80 pointer-events-none select-none opacity-60">
         <Image

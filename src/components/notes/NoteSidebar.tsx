@@ -126,7 +126,7 @@ export function NoteSidebar({
       )}
 
       {/* 4. Note Cards Stream */}
-      <div className="flex-1 overflow-y-auto space-y-2.5 max-h-[calc(100vh-16rem)] pr-0.5 scrollbar-thin">
+      <div className="flex-1 gravitational-scroll space-y-2.5 max-h-[calc(100vh-16rem)] pr-0.5">
         {notes.length === 0 ? (
           <div className="p-8 text-center text-xs text-[var(--muted-foreground)] rounded-2xl border border-dashed border-[var(--border)]">
             No notes found.

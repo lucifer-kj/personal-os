@@ -26,7 +26,7 @@ async function DashboardContent() {
 
 export default function HomePage() {
   return (
-    <PageShell className="pb-16 max-w-6xl">
+    <PageShell className="pb-36 lg:pb-16 max-w-6xl">
       <React.Suspense
         fallback={
           <div className="space-y-6 pt-2">

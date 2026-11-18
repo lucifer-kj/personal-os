@@ -25,31 +25,33 @@ export function ProjectFilterBar({
   searchQuery,
   onSearchChange,
 }: ProjectFilterBarProps) {
-  const tabs: { label: string; value: ProjectStatusFilterOption }[] = [
-    { label: "All", value: "all" },
-    { label: "Active", value: "active" },
-    { label: "Planned", value: "planned" },
-    { label: "Completed", value: "completed" },
-    { label: "Archived", value: "archived" },
+  const tabs: { label: string; shortLabel: string; value: ProjectStatusFilterOption }[] = [
+    { label: "All", shortLabel: "All", value: "all" },
+    { label: "Active", shortLabel: "Active", value: "active" },
+    { label: "Planned", shortLabel: "Plan", value: "planned" },
+    { label: "Completed", shortLabel: "Done", value: "completed" },
+    { label: "Archived", shortLabel: "Archive", value: "archived" },
   ];
 
   return (
     <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
       {/* Status Segmented Tabs */}
-      <div className="h-9 flex items-center rounded-lg bg-[var(--muted)] p-1 border border-[var(--border)] shrink-0 self-start sm:self-auto overflow-x-auto max-w-full">
+      <div className="grid grid-cols-5 sm:flex sm:items-center rounded-lg bg-[var(--muted)] p-1 border border-[var(--border)] w-full sm:w-auto shrink-0 gap-0.5 sm:gap-0">
         {tabs.map((tab) => (
           <button
             key={tab.value}
             type="button"
+            aria-label={tab.label}
             onClick={() => onStatusFilterChange(tab.value)}
             className={cn(
-              "h-7 px-3 rounded-md text-xs font-medium whitespace-nowrap flex items-center transition-all duration-[var(--motion-fast)]",
+              "h-7 px-1 sm:px-3 rounded-md text-[11px] sm:text-xs font-medium justify-center items-center flex transition-all duration-[var(--motion-fast)]",
               statusFilter === tab.value
                 ? "bg-[var(--card)] text-[var(--foreground)] shadow-xs font-semibold"
                 : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
             )}
           >
-            {tab.label}
+            <span className="sm:hidden">{tab.shortLabel}</span>
+            <span className="hidden sm:inline">{tab.label}</span>
           </button>
         ))}
       </div>

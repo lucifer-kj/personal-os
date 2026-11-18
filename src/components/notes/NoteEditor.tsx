@@ -76,6 +76,13 @@ export function NoteEditor({
   const [viewMode, setViewMode] = React.useState<"edit" | "preview" | "split">("split");
   const [selectedLinkTargetId, setSelectedLinkTargetId] = React.useState("");
 
+  // On mobile screens, default viewMode to "edit" rather than "split"
+  React.useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setViewMode("edit");
+    }
+  }, []);
+
   // Sync state when note prop changes
   const [prevNoteId, setPrevNoteId] = React.useState<string | null>(null);
   const currentNoteId = note?.id ?? null;
@@ -411,7 +418,7 @@ export function NoteEditor({
         {/* Editor Pane */}
         {(viewMode === "edit" || viewMode === "split") && (
           <div
-            className={`flex-1 p-4 sm:p-8 overflow-y-auto ${
+            className={`flex-1 p-4 sm:p-8 gravitational-scroll ${
               viewMode === "split" ? "border-r border-[var(--border)]" : ""
             }`}
           >
@@ -429,7 +436,7 @@ export function NoteEditor({
 
         {/* Preview Pane */}
         {(viewMode === "preview" || viewMode === "split") && (
-          <div className="flex-1 p-4 sm:p-8 overflow-y-auto bg-[var(--card)]/10">
+          <div className="flex-1 p-4 sm:p-8 gravitational-scroll bg-[var(--card)]/10">
             <MarkdownPreview content={content} />
           </div>
         )}

@@ -10,6 +10,7 @@ import { CurrentFocusCard } from "./CurrentFocusCard";
 import { FocusTimerWidget } from "./FocusTimerWidget";
 import { TodayAgenda } from "./TodayAgenda";
 import { ActiveProjectsWidget } from "./ActiveProjectsWidget";
+import { OutreachPulseWidget } from "./OutreachPulseWidget";
 import { QuickCaptureCard } from "./QuickCaptureCard";
 import { TaskCreateDialog } from "@/components/tasks/TaskCreateDialog";
 import { MobileFocusedDashboard } from "./MobileFocusedDashboard";
@@ -183,11 +184,12 @@ export function DashboardView({ initialOverview }: DashboardViewProps) {
             />
           </div>
 
-          <div className="col-span-12 lg:col-span-5 flex flex-col">
+          <div className="col-span-12 lg:col-span-5 flex flex-col gap-6">
             <ActiveProjectsWidget
               projects={overview.active_projects}
-              className="h-full flex flex-col justify-between"
+              className="flex flex-col justify-between"
             />
+            <OutreachPulseWidget />
           </div>
         </div>
       </div>

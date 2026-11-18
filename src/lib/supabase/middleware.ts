@@ -49,6 +49,29 @@ export async function updateSession(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
 
+  // Check development preview mode first
+  const cookieHeader = request.headers.get("cookie") || "";
+  const hasDevPreview =
+    process.env.NODE_ENV === "development" &&
+    (request.nextUrl.searchParams.get("preview") === "true" ||
+      cookieHeader.includes("dev_preview=true") ||
+      request.cookies.get("dev_preview")?.value === "true");
+
+  if (hasDevPreview) {
+    supabaseResponse.cookies.set("dev_preview", "true", {
+      path: "/",
+      httpOnly: false,
+      maxAge: 2592000,
+      sameSite: "lax",
+    });
+    if (pathname.startsWith("/login") || pathname.startsWith("/signup")) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/";
+      return NextResponse.redirect(url);
+    }
+    return supabaseResponse;
+  }
+
   // In production or when session cookie is present, enforce idle and absolute timeouts
   if (user && !pathname.startsWith("/auth/callback")) {
     const rawSessionMeta = request.cookies.get(SESSION_COOKIE_NAME)?.value;
@@ -118,24 +141,6 @@ export async function updateSession(request: NextRequest) {
     pathname.startsWith("/forgot-password") ||
     pathname.startsWith("/reset-password") ||
     pathname.startsWith("/auth");
-
-  // Check development preview mode
-  const hasDevPreview =
-    process.env.NODE_ENV === "development" &&
-    (request.nextUrl.searchParams.get("preview") === "true" ||
-      request.cookies.get("dev_preview")?.value === "true");
-
-  if (hasDevPreview) {
-    if (request.nextUrl.searchParams.get("preview") === "true") {
-      supabaseResponse.cookies.set("dev_preview", "true", { path: "/", httpOnly: false });
-    }
-    if (isAuthPage && !pathname.startsWith("/auth/callback")) {
-      const url = request.nextUrl.clone();
-      url.pathname = "/";
-      return NextResponse.redirect(url);
-    }
-    return supabaseResponse;
-  }
 
   // Protect internal pages: if not signed in, redirect to /login
   if (!user && !isAuthPage && !pathname.startsWith("/api")) {

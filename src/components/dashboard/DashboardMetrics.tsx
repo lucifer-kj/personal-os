@@ -22,96 +22,108 @@ export function DashboardMetrics({ metrics }: DashboardMetricsProps) {
       ? focusHours > 0
         ? `${focusHours}h ${focusRemainingMins}m`
         : `${focusRemainingMins}m`
-      : "3h 20m";
+      : "0m";
 
-  const dailyTasksDisplay =
-    totalTasks > 0 ? `${metrics.tasks_completed_today} / ${totalTasks}` : "7 / 12";
-
-  const activeProjectsDisplay =
-    metrics.active_projects_count > 0 ? `${metrics.active_projects_count}` : "3";
-
-  const targetPercent = completionPercent > 0 ? `${completionPercent}%` : "68%";
+  const dailyTasksDisplay = `${metrics.tasks_completed_today} / ${totalTasks}`;
+  const activeProjectsDisplay = `${metrics.active_projects_count}`;
+  const targetPercent = `${completionPercent}%`;
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
       {/* 1. Focus Time */}
-      <Card className="p-4 sm:p-5 bg-white dark:bg-[#161413] border-[#EDE7DE] dark:border-[#2A2624] shadow-[0_2px_8px_rgba(0,0,0,0.02)] rounded-2xl flex flex-col justify-between transition-all hover:shadow-[0_4px_16px_rgba(0,0,0,0.04)] active:scale-[0.99]">
+      <Card className="group p-4 sm:p-5 bg-[var(--card)] border-[var(--border)] shadow-xs rounded-2xl flex flex-col justify-between transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.99]">
         <div>
-          <div className="flex items-center gap-2 text-xs font-medium text-[#7A7269] dark:text-[#A69E94]">
-            <Clock className="h-4 w-4 text-[#B94A24] dark:text-[#E07A50]" />
+          <div className="flex items-center gap-2 text-xs font-medium text-[var(--muted-foreground)]">
+            <Clock className="h-4 w-4 text-[var(--primary)]" />
             <span>Focus Time</span>
           </div>
 
           <div className="mt-3 flex items-baseline gap-2.5">
-            <span className="text-2xl sm:text-3xl font-bold tracking-tight text-[#24211F] dark:text-[#F3EFEA]">
+            <span className="text-2xl sm:text-3xl font-serif font-medium tracking-tight text-[var(--foreground)]">
               {focusDisplay}
             </span>
-            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#EAF5EE] text-[#227142] dark:bg-[#142B1D] dark:text-[#52C480]">
-              <TrendingUp className="h-2.5 w-2.5 stroke-[2.5]" />
-              <span>+12%</span>
-            </span>
+            {metrics.estimated_focus_minutes > 0 && (
+              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono">
+                <TrendingUp className="h-2.5 w-2.5 stroke-[2.5]" />
+                <span>Active</span>
+              </span>
+            )}
           </div>
         </div>
 
-        {/* Bottom Accent Bar */}
-        <div className="mt-4 h-1.5 w-20 rounded-full bg-[#B94A24] dark:bg-[#E07A50]" />
+        {/* Dynamic Micro Accent Track */}
+        <div className="mt-4 h-1.5 w-full bg-[var(--muted)] rounded-full overflow-hidden">
+          <div className="h-full w-14 group-hover:w-28 bg-[var(--primary)] rounded-full transition-all duration-300" />
+        </div>
       </Card>
 
       {/* 2. Daily Tasks */}
-      <Card className="p-4 sm:p-5 bg-white dark:bg-[#161413] border-[#EDE7DE] dark:border-[#2A2624] shadow-[0_2px_8px_rgba(0,0,0,0.02)] rounded-2xl flex flex-col justify-between transition-all hover:shadow-[0_4px_16px_rgba(0,0,0,0.04)] active:scale-[0.99]">
+      <Card className="group p-4 sm:p-5 bg-[var(--card)] border-[var(--border)] shadow-xs rounded-2xl flex flex-col justify-between transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.99]">
         <div>
-          <div className="flex items-center gap-2 text-xs font-medium text-[#7A7269] dark:text-[#A69E94]">
-            <CheckSquare2 className="h-4 w-4 text-[#287A4B] dark:text-[#52C480]" />
+          <div className="flex items-center gap-2 text-xs font-medium text-[var(--muted-foreground)]">
+            <CheckSquare2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
             <span>Daily Tasks</span>
           </div>
 
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-bold tracking-tight text-[#24211F] dark:text-[#F3EFEA]">
+            <span className="text-2xl sm:text-3xl font-serif font-medium tracking-tight text-[var(--foreground)]">
               {dailyTasksDisplay}
             </span>
           </div>
         </div>
 
-        {/* Bottom Accent Bar */}
-        <div className="mt-4 h-1.5 w-20 rounded-full bg-[#287A4B] dark:bg-[#52C480]" />
+        {/* Dynamic Micro Accent Track */}
+        <div className="mt-4 h-1.5 w-full bg-[var(--muted)] rounded-full overflow-hidden">
+          <div
+            className="h-full bg-emerald-600 dark:bg-emerald-500 rounded-full transition-all duration-500"
+            style={{ width: `${Math.max(12, Math.min(100, completionPercent))}%` }}
+          />
+        </div>
       </Card>
 
       {/* 3. Active Projects */}
-      <Card className="p-4 sm:p-5 bg-white dark:bg-[#161413] border-[#EDE7DE] dark:border-[#2A2624] shadow-[0_2px_8px_rgba(0,0,0,0.02)] rounded-2xl flex flex-col justify-between transition-all hover:shadow-[0_4px_16px_rgba(0,0,0,0.04)] active:scale-[0.99]">
+      <Card className="group p-4 sm:p-5 bg-[var(--card)] border-[var(--border)] shadow-xs rounded-2xl flex flex-col justify-between transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.99]">
         <div>
-          <div className="flex items-center gap-2 text-xs font-medium text-[#7A7269] dark:text-[#A69E94]">
-            <Layers className="h-4 w-4 text-[#D97706] dark:text-[#F59E0B]" />
+          <div className="flex items-center gap-2 text-xs font-medium text-[var(--muted-foreground)]">
+            <Layers className="h-4 w-4 text-amber-600 dark:text-amber-400" />
             <span>Active Projects</span>
           </div>
 
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-bold tracking-tight text-[#24211F] dark:text-[#F3EFEA]">
+            <span className="text-2xl sm:text-3xl font-serif font-medium tracking-tight text-[var(--foreground)]">
               {activeProjectsDisplay}
             </span>
           </div>
         </div>
 
-        {/* Bottom Accent Bar */}
-        <div className="mt-4 h-1.5 w-20 rounded-full bg-[#D97706] dark:bg-[#F59E0B]" />
+        {/* Dynamic Micro Accent Track */}
+        <div className="mt-4 h-1.5 w-full bg-[var(--muted)] rounded-full overflow-hidden">
+          <div className="h-full w-12 group-hover:w-24 bg-amber-600 dark:bg-amber-500 rounded-full transition-all duration-300" />
+        </div>
       </Card>
 
       {/* 4. Targets */}
-      <Card className="p-4 sm:p-5 bg-white dark:bg-[#161413] border-[#EDE7DE] dark:border-[#2A2624] shadow-[0_2px_8px_rgba(0,0,0,0.02)] rounded-2xl flex flex-col justify-between transition-all hover:shadow-[0_4px_16px_rgba(0,0,0,0.04)] active:scale-[0.99]">
+      <Card className="group p-4 sm:p-5 bg-[var(--card)] border-[var(--border)] shadow-xs rounded-2xl flex flex-col justify-between transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.99]">
         <div>
-          <div className="flex items-center gap-2 text-xs font-medium text-[#7A7269] dark:text-[#A69E94]">
-            <Target className="h-4 w-4 text-[#24211F] dark:text-[#E8E1D7]" />
+          <div className="flex items-center gap-2 text-xs font-medium text-[var(--muted-foreground)]">
+            <Target className="h-4 w-4 text-sky-600 dark:text-sky-400" />
             <span>Targets</span>
           </div>
 
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-bold tracking-tight text-[#24211F] dark:text-[#F3EFEA]">
+            <span className="text-2xl sm:text-3xl font-serif font-medium tracking-tight text-[var(--foreground)]">
               {targetPercent}
             </span>
           </div>
         </div>
 
-        {/* Bottom Accent Bar */}
-        <div className="mt-4 h-1.5 w-20 rounded-full bg-[#24211F] dark:bg-[#E8E1D7]" />
+        {/* Dynamic Micro Accent Track */}
+        <div className="mt-4 h-1.5 w-full bg-[var(--muted)] rounded-full overflow-hidden">
+          <div
+            className="h-full bg-sky-600 dark:bg-sky-500 rounded-full transition-all duration-500"
+            style={{ width: `${Math.max(10, Math.min(100, completionPercent))}%` }}
+          />
+        </div>
       </Card>
     </div>
   );

@@ -43,14 +43,14 @@ export function TaskItem({ task, onToggleComplete, onDelete }: TaskItemProps) {
           aria-label={isCompleted ? `Mark '${task.title}' as incomplete` : `Mark '${task.title}' as completed`}
           onClick={() => onToggleComplete(task)}
           className={cn(
-            "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-colors",
+            "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-all active:scale-90 cursor-pointer",
             "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)]",
             isCompleted
-              ? "border-[var(--success)] bg-[var(--success)] text-white"
-              : "border-[var(--border)] bg-[var(--card)] hover:border-[var(--primary)]"
+              ? "border-[var(--success)] bg-[var(--success)] text-white shadow-2xs"
+              : "border-[var(--border)] bg-[var(--card)] hover:border-[var(--primary)]/60"
           )}
         >
-          {isCompleted && <Check className="h-3.5 w-3.5 stroke-[2.5]" />}
+          {isCompleted && <Check className="h-3.5 w-3.5 stroke-[2.5] animate-in zoom-in-75 duration-150" />}
         </button>
 
         {/* Task Details */}

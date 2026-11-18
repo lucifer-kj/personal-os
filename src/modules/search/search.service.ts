@@ -88,6 +88,14 @@ export const DEFAULT_NAVIGATION_COMMANDS: NavigationCommand[] = [
     shortcut: "G S",
   },
   {
+    id: "nav-leads",
+    title: "Leads & Clients",
+    category: "Navigation",
+    url: "/leads",
+    keywords: ["leads", "clients", "crm", "pipeline", "pitches", "audit", "engine"],
+    shortcut: "G L",
+  },
+  {
     id: "nav-radar",
     title: "The Radar",
     category: "Navigation",
@@ -106,6 +114,16 @@ export const DEFAULT_QUICK_ACTIONS: QuickActionCommand[] = [
     keywords: ["capture", "new", "inbox", "quick", "create", "draft"],
     shortcut: "C",
   },
+  {
+    id: "act-new-lead",
+    title: "New Client Lead",
+    description: "Capture prospective client or commercial lead",
+    actionId: "new-lead",
+    url: "/leads?new=true",
+    keywords: ["new lead", "add lead", "client", "prospect"],
+    shortcut: "N L",
+  },
+
   {
     id: "act-new-task",
     title: "Create Task",

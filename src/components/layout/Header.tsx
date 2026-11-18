@@ -17,6 +17,8 @@ const routeTitleMap: Record<string, { title: string; category?: string }> = {
   "/notes": { title: "Notes", category: "Personal OS" },
   "/habits": { title: "Habits", category: "Personal OS" },
   "/journal": { title: "Journal", category: "Personal OS" },
+  "/leads": { title: "Leads & Clients", category: "Personal OS" },
+  "/focus": { title: "Focus Mode", category: "Personal OS" },
   "/studio": { title: "Social Studio", category: "Personal OS" },
   "/radar": { title: "The Radar", category: "Personal OS" },
   "/settings": { title: "Settings", category: "Personal OS" },
@@ -65,7 +67,7 @@ export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-[var(--header-height)] items-center justify-between border-b border-[#EDE7DE] dark:border-[#262220] bg-white/70 dark:bg-[#12100E]/80 max-lg:bg-[#0D0B0A] max-lg:border-white/10 max-lg:text-white backdrop-blur-xl px-4 sm:px-6 lg:px-8 transition-all">
+    <header className="sticky top-0 z-30 flex h-[var(--header-height)] items-center justify-between border-b border-[var(--border)] bg-[var(--card)]/80 backdrop-blur-xl px-4 sm:px-6 lg:px-8 transition-colors">
       {/* Mobile Top Bar (< lg) */}
       <div className="flex lg:hidden items-center justify-between w-full">
         {/* Left Mobile Actions (Theme, Search, Notifications) */}
@@ -74,7 +76,7 @@ export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
           <button
             type="button"
             onClick={handleOpenSearch}
-            className="p-2 text-[#A69E94] hover:text-white transition-colors cursor-pointer"
+            className="p-2 text-[var(--muted-foreground)] hover:text-[var(--foreground)] active:scale-95 transition-all cursor-pointer"
             aria-label="Search"
           >
             <Search className="h-4 w-4" />
@@ -82,26 +84,26 @@ export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
           <button
             type="button"
             onClick={() => setShowNotifications(!showNotifications)}
-            className="relative p-2 text-[#A69E94] hover:text-white transition-colors cursor-pointer"
+            className="relative p-2 text-[var(--muted-foreground)] hover:text-[var(--foreground)] active:scale-95 transition-all cursor-pointer"
             aria-label="Notifications"
           >
             <Bell className="h-4 w-4" />
             {hasUnread && (
-              <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-[#E05B27] ring-2 ring-[#0D0B0A]" />
+              <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-[var(--primary)] ring-2 ring-[var(--card)]" />
             )}
           </button>
         </div>
 
         {/* Centered Mobile Brand */}
         <div className="flex items-center gap-2">
-          <div className="h-7 w-7 rounded-full overflow-hidden border border-white/20 shadow-2xs">
+          <div className="h-7 w-7 rounded-full overflow-hidden border border-[var(--border)] shadow-2xs">
             <Image src="/logo.png" alt="Logo" width={28} height={28} className="object-cover" priority />
           </div>
           <div className="flex flex-col text-center">
-            <span className="font-serif font-medium text-sm text-white leading-tight">
+            <span className="font-serif font-medium text-sm text-[var(--foreground)] leading-tight">
               Personal OS
             </span>
-            <span className="text-[9px] text-[#E07A50] font-sans tracking-wide">
+            <span className="text-[9px] text-[var(--primary)] font-sans tracking-wide">
               Arif&apos;s Sanctuary
             </span>
           </div>
@@ -111,7 +113,7 @@ export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
         <button
           type="button"
           onClick={onOpenMobileMenu}
-          className="p-2 -mr-2 text-[#A69E94] hover:text-white transition-colors cursor-pointer"
+          className="p-2 -mr-2 text-[var(--muted-foreground)] hover:text-[var(--foreground)] active:scale-95 transition-all cursor-pointer"
           aria-label="More options / Open navigation menu"
           title="More options"
         >
@@ -120,35 +122,35 @@ export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
 
         {/* Mobile Notification Popover */}
         {showNotifications && (
-          <div className="absolute left-4 top-[calc(var(--header-height)+4px)] w-[calc(100vw-32px)] max-w-sm rounded-2xl bg-[#1C1917] border border-white/10 shadow-2xl p-3 z-50 animate-in fade-in duration-150">
-            <div className="flex items-center justify-between pb-2 border-b border-white/10">
-              <p className="text-xs font-semibold text-white">Signals & Alerts</p>
+          <div className="absolute left-4 top-[calc(var(--header-height)+4px)] w-[calc(100vw-32px)] max-w-sm rounded-2xl bg-[var(--popover)] border border-[var(--border)] shadow-2xl p-3 z-50 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between pb-2 border-b border-[var(--border)]">
+              <p className="text-xs font-semibold text-[var(--foreground)]">Signals & Alerts</p>
               {hasUnread && (
                 <button
                   type="button"
                   onClick={() => setHasUnread(false)}
-                  className="text-[10px] text-[#E07A50] hover:underline cursor-pointer"
+                  className="text-[10px] text-[var(--primary)] hover:underline cursor-pointer"
                 >
                   Mark read
                 </button>
               )}
             </div>
             <div className="py-2 space-y-2 text-xs">
-              <div className="p-2 rounded-xl bg-white/5 border border-white/8">
-                <div className="flex items-center gap-1.5 font-medium text-white">
+              <div className="p-2 rounded-xl bg-[var(--muted)]/50 border border-[var(--border)]">
+                <div className="flex items-center gap-1.5 font-medium text-[var(--foreground)]">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                   <span>Deep Focus Ready</span>
                 </div>
-                <p className="text-[11px] text-white/60 mt-0.5">
+                <p className="text-[11px] text-[var(--muted-foreground)] mt-0.5">
                   Start your scheduled 25m focus sprint for today.
                 </p>
               </div>
-              <div className="p-2 rounded-xl bg-white/5 border border-white/8">
-                <div className="flex items-center gap-1.5 font-medium text-white">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#E05B27]" />
+              <div className="p-2 rounded-xl bg-[var(--muted)]/50 border border-[var(--border)]">
+                <div className="flex items-center gap-1.5 font-medium text-[var(--foreground)]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[var(--primary)]" />
                   <span>The Radar Signal</span>
                 </div>
-                <p className="text-[11px] text-white/60 mt-0.5">
+                <p className="text-[11px] text-[var(--muted-foreground)] mt-0.5">
                   Curated RSS insights ready to review.
                 </p>
               </div>
@@ -158,10 +160,10 @@ export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
       </div>
 
       {/* Desktop Left Breadcrumb Navigation (>= lg) */}
-      <div className="hidden lg:flex items-center gap-2 text-xs font-mono tracking-wide text-[#7A7269] dark:text-[#A69E94]">
+      <div className="hidden lg:flex items-center gap-2 text-xs font-mono tracking-wide text-[var(--muted-foreground)]">
         <span>Personal OS</span>
-        <span className="text-[#C5BCB2] dark:text-neutral-600">/</span>
-        <span className="text-[#24211F] dark:text-[#F3EFEA] font-medium">{currentRoute.title}</span>
+        <span className="text-[var(--border)]">/</span>
+        <span className="text-[var(--foreground)] font-medium">{currentRoute.title}</span>
       </div>
 
       {/* Desktop Center/Right Controls (>= lg) */}
@@ -170,30 +172,13 @@ export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
         <button
           type="button"
           onClick={handleOpenSearch}
-          className="flex items-center gap-2.5 w-64 xl:w-72 rounded-full border border-[#EDE7DE] dark:border-[#2C2724] bg-white/80 dark:bg-[#1A1715]/90 px-3.5 py-1.5 text-xs text-[#968E85] dark:text-[#8E867C] shadow-2xs hover:border-[#D8CFBF] dark:hover:border-[#3D3733] transition-all cursor-pointer"
+          className="flex items-center gap-2.5 w-64 xl:w-72 rounded-full border border-[var(--border)] bg-[var(--background)] px-3.5 py-1.5 text-xs text-[var(--muted-foreground)] shadow-2xs hover:border-[var(--primary)]/40 active:scale-[0.99] transition-all cursor-pointer"
         >
-          <Search className="h-3.5 w-3.5 text-[#A0988E]" />
+          <Search className="h-3.5 w-3.5 text-[var(--muted-foreground)]" />
           <span className="flex-1 text-left">Search or ask anything...</span>
-          <kbd className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#F7F4EF] dark:bg-[#25211E] border border-[#E8E1D7] dark:border-[#332E2A] text-[#7A7269] dark:text-[#A69E94]">
+          <kbd className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[var(--card)] border border-[var(--border)] text-[var(--muted-foreground)]">
             ⌘K
           </kbd>
-        </button>
-
-        {/* Quick Capture Action */}
-        <button
-          type="button"
-          onClick={() => {
-            if (onQuickCapture) {
-              onQuickCapture();
-            } else if (typeof window !== "undefined") {
-              window.dispatchEvent(new CustomEvent("personal-os:quick-capture"));
-            }
-          }}
-          className="relative h-9 w-9 rounded-full flex items-center justify-center text-[#7A7269] hover:text-[#24211F] dark:text-[#A69E94] dark:hover:text-[#F3EFEA] hover:bg-[#F7F4EF] dark:hover:bg-[#1C1917] transition-colors cursor-pointer"
-          aria-label="Quick capture"
-          title="Quick capture (N)"
-        >
-          <Plus className="h-4 w-4 text-[#B94A24] dark:text-[#E07A50]" />
         </button>
 
         {/* Theme Mode Toggle */}
@@ -214,35 +199,35 @@ export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
           </button>
 
           {showNotifications && (
-            <div className="absolute right-0 top-full mt-2 w-80 rounded-2xl bg-white dark:bg-[#1C1917] border border-[#EDE7DE] dark:border-[#2C2724] shadow-xl p-3 z-50 animate-in fade-in zoom-in-95 duration-150">
-              <div className="flex items-center justify-between pb-2 border-b border-[#F2EDE6] dark:border-[#282421]">
-                <p className="text-xs font-semibold text-[#24211F] dark:text-[#F3EFEA]">Signals & Alerts</p>
+            <div className="absolute right-0 top-full mt-2 w-80 rounded-2xl bg-[var(--popover)] border border-[var(--border)] shadow-xl p-3 z-50 animate-in fade-in zoom-in-95 duration-150">
+              <div className="flex items-center justify-between pb-2 border-b border-[var(--border)]">
+                <p className="text-xs font-semibold text-[var(--foreground)]">Signals & Alerts</p>
                 {hasUnread && (
                   <button
                     type="button"
                     onClick={() => setHasUnread(false)}
-                    className="text-[10px] text-[#B94A24] dark:text-[#E07A50] hover:underline cursor-pointer"
+                    className="text-[10px] text-[var(--primary)] hover:underline cursor-pointer"
                   >
                     Mark read
                   </button>
                 )}
               </div>
               <div className="py-2 space-y-2 text-xs">
-                <div className="p-2 rounded-xl bg-[#F7F4EF]/70 dark:bg-[#25211E]/50 border border-[#EDE7DE]/60 dark:border-[#2C2724]">
-                  <div className="flex items-center gap-1.5 font-medium text-[#24211F] dark:text-[#F3EFEA]">
+                <div className="p-2 rounded-xl bg-[var(--muted)]/50 border border-[var(--border)]">
+                  <div className="flex items-center gap-1.5 font-medium text-[var(--foreground)]">
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                     <span>Deep Focus Ready</span>
                   </div>
-                  <p className="text-[11px] text-[#7A7269] dark:text-[#A69E94] mt-0.5">
+                  <p className="text-[11px] text-[var(--muted-foreground)] mt-0.5">
                     Start your scheduled 25m focus sprint for today.
                   </p>
                 </div>
-                <div className="p-2 rounded-xl bg-[#F7F4EF]/70 dark:bg-[#25211E]/50 border border-[#EDE7DE]/60 dark:border-[#2C2724]">
-                  <div className="flex items-center gap-1.5 font-medium text-[#24211F] dark:text-[#F3EFEA]">
-                    <span className="h-1.5 w-1.5 rounded-full bg-[#E05B27]" />
+                <div className="p-2 rounded-xl bg-[var(--muted)]/50 border border-[var(--border)]">
+                  <div className="flex items-center gap-1.5 font-medium text-[var(--foreground)]">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[var(--primary)]" />
                     <span>The Radar Signal</span>
                   </div>
-                  <p className="text-[11px] text-[#7A7269] dark:text-[#A69E94] mt-0.5">
+                  <p className="text-[11px] text-[var(--muted-foreground)] mt-0.5">
                     Curated RSS insights ready to review.
                   </p>
                 </div>
@@ -251,12 +236,12 @@ export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
           )}
         </div>
 
-        {/* Primary + New / + Capture Button */}
+        {/* Primary + New Action Button */}
         <Button
           size="sm"
           onClick={onQuickCapture}
           aria-label="Capture"
-          className="h-9 px-4 rounded-full bg-[#1F1D1B] hover:bg-[#33302C] active:scale-95 text-white dark:bg-[#FAF7F2] dark:text-[#1F1D1B] dark:hover:bg-white text-xs font-medium gap-1.5 shadow-xs transition-transform"
+          className="h-8 px-3.5 rounded-full bg-[var(--primary)] hover:bg-[var(--primary)]/90 active:scale-95 text-[var(--primary-foreground)] text-xs font-medium gap-1.5 shadow-sm transition-all cursor-pointer"
         >
           <Plus className="h-3.5 w-3.5" />
           <span>New</span>
@@ -267,18 +252,18 @@ export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
           <button
             type="button"
             onClick={() => setShowProfileMenu(!showProfileMenu)}
-            className="relative flex items-center justify-center h-8 w-8 rounded-full bg-[#B94A24] text-white font-serif font-medium text-xs shadow-xs ring-2 ring-emerald-500/80 ring-offset-2 ring-offset-white dark:ring-offset-[#12100E] active:scale-95 transition-all cursor-pointer"
+            className="relative flex items-center justify-center h-8 w-8 rounded-full bg-[var(--primary)] text-white font-serif font-medium text-xs shadow-xs ring-2 ring-emerald-500/80 ring-offset-2 ring-offset-[var(--card)] active:scale-95 transition-all cursor-pointer"
             aria-label="User account menu"
           >
             A
           </button>
 
           {showProfileMenu && (
-            <div className="absolute right-0 top-full mt-2 w-56 rounded-2xl bg-white dark:bg-[#1C1917] border border-[#EDE7DE] dark:border-[#2C2724] shadow-xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
-              <div className="px-3 py-2 border-b border-[#F2EDE6] dark:border-[#282421]">
-                <p className="text-xs font-semibold text-[#24211F] dark:text-[#F3EFEA]">Arif</p>
-                <p className="text-[11px] text-[#7A7269] dark:text-[#A69E94] truncate">321arifali@gmail.com</p>
-                <div className="mt-1 flex items-center gap-1.5 text-[10px] text-emerald-600 font-mono">
+            <div className="absolute right-0 top-full mt-2 w-56 rounded-2xl bg-[var(--popover)] border border-[var(--border)] shadow-xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+              <div className="px-3 py-2 border-b border-[var(--border)]">
+                <p className="text-xs font-semibold text-[var(--foreground)]">Arif</p>
+                <p className="text-[11px] text-[var(--muted-foreground)] truncate">321arifali@gmail.com</p>
+                <div className="mt-1 flex items-center gap-1.5 text-[10px] text-emerald-600 dark:text-emerald-400 font-mono">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                   <span>Enclave Active</span>
                 </div>
@@ -291,16 +276,16 @@ export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
                     setShowProfileMenu(false);
                     router.push("/settings");
                   }}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[#24211F] dark:text-[#F3EFEA] hover:bg-[#F7F4EF] dark:hover:bg-[#25211E] rounded-lg transition-colors text-left"
+                  className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[var(--foreground)] hover:bg-[var(--muted)] rounded-lg transition-colors text-left cursor-pointer"
                 >
-                  <Settings className="h-3.5 w-3.5 text-[#7A7269]" />
+                  <Settings className="h-3.5 w-3.5 text-[var(--muted-foreground)]" />
                   <span>Settings</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={handleSignOut}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors text-left"
+                  className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-600 hover:bg-red-500/10 rounded-lg transition-colors text-left cursor-pointer"
                 >
                   <LogOut className="h-3.5 w-3.5" />
                   <span>Sign Out</span>

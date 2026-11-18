@@ -131,6 +131,18 @@ export async function getRequestContext(
 
   // 4. Local dev preview when running in development mode with dev_preview cookie
   if (isDev) {
+    if (request) {
+      const cookieHeader = request.headers.get("cookie") || "";
+      if (cookieHeader.includes("dev_preview=true")) {
+        return {
+          user: {
+            id: "40dd9499-53c2-48d9-9749-a061ac72ad7a",
+            email: "321arifali@gmail.com",
+          },
+          supabase,
+        };
+      }
+    }
     try {
       const { cookies } = await import("next/headers");
       const cookieStore = await cookies();
@@ -162,3 +174,38 @@ export async function getRequestContext(
 
   return null;
 }
+
+/**
+ * Universal authentication context: checks for Bearer API token first (e.g. from n8n or external workers),
+ * and falls back to standard user session cookie context.
+ */
+export async function getAuthOrTokenContext(
+  request?: Request
+): Promise<RequestContext | null> {
+  if (request) {
+    const authHeader = request.headers.get("authorization");
+    if (authHeader && authHeader.toLowerCase().startsWith("bearer ")) {
+      const { validateApiToken } = await import("@/lib/auth/api-tokens");
+      let supabase: SupabaseClient | null = null;
+      try {
+        supabase = await createClient();
+      } catch {
+        // Fallback in dev/test
+      }
+      const tokenResult = await validateApiToken(request, supabase);
+      if (tokenResult.valid && tokenResult.userId) {
+        return {
+          user: {
+            id: tokenResult.userId,
+            email: "api-token@personal-os.local",
+          },
+          supabase,
+        };
+      }
+      return null;
+    }
+  }
+
+  return getRequestContext(request);
+}
+

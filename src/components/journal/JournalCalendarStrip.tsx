@@ -102,7 +102,7 @@ export function JournalCalendarStrip({
       </div>
 
       {/* Date pills */}
-      <div className="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+      <div className="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0 no-scrollbar">
         {days.map((item) => {
           const isSelected = item.date === selectedDate;
           const hasEntry = entriesDates.has(item.date);

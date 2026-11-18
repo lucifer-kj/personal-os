@@ -68,11 +68,19 @@ export const DEFAULT_WORKBENCH: WorkbenchConfig = {
     },
     {
       id: "leads",
-      title: "Leads & CRM",
-      defaultTitle: "Leads & CRM",
+      title: "Leads & Clients",
+      defaultTitle: "Leads & Clients",
       href: "/leads",
       iconName: "Users",
-      description: "Client pipeline, lead scoring & conversion",
+      description: "Autonomous lead engine, audits & client conversion",
+    },
+    {
+      id: "radar",
+      title: "The Radar",
+      defaultTitle: "The Radar",
+      href: "/radar",
+      iconName: "Radio",
+      description: "Curated RSS feeds & 1-click signal promotion",
     },
     {
       id: "studio",
@@ -91,14 +99,6 @@ export const DEFAULT_WORKBENCH: WorkbenchConfig = {
       href: "/notes",
       iconName: "FileText",
       description: "Markdown knowledge base & wiki-link graph",
-    },
-    {
-      id: "radar",
-      title: "The Radar",
-      defaultTitle: "The Radar",
-      href: "/radar",
-      iconName: "Radio",
-      description: "Curated RSS feeds & 1-click signal promotion",
     },
     {
       id: "habits",

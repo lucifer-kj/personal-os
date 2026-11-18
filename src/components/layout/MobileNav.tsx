@@ -91,7 +91,7 @@ export function MobileNav({
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 px-4 pb-3 pt-1 pointer-events-none flex flex-col items-center">
         <nav
           aria-label="Mobile Navigation"
-          className="pointer-events-auto w-full max-w-md flex items-center justify-between rounded-full border border-white/10 bg-[#161311]/92 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-3 py-1.5 transition-all text-[#8E867C]"
+          className="pointer-events-auto w-full max-w-md flex items-center justify-between rounded-full border border-[var(--border)]/80 bg-[var(--card)]/92 dark:bg-[#161311]/92 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-3 py-1.5 transition-all text-[var(--muted-foreground)]"
         >
           {navTabs.map((tab) => {
             const isHome = tab.href === "/";
@@ -104,7 +104,7 @@ export function MobileNav({
                   key="mobile-quick-capture"
                   type="button"
                   onClick={onQuickCapture}
-                  className="flex items-center justify-center h-9 w-9 rounded-full bg-[#E05B27] hover:bg-[#C94D1D] active:scale-90 text-white shadow-md transition-transform cursor-pointer mx-1"
+                  className="flex items-center justify-center h-9 w-9 rounded-full bg-[var(--primary)] hover:brightness-105 active:scale-90 text-[var(--primary-foreground)] shadow-md transition-transform cursor-pointer mx-1"
                   aria-label="Quick capture"
                   title="Quick capture"
                 >
@@ -120,8 +120,8 @@ export function MobileNav({
                 className={cn(
                   "flex items-center gap-1.5 rounded-xl transition-all duration-200 active:scale-95",
                   isActive
-                    ? "bg-[#D25828] text-white px-3 py-1.5 shadow-sm font-semibold text-xs rounded-xl"
-                    : "flex-col p-2 text-[#8E867C] hover:text-white rounded-xl"
+                    ? "bg-[var(--primary)] text-[var(--primary-foreground)] px-3 py-1.5 shadow-sm font-semibold text-xs rounded-xl"
+                    : "flex-col p-2 text-[var(--muted-foreground)] hover:text-[var(--foreground)] rounded-xl"
                 )}
               >
                 <Icon className={cn("h-4.5 w-4.5", isActive ? "stroke-[2.5]" : "")} />
@@ -134,7 +134,7 @@ export function MobileNav({
         </nav>
 
         {/* iOS Home Indicator Bar */}
-        <div className="w-32 h-1 rounded-full bg-neutral-300 dark:bg-neutral-700 mt-2 opacity-60" />
+        <div className="w-32 h-1 rounded-full bg-[var(--border)] mt-2 opacity-60" />
       </div>
 
       {/* Secondary Drawer Sheet for "More" */}
