@@ -11,8 +11,8 @@ interface EdgeVoiceOptions {
 
 export function useEdgeVoiceRecording(options: EdgeVoiceOptions = {}) {
   const {
-    workerUrl = process.env.NEXT_PUBLIC_EDGE_API_URL || "",
-    apiToken = process.env.NEXT_PUBLIC_EDGE_API_TOKEN || "",
+    workerUrl = "",
+    apiToken = "",
     onTranscriptionComplete,
     onError,
   } = options;
