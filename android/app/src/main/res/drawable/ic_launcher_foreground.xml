@@ -15,7 +15,7 @@
     <path
         android:pathData="M32,44 C34,34 44,28 56,30 C69,32 78,43 76,56 C74,69 63,78 50,76 C40,74 33,67 31,58"
         android:strokeWidth="3.2"
-        android:strokeCap="round"
+        android:strokeLineCap="round"
         android:strokeColor="#D97757"
         android:fillColor="#00000000" />
 
@@ -23,7 +23,7 @@
     <path
         android:pathData="M37,68 C45,74 58,74 67,67 C76,60 77,47 71,38"
         android:strokeWidth="1.8"
-        android:strokeCap="round"
+        android:strokeLineCap="round"
         android:strokeColor="#80D97757"
         android:fillColor="#00000000" />
 
