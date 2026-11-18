@@ -1,0 +1,52 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportHeight="108"
+    android:viewportWidth="108">
+
+    <!-- Ambient Orbital Aura Glow -->
+    <path
+        android:pathData="M54,26 A28,28 0 1,0 54,82 A28,28 0 1,0 54,26 Z"
+        android:strokeWidth="1.2"
+        android:strokeColor="#25D97757"
+        android:fillColor="#00000000" />
+
+    <!-- Primary Tilted Orbital Ring -->
+    <path
+        android:pathData="M32,44 C34,34 44,28 56,30 C69,32 78,43 76,56 C74,69 63,78 50,76 C40,74 33,67 31,58"
+        android:strokeWidth="3.2"
+        android:strokeCap="round"
+        android:strokeColor="#D97757"
+        android:fillColor="#00000000" />
+
+    <!-- Secondary Focus Orbit Track -->
+    <path
+        android:pathData="M37,68 C45,74 58,74 67,67 C76,60 77,47 71,38"
+        android:strokeWidth="1.8"
+        android:strokeCap="round"
+        android:strokeColor="#80D97757"
+        android:fillColor="#00000000" />
+
+    <!-- Central Workstation Nucleus Core -->
+    <path
+        android:pathData="M54,45 A9,9 0 1,1 53.99,45 Z"
+        android:strokeWidth="1.5"
+        android:strokeColor="#F39C78"
+        android:fillColor="#C96442" />
+
+    <!-- Inner Core Dot -->
+    <path
+        android:pathData="M54,51.5 A2.5,2.5 0 1,1 53.99,51.5 Z"
+        android:fillColor="#EDEAE6" />
+
+    <!-- Active Satellite Node (Focus Beacon) -->
+    <path
+        android:pathData="M70,41 A3.5,3.5 0 1,1 69.99,41 Z"
+        android:fillColor="#F39C78" />
+
+    <!-- Ambient Counter-Node -->
+    <path
+        android:pathData="M38,67 A2,2 0 1,1 37.99,67 Z"
+        android:fillColor="#C96442" />
+
+</vector>

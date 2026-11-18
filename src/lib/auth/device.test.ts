@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getBrowserName, getOsName, getDeviceType, parseUserAgent } from "./device";
+import { parseUserAgent } from "./device";
 
 describe("Device and User-Agent parser", () => {
   it("parses Windows and Chrome correctly", () => {

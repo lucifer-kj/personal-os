@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Fingerprint, Lock, LogOut, Loader2, AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Capacitor } from "@capacitor/core";
 
 export interface AppLockScreenProps {
   isShielded: boolean;
@@ -72,7 +73,9 @@ export function AppLockScreen({
 
           <p className="text-xs text-[var(--muted-foreground)]">
             {isLocked
-              ? "Re-authenticate using your device passkey or biometric sensor to resume."
+              ? Capacitor.isNativePlatform()
+                ? "Touch the side-mounted fingerprint sensor to resume."
+                : "Re-authenticate using your device passkey or biometric sensor to resume."
               : "Interface shielded while app was backgrounded."}
           </p>
         </div>
@@ -97,7 +100,11 @@ export function AppLockScreen({
               ) : (
                 <Fingerprint className="h-4 w-4" />
               )}
-              <span>Unlock with Passkey / Face ID</span>
+              <span>
+                {Capacitor.isNativePlatform()
+                  ? "Unlock with Fingerprint"
+                  : "Unlock with Passkey / Face ID"}
+              </span>
             </Button>
           ) : (
             <Button

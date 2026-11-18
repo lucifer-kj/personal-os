@@ -16,6 +16,37 @@ export interface CleanArticleResponse {
   url: string;
 }
 
+/**
+ * Validates URLs against SSRF: blocks non-HTTP protocols, localhost, private IP ranges, and cloud metadata.
+ */
+function isBlockedUrl(urlString: string): boolean {
+  try {
+    const parsed = new URL(urlString);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+      return true;
+    }
+    const host = parsed.hostname.toLowerCase();
+    if (
+      host === "localhost" ||
+      host === "127.0.0.1" ||
+      host === "::1" ||
+      host === "0.0.0.0" ||
+      host.endsWith(".local") ||
+      host.endsWith(".internal") ||
+      host === "169.254.169.254" ||
+      host === "metadata.google.internal" ||
+      /^10\./.test(host) ||
+      /^192\.168\./.test(host) ||
+      /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(host)
+    ) {
+      return true;
+    }
+    return false;
+  } catch {
+    return true;
+  }
+}
+
 export async function GET(request: NextRequest) {
   const user = await getAuthenticatedUser(request);
   if (!user) {
@@ -26,8 +57,8 @@ export async function GET(request: NextRequest) {
   const targetUrl = searchParams.get("url");
   const fallbackTitle = searchParams.get("title") || "Article Signal";
 
-  if (!targetUrl) {
-    return apiError("VALIDATION_ERROR", "Target URL is required", undefined, 400);
+  if (!targetUrl || isBlockedUrl(targetUrl)) {
+    return apiError("VALIDATION_ERROR", "Target URL is invalid or points to a restricted network address", undefined, 400);
   }
 
   let domain = "";
@@ -87,7 +118,7 @@ export async function GET(request: NextRequest) {
 
         // If story points to an external article, fetch that article's text
         let articleBody = hnData.text ? hnData.text.replace(/<[^>]+>/g, " ").trim() : "";
-        if (externalStoryUrl) {
+        if (externalStoryUrl && !isBlockedUrl(externalStoryUrl)) {
           try {
             const extRes = await fetch(externalStoryUrl, {
               headers: {

@@ -164,7 +164,7 @@ export function DashboardHeader({
           <Button
             size="sm"
             onClick={onStartFocus}
-            className="h-8.5 px-4 rounded-full bg-[#E05B27] hover:bg-[#C94D1D] active:scale-95 text-white text-xs font-semibold gap-1.5 shadow-sm transition-transform cursor-pointer"
+            className="h-8.5 px-4 rounded-full bg-[var(--primary)] hover:bg-[var(--primary)]/90 active:scale-95 text-[var(--primary-foreground)] text-xs font-semibold gap-1.5 shadow-sm transition-all cursor-pointer"
           >
             <Play className="h-3 w-3 fill-current" />
             <span>Start Deep Work (45m)</span>
@@ -174,10 +174,10 @@ export function DashboardHeader({
             size="sm"
             variant="outline"
             onClick={onPlanDay}
-            className="h-8.5 px-4 rounded-full bg-white/95 dark:bg-[#1C1917]/95 text-[#24211F] dark:text-[#F3EFEA] border border-[#E5DDD3] dark:border-white/15 hover:bg-stone-100 dark:hover:bg-[#282421] active:scale-95 text-xs font-semibold gap-1.5 shadow-xs transition-all cursor-pointer"
+            className="h-8.5 px-4 rounded-full bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] hover:bg-[var(--muted)] active:scale-95 text-xs font-semibold gap-1.5 shadow-2xs transition-all cursor-pointer"
           >
-            <CalendarIcon className="h-3 w-3 text-[#E05B27]" />
-            <span className="text-[#24211F] dark:text-[#F3EFEA] font-semibold">Plan My Day</span>
+            <CalendarIcon className="h-3 w-3 text-[var(--primary)]" />
+            <span className="font-semibold">Plan My Day</span>
           </Button>
         </div>
 

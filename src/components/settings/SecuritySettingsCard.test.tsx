@@ -64,7 +64,7 @@ describe("SecuritySettingsCard Component", () => {
       nextLevel: "aal1",
     });
     const regSpy = vi.spyOn(passkeysModule, "registerPasskey").mockResolvedValue({
-      data: { id: "passkey-1" } as any,
+      data: { id: "passkey-1" } as unknown as NonNullable<passkeysModule.PasskeyRegistrationResult["data"]>,
       error: null,
     });
 

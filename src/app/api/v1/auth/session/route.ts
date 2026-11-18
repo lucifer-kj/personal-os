@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { getRequestContext } from "@/lib/supabase/context";
 import {
   SESSION_COOKIE_NAME,
@@ -21,9 +21,30 @@ export async function GET(req: NextRequest) {
   }
 
   const raw = req.cookies.get(SESSION_COOKIE_NAME)?.value;
-  const meta = deserializeSessionMeta(raw);
-  const evaluation = evaluateSessionValidity(meta);
-  const timeRemaining = getSessionTimeRemaining(meta);
+  let meta = deserializeSessionMeta(raw);
+
+  const isDevPreview =
+    process.env.NODE_ENV === "development" &&
+    req.cookies.get("dev_preview")?.value === "true";
+
+  if (!meta && isDevPreview) {
+    meta = createSessionMeta(true, "dev-preview-device");
+  }
+
+  const evaluation =
+    isDevPreview && (!meta || !evaluateSessionValidity(meta).isValid)
+      ? { isValid: true }
+      : evaluateSessionValidity(meta);
+
+  const timeRemaining =
+    isDevPreview && (!meta || getSessionTimeRemaining(meta).effectiveRemainingMs <= 0)
+      ? {
+          effectiveRemainingMs: 3600000,
+          isWarning: false,
+          sessionExpiryTime: Date.now() + 3600000,
+          inactivityExpiryTime: Date.now() + 3600000,
+        }
+      : getSessionTimeRemaining(meta);
 
   return apiSuccess({
     user: ctx.user,

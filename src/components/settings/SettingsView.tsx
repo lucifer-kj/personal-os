@@ -13,8 +13,6 @@ import {
   Flame,
   Radio,
   Loader2,
-  Sliders,
-  ExternalLink,
 } from "lucide-react";
 import { toast } from "sonner";
 import { SecuritySettingsCard } from "./SecuritySettingsCard";
@@ -132,7 +130,7 @@ export function SettingsView() {
               <span>Curated Radar Feeds</span>
             </div>
             <p className="text-[11px] text-[#7A7269] dark:text-[#A69E94]">
-              Hacker News, Simon Willison's Weblog, and GitHub Engineering blog.
+              Hacker News, Simon Willison&apos;s Weblog, and GitHub Engineering blog.
             </p>
           </div>
         </div>

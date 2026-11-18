@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { X, Sparkles, Monitor, Smartphone, Sun, Moon, CheckCircle2, Flame, Play, Eye } from "lucide-react";
+import { X, Sparkles, Monitor, Smartphone, Sun, Moon, Eye } from "lucide-react";
 import { useTheme } from "@/lib/theme/ThemeProvider";
 import { AppOrb, OrbState } from "@/components/brand/AppOrb";
 import { fireCelebrationConfetti } from "@/lib/ui/confetti";
@@ -17,7 +17,6 @@ export function StatePreviewModal({ isOpen, onClose, onSelectScenery }: StatePre
   const { resolvedTheme, setTheme } = useTheme();
   const [selectedOrbState, setSelectedOrbState] = React.useState<OrbState>("breathing");
   const [previewDevice, setPreviewDevice] = React.useState<"desktop" | "mobile">("desktop");
-  const [activeWorkflowState, setActiveWorkflowState] = React.useState<"normal" | "empty" | "complete" | "focus">("normal");
 
   if (!isOpen) return null;
 
@@ -29,7 +28,6 @@ export function StatePreviewModal({ isOpen, onClose, onSelectScenery }: StatePre
   ];
 
   const handleTriggerCelebration = () => {
-    setActiveWorkflowState("complete");
     fireCelebrationConfetti();
   };
 

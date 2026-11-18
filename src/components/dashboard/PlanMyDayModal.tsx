@@ -3,17 +3,9 @@
 import * as React from "react";
 import {
   Calendar,
-  Sparkles,
   X,
-  CheckCircle2,
-  Clock,
-  FolderKanban,
-  AlertCircle,
   HelpCircle,
-  Trash2,
   ArrowRight,
-  Copy,
-  ExternalLink,
 } from "lucide-react";
 import { toast } from "sonner";
 import { fireCelebrationConfetti } from "@/lib/ui/confetti";
@@ -408,13 +400,13 @@ export function PlanMyDayModal({
 
                 <div className="p-2.5 rounded-xl border border-[var(--border)] bg-[var(--background)] flex items-start justify-between gap-3">
                   <div>
-                    <span className="font-semibold text-[var(--foreground)]">// note</span>
+                    <span className="font-semibold text-[var(--foreground)]">{"// note"}</span>
                     <p className="text-[10px] text-[var(--muted-foreground)] font-sans mt-0.5">
                       Appends additional notes to the task
                     </p>
                   </div>
                   <span className="text-[10px] text-[var(--muted-foreground)]">
-                    // deliver draft by evening
+                    {"// deliver draft by evening"}
                   </span>
                 </div>
               </div>

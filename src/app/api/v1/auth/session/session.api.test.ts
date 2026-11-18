@@ -5,7 +5,6 @@ import {
   SESSION_COOKIE_NAME,
   createSessionMeta,
   serializeSessionMeta,
-  deserializeSessionMeta,
 } from "@/lib/auth/session-policy";
 
 describe("Auth Session Policy API (/api/v1/auth/session)", () => {

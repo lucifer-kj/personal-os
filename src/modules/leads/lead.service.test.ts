@@ -79,4 +79,89 @@ describe("LeadService domain logic & CRM workflows", () => {
     const listForB = await service.listLeads(USER_B);
     expect(listForB.leads.length).toBe(0);
   });
+
+  it("handles batch ingestion with deduplication by dedupe_key", async () => {
+    const ingestData = {
+      leads: [
+        {
+          full_name: "Kolkata Dental Care",
+          business_name: "Kolkata Dental Care",
+          phone: "+919830999999",
+          dedupe_key: "osm_node_1001",
+          lighthouse_mobile: 32,
+          score_tier: "hot" as const,
+        },
+        {
+          full_name: "Apex Diagnostic Lab",
+          business_name: "Apex Diagnostic Lab",
+          phone: "+919830888888",
+          dedupe_key: "osm_node_1002",
+          lighthouse_mobile: 45,
+          score_tier: "warm" as const,
+        },
+      ],
+      batch_id: "batch-test-01",
+    };
+
+    const result = await service.batchIngest(USER_A, ingestData);
+    expect(result.count).toBe(2);
+
+    // Ingesting the same dedupe_key should update instead of creating a duplicate
+    const reIngest = await service.batchIngest(USER_A, {
+      leads: [
+        {
+          full_name: "Kolkata Dental Care (Updated)",
+          business_name: "Kolkata Dental Care (Updated)",
+          dedupe_key: "osm_node_1001",
+          lighthouse_mobile: 28,
+        },
+      ],
+    });
+    expect(reIngest.count).toBe(1);
+
+    const allLeads = await service.listLeads(USER_A);
+    // Total should still be 2 (plus any default seed leads)
+    const matching = allLeads.leads.filter((l) => l.dedupe_key === "osm_node_1001");
+    expect(matching.length).toBe(1);
+    expect(matching[0].business_name).toBe("Kolkata Dental Care (Updated)");
+  });
+
+  it("manages targeting niches and locations cleanly", async () => {
+    const niche = await service.createNiche(USER_A, {
+      name: "Boutique Cafes",
+      vertical: "Food & Beverage",
+      osm_tags: ["amenity=cafe"],
+      avg_deal_value_cents: 2000000,
+    });
+    expect(niche.id).toBeDefined();
+    expect(niche.name).toBe("Boutique Cafes");
+
+    const location = await service.createLocation(USER_A, {
+      name: "New Town Hub",
+      city: "Kolkata",
+      latitude: 22.585,
+      longitude: 88.465,
+      radius_km: 4.0,
+    });
+    expect(location.id).toBeDefined();
+
+    const stats = await service.getStats(USER_A);
+    expect(stats.active_niches).toBeGreaterThanOrEqual(1);
+    expect(stats.active_locations).toBeGreaterThanOrEqual(1);
+  });
+
+  it("dispatches and records push triggers for workflows", async () => {
+    const trigger = await service.triggerWorkflow(USER_A, "discovery", {
+      niche: "Dental Clinics",
+      location: "Salt Lake",
+    });
+
+    expect(trigger.triggered).toBe(true);
+    expect(trigger.executionId).toBeDefined();
+
+    const logs = await service.listLogs(USER_A);
+    const triggerLog = logs.find((l) => l.event_type === "workflow_trigger");
+    expect(triggerLog).toBeDefined();
+    expect(triggerLog?.component).toBe("n8n_discovery");
+  });
 });

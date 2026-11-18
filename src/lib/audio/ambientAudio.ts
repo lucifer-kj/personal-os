@@ -34,14 +34,11 @@ export function startAmbientNoise(volume = 0.15): () => void {
     for (let i = 0; i < bufferSize; i++) {
       const white = Math.random() * 2 - 1;
       // Brown noise integration filter
-      dataStep(white);
       output[i] = (lastOut + 0.02 * white) / 1.02;
       lastOut = output[i];
       // Normalize gain
       output[i] *= 3.5;
     }
-
-    function dataStep(_val: number) {}
 
     const source = ctx.createBufferSource();
     source.buffer = buffer;

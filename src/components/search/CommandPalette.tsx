@@ -18,6 +18,7 @@ import {
   Sparkles,
   Share2,
   Radio,
+  Users,
 } from "lucide-react";
 import {
   DEFAULT_NAVIGATION_COMMANDS,
@@ -148,6 +149,7 @@ export function CommandPalette({
 
   const tasks = results.filter((r) => r.type === "task");
   const projects = results.filter((r) => r.type === "project");
+  const leads = results.filter((r) => r.type === "lead");
   const notes = results.filter((r) => r.type === "note");
   const habits = results.filter((r) => r.type === "habit");
   const inbox = results.filter((r) => r.type === "inbox");
@@ -271,6 +273,39 @@ export function CommandPalette({
                           <span className="font-medium truncate">{proj.title}</span>
                         </div>
                         <ArrowRight className="h-3.5 w-3.5 text-[var(--muted-foreground)] shrink-0" />
+                      </Command.Item>
+                    ))}
+                  </Command.Group>
+                )}
+
+                {leads.length > 0 && (
+                  <Command.Group
+                    heading="Leads & Clients"
+                    className="text-[10px] font-mono uppercase tracking-wider text-[var(--muted-foreground)] px-2 py-1 font-semibold"
+                  >
+                    {leads.map((lead) => (
+                      <Command.Item
+                        key={lead.id}
+                        value={`lead-${lead.id}-${lead.title}`}
+                        onSelect={() => handleSelectResult(lead)}
+                        className="flex items-center justify-between px-3 py-2 rounded-lg text-xs cursor-pointer select-none transition-colors data-[selected=true]:bg-[var(--muted)] hover:bg-[var(--muted)] text-[var(--foreground)]"
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <Users className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
+                          <div className="truncate">
+                            <span className="font-medium">{lead.title}</span>
+                            {lead.subtitle && (
+                              <span className="text-[11px] text-[var(--muted-foreground)] ml-2">
+                                {lead.subtitle}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        {lead.status && (
+                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded border border-[var(--border)] text-[var(--muted-foreground)] shrink-0 capitalize">
+                            {lead.status}
+                          </span>
+                        )}
                       </Command.Item>
                     ))}
                   </Command.Group>
@@ -401,6 +436,7 @@ export function CommandPalette({
                     {nav.url === "/focus" && <Timer className="h-3.5 w-3.5 shrink-0 text-teal-600" />}
                     {nav.url === "/inbox" && <Inbox className="h-3.5 w-3.5 shrink-0 text-purple-600" />}
                     {nav.url === "/studio" && <Share2 className="h-3.5 w-3.5 shrink-0 text-indigo-600" />}
+                    {nav.url === "/leads" && <Users className="h-3.5 w-3.5 shrink-0 text-emerald-500" />}
                     {nav.url === "/radar" && <Radio className="h-3.5 w-3.5 shrink-0 text-rose-500" />}
                     <span className="font-medium">{nav.title}</span>
                   </div>

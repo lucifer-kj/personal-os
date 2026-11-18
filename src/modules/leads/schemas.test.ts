@@ -51,6 +51,13 @@ describe("Leads validation schemas", () => {
     });
   });
 
+  describe("UpdateLeadSchema", () => {
+    it("accepts valid partial update", () => {
+      const res = UpdateLeadSchema.safeParse({ score: 90, status: "qualified" });
+      expect(res.success).toBe(true);
+    });
+  });
+
   describe("ConvertLeadSchema", () => {
     it("accepts empty object or custom project name", () => {
       const res1 = ConvertLeadSchema.safeParse({});

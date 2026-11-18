@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Plus } from "lucide-react";
+import { Plus, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Note, NoteWithLinks } from "@/modules/notes/types";
 import { Project } from "@/modules/projects/types";
@@ -31,6 +31,7 @@ export function NotesView({
   const [filterMode, setFilterMode] = React.useState<"all" | "pinned" | "archived">("all");
   const [searchQuery, setSearchQuery] = React.useState("");
   const [mobileShowEditor, setMobileShowEditor] = React.useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false);
 
   // Fetch full details (with links) when selected note changes
   const fetchNoteDetails = React.useCallback(async (noteId: string) => {
@@ -221,7 +222,7 @@ export function NotesView({
 
   return (
     <div className="space-y-6 flex flex-col flex-1 min-h-[calc(100vh-6rem)]">
-      {/* 1. Page Header matching Reference Image 1 */}
+      {/* 1. Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="space-y-1">
           <h1 className="text-3xl sm:text-4xl font-serif font-medium tracking-tight text-[var(--foreground)]">
@@ -232,37 +233,56 @@ export function NotesView({
           </p>
         </div>
 
-        <Button
-          size="default"
-          onClick={handleNewNote}
-          className="h-9 px-5 rounded-full bg-white dark:bg-[#FAF7F2] text-[#12100E] dark:text-[#12100E] hover:bg-stone-200 text-xs font-semibold gap-1.5 shadow-xs transition-transform active:scale-95 cursor-pointer self-start sm:self-auto"
-        >
-          <Plus className="h-3.5 w-3.5" />
-          <span>New Note</span>
-        </Button>
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          {/* Zen Canvas / Sidebar Toggle */}
+          <button
+            type="button"
+            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium rounded-full border border-[var(--border)] bg-[var(--card)] hover:bg-[var(--muted)] text-[var(--foreground)] transition-all cursor-pointer active:scale-95 shadow-2xs"
+            title={isSidebarCollapsed ? "Expand notes sidebar" : "Collapse notes sidebar for distraction-free writing"}
+          >
+            {isSidebarCollapsed ? (
+              <PanelLeftOpen className="h-3.5 w-3.5 text-[var(--primary)]" />
+            ) : (
+              <PanelLeftClose className="h-3.5 w-3.5 text-[var(--muted-foreground)]" />
+            )}
+            <span className="hidden sm:inline">{isSidebarCollapsed ? "Show List" : "Zen Canvas"}</span>
+          </button>
+
+          <Button
+            size="default"
+            onClick={handleNewNote}
+            className="h-9 px-5 rounded-full bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-[var(--primary-foreground)] text-xs font-semibold gap-1.5 shadow-xs transition-transform active:scale-95 cursor-pointer"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            <span>New Note</span>
+          </Button>
+        </div>
       </div>
 
-      {/* 2. Main Two-Column Layout */}
+      {/* 2. Main Collapsible Two-Column Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 min-h-0">
-        {/* Left Column: Note Stream & Tabs (4 cols) */}
-        <div className={`${mobileShowEditor ? "hidden lg:flex" : "flex"} lg:col-span-4 flex-col`}>
-          <NoteSidebar
-            notes={notes}
-            selectedNoteId={selectedNote?.id || null}
-            onSelectNote={handleSelectNote}
-            onNewNote={handleNewNote}
-            activeTag={activeTag}
-            onSelectTag={setActiveTag}
-            availableTags={availableTags}
-            filterMode={filterMode}
-            onFilterModeChange={setFilterMode}
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-          />
-        </div>
+        {/* Left Column: Note Stream & Tabs */}
+        {!isSidebarCollapsed && (
+          <div className={`${mobileShowEditor ? "hidden lg:flex" : "flex"} lg:col-span-4 flex-col animate-in fade-in slide-in-from-left-2 duration-200`}>
+            <NoteSidebar
+              notes={notes}
+              selectedNoteId={selectedNote?.id || null}
+              onSelectNote={handleSelectNote}
+              onNewNote={handleNewNote}
+              activeTag={activeTag}
+              onSelectTag={setActiveTag}
+              availableTags={availableTags}
+              filterMode={filterMode}
+              onFilterModeChange={setFilterMode}
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+            />
+          </div>
+        )}
 
-        {/* Right Column: Editor & Reader Area (8 cols) */}
-        <div className={`${!mobileShowEditor ? "hidden lg:flex" : "flex"} lg:col-span-8 flex-col`}>
+        {/* Right Column: Editor & Reader Area */}
+        <div className={`${!mobileShowEditor ? "hidden lg:flex" : "flex"} ${isSidebarCollapsed ? "lg:col-span-12" : "lg:col-span-8"} flex-col transition-all duration-200`}>
           <NoteEditor
             note={selectedNote}
             onUpdateNote={handleUpdateNote}

@@ -16,16 +16,12 @@ const ThemeContext = React.createContext<ThemeContextType | undefined>(undefined
 const STORAGE_KEY = "personal_os_theme";
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = React.useState<Theme>("system");
-  const [resolvedTheme, setResolvedTheme] = React.useState<"light" | "dark">("light");
-  const [mounted, setMounted] = React.useState(false);
-
   // Compute resolved theme based on screen size (desktop = light default, mobile = dark default)
   const computeTheme = React.useCallback((currentTheme: Theme): "light" | "dark" => {
     if (currentTheme === "light") return "light";
     if (currentTheme === "dark") return "dark";
 
-    // "system" or initial: desktop (<1024px) defaults to dark, desktop (>=1024px) defaults to light
+    // "system" or initial: mobile (<1024px) defaults to dark, desktop (>=1024px) defaults to light
     if (typeof window !== "undefined") {
       const isMobile = window.innerWidth < 1024;
       return isMobile ? "dark" : "light";
@@ -33,16 +29,28 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     return "light";
   }, []);
 
-  // Initialize theme on mount
-  React.useEffect(() => {
-    setMounted(true);
-    const saved = localStorage.getItem(STORAGE_KEY) as Theme | null;
-    const initialTheme: Theme = saved || "system";
-    setThemeState(initialTheme);
-    const resolved = computeTheme(initialTheme);
-    setResolvedTheme(resolved);
+  const [theme, setThemeState] = React.useState<Theme>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(STORAGE_KEY) as Theme | null;
+      if (saved) return saved;
+    }
+    return "system";
+  });
 
-    if (resolved === "dark") {
+  const [resolvedTheme, setResolvedTheme] = React.useState<"light" | "dark">(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(STORAGE_KEY) as Theme | null;
+      const initialTheme: Theme = saved || "system";
+      if (initialTheme === "light") return "light";
+      if (initialTheme === "dark") return "dark";
+      return window.innerWidth < 1024 ? "dark" : "light";
+    }
+    return "light";
+  });
+
+  // Synchronize document classes and handle resize
+  React.useEffect(() => {
+    if (resolvedTheme === "dark") {
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");
@@ -64,7 +72,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [computeTheme]);
+  }, [computeTheme, resolvedTheme]);
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);

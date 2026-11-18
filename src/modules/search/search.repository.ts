@@ -295,6 +295,43 @@ export class SupabaseSearchRepository implements ISearchRepository {
       );
     }
 
+    // Search leads / prospective clients
+    if (!allowedTypes || allowedTypes.includes("lead")) {
+      promises.push(
+        (async (): Promise<SearchResultItem[]> => {
+          const { data, error } = await this.client
+            .from("leads")
+            .select("id, full_name, business_name, company, score, status, category")
+            .eq("user_id", userId)
+            .is("archived_at", null)
+            .or(`full_name.ilike.${pattern},business_name.ilike.${pattern},company.ilike.${pattern},notes.ilike.${pattern}`)
+            .limit(limit);
+
+          if (error || !data) return [];
+          return data.map((l) => {
+            const name = l.business_name || l.company || l.full_name;
+            const nLower = name.toLowerCase();
+            let score = 40;
+            if (nLower === termLower) score = 100;
+            else if (nLower.startsWith(termLower)) score = 85;
+            else if (nLower.includes(termLower)) score = 55;
+
+            return {
+              id: l.id,
+              type: "lead",
+              title: name,
+              subtitle: l.category ? `${l.category} • Score: ${l.score}/100` : `Lead Score: ${l.score}/100`,
+              url: `/leads?selected=${l.id}`,
+              status: l.status,
+              metadata: { score: l.score, category: l.category },
+              score,
+            };
+          });
+        })()
+      );
+    }
+
+
     const resultsByGroup = await Promise.all(promises);
     const combined = resultsByGroup.flat();
 

@@ -11,7 +11,6 @@ import {
   UNTRUSTED_ABSOLUTE_MAX_MS,
   TRUSTED_INACTIVITY_MAX_MS,
   TRUSTED_ABSOLUTE_MAX_MS,
-  INACTIVITY_WARNING_THRESHOLD_MS,
 } from "./session-policy";
 
 describe("Session Policy & Lifetime Engine", () => {

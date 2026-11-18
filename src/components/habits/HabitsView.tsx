@@ -136,44 +136,47 @@ export function HabitsView({ initialHabits = [], initialStats = null }: HabitsVi
 
       {/* Summary Stats Cards */}
       {stats && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="p-4 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs flex items-center gap-3.5">
-            <div className="h-10 w-10 rounded-lg bg-[var(--primary)]/10 text-[var(--primary)] flex items-center justify-center shrink-0">
-              <CheckCircle2 className="h-5 w-5" />
+        <div className="grid grid-cols-3 gap-2 sm:gap-4">
+          <div className="p-2.5 sm:p-4 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-3.5">
+            <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-[var(--primary)]/10 text-[var(--primary)] flex items-center justify-center shrink-0">
+              <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
-            <div>
-              <p className="text-xs font-mono text-[var(--muted-foreground)] uppercase tracking-wider">
-                Completed Today
+            <div className="min-w-0">
+              <p className="text-[10px] sm:text-xs font-mono text-[var(--muted-foreground)] uppercase tracking-wider truncate">
+                <span className="sm:hidden">Today</span>
+                <span className="hidden sm:inline">Completed Today</span>
               </p>
-              <p className="text-2xl font-serif font-medium text-[var(--foreground)] mt-0.5">
+              <p className="text-base sm:text-2xl font-serif font-medium text-[var(--foreground)] mt-0.5 font-mono">
                 {stats.completed_today} / {stats.total_habits}
               </p>
             </div>
           </div>
 
-          <div className="p-4 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs flex items-center gap-3.5">
-            <div className="h-10 w-10 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
-              <TrendingUp className="h-5 w-5" />
+          <div className="p-2.5 sm:p-4 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-3.5">
+            <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+              <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
-            <div>
-              <p className="text-xs font-mono text-[var(--muted-foreground)] uppercase tracking-wider">
-                Today&apos;s Rate
+            <div className="min-w-0">
+              <p className="text-[10px] sm:text-xs font-mono text-[var(--muted-foreground)] uppercase tracking-wider truncate">
+                <span className="sm:hidden">Rate</span>
+                <span className="hidden sm:inline">Today&apos;s Rate</span>
               </p>
-              <p className="text-2xl font-serif font-medium text-[var(--foreground)] mt-0.5">
+              <p className="text-base sm:text-2xl font-serif font-medium text-[var(--foreground)] mt-0.5 font-mono">
                 {stats.completion_rate_today}%
               </p>
             </div>
           </div>
 
-          <div className="p-4 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs flex items-center gap-3.5">
-            <div className="h-10 w-10 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
-              <Flame className="h-5 w-5 fill-amber-500" />
+          <div className="p-2.5 sm:p-4 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-3.5">
+            <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+              <Flame className="h-4 w-4 sm:h-5 sm:w-5 fill-amber-500" />
             </div>
-            <div>
-              <p className="text-xs font-mono text-[var(--muted-foreground)] uppercase tracking-wider">
-                Best Current Streak
+            <div className="min-w-0">
+              <p className="text-[10px] sm:text-xs font-mono text-[var(--muted-foreground)] uppercase tracking-wider truncate">
+                <span className="sm:hidden">Streak</span>
+                <span className="hidden sm:inline">Best Streak</span>
               </p>
-              <p className="text-2xl font-serif font-medium text-[var(--foreground)] mt-0.5">
+              <p className="text-base sm:text-2xl font-serif font-medium text-[var(--foreground)] mt-0.5 font-mono">
                 {stats.best_streak} {stats.best_streak === 1 ? "day" : "days"}
               </p>
             </div>

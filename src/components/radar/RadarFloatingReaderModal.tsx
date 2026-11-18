@@ -11,9 +11,6 @@ import {
   MessageSquare,
   Clock,
   Sparkles,
-  Radio,
-  FileText,
-  User,
   ArrowUpRight,
 } from "lucide-react";
 import { RadarItem } from "@/modules/radar/types";
@@ -56,13 +53,19 @@ export function RadarFloatingReaderModal({
   const [personalNotes, setPersonalNotes] = React.useState("");
   const [isPromoting, setIsPromoting] = React.useState(false);
 
+  const [prevItemUrl, setPrevItemUrl] = React.useState<string | null>(item?.url ?? null);
+  const currentItemUrl = item?.url ?? null;
+  if (currentItemUrl !== prevItemUrl) {
+    setPrevItemUrl(currentItemUrl);
+    setArticleData(null);
+    setIsLoading(true);
+  }
+
   // Fetch real-time article contents with skeleton
   React.useEffect(() => {
     if (!isOpen || !item) return;
 
     let isMounted = true;
-    setIsLoading(true);
-    setArticleData(null);
 
     const fetchRealtime = async () => {
       try {

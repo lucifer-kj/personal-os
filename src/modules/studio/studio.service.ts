@@ -104,8 +104,8 @@ export class SocialStudioService {
       );
     }
 
-    let media_urls = dto.media_urls ?? existing.media_urls;
-    let media_type = dto.media_type ?? (dto.media_urls ? detectMediaType(dto.media_urls) : existing.media_type);
+    const media_urls = dto.media_urls ?? existing.media_urls;
+    const media_type = dto.media_type ?? (dto.media_urls ? detectMediaType(dto.media_urls) : existing.media_type);
 
     let published_at = dto.published_at;
     if (dto.status === "published" && existing.status !== "published" && !dto.published_at) {

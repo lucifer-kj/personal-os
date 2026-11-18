@@ -21,7 +21,6 @@ import {
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { toast } from "sonner";
 
 interface NoteEditorProps {
   note: NoteWithLinks | null;
@@ -73,7 +72,12 @@ export function NoteEditor({
 
   // UI state
   const [saveStatus, setSaveStatus] = React.useState<"saved" | "saving" | "unsaved">("saved");
-  const [viewMode, setViewMode] = React.useState<"edit" | "preview" | "split">("split");
+  const [viewMode, setViewMode] = React.useState<"edit" | "preview" | "split">(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      return "edit";
+    }
+    return "split";
+  });
   const [selectedLinkTargetId, setSelectedLinkTargetId] = React.useState("");
 
   // Sync state when note prop changes
@@ -411,7 +415,7 @@ export function NoteEditor({
         {/* Editor Pane */}
         {(viewMode === "edit" || viewMode === "split") && (
           <div
-            className={`flex-1 p-4 sm:p-8 overflow-y-auto ${
+            className={`flex-1 p-4 sm:p-8 gravitational-scroll ${
               viewMode === "split" ? "border-r border-[var(--border)]" : ""
             }`}
           >
@@ -429,7 +433,7 @@ export function NoteEditor({
 
         {/* Preview Pane */}
         {(viewMode === "preview" || viewMode === "split") && (
-          <div className="flex-1 p-4 sm:p-8 overflow-y-auto bg-[var(--card)]/10">
+          <div className="flex-1 p-4 sm:p-8 gravitational-scroll bg-[var(--card)]/10">
             <MarkdownPreview content={content} />
           </div>
         )}

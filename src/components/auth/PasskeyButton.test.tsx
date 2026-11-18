@@ -1,5 +1,5 @@
 import * as React from "react";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { PasskeyButton } from "./PasskeyButton";
 import * as passkeyLib from "@/lib/auth/passkeys";
@@ -22,8 +22,8 @@ describe("PasskeyButton Component", () => {
     vi.spyOn(passkeyLib, "isWebAuthnSupported").mockReturnValue(true);
     const mockSuccess = vi.fn();
     const mockResult: passkeyLib.PasskeyAuthResult = {
-      user: { id: "user-1", email: "321arifali@gmail.com" } as any,
-      session: { access_token: "tok" } as any,
+      user: { id: "user-1", email: "321arifali@gmail.com" } as unknown as passkeyLib.PasskeyAuthResult["user"],
+      session: { access_token: "tok" } as unknown as passkeyLib.PasskeyAuthResult["session"],
       error: null,
     };
     vi.spyOn(passkeyLib, "signInWithPasskey").mockResolvedValue(mockResult);

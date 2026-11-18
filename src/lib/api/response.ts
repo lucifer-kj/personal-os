@@ -106,7 +106,7 @@ export function handleApiError(
   requestId = generateRequestId()
 ): NextResponse<ApiErrorEnvelope> {
   if (err instanceof AppError) {
-    const details = (err as any).details;
+    const details = (err as { details?: unknown }).details;
     const formattedDetails = Array.isArray(details)
       ? details
       : undefined;

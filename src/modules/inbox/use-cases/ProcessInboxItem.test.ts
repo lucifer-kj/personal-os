@@ -1,36 +1,44 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ProcessInboxItem } from "./ProcessInboxItem";
 import { NotFoundError, ValidationError } from "@/lib/errors";
+import { IInboxRepository } from "../types";
+import { ITaskRepository } from "@/modules/tasks/task.repository";
 
 describe("ProcessInboxItem Use Case", () => {
   const mockInboxRepo = {
     findById: vi.fn(),
     markProcessed: vi.fn(),
     processItemToTaskAtomic: vi.fn(),
-  } as any;
+  };
 
   const mockTaskRepo = {
     create: vi.fn(),
     delete: vi.fn(),
-  } as any;
+  };
+
+  const getUseCase = () =>
+    new ProcessInboxItem(
+      mockInboxRepo as unknown as IInboxRepository,
+      mockTaskRepo as unknown as ITaskRepository
+    );
 
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it("throws ValidationError when an unsupported target type is provided", async () => {
-    const useCase = new ProcessInboxItem(mockInboxRepo, mockTaskRepo);
+    const useCase = getUseCase();
 
     await expect(
       useCase.execute("user-1", "inbox-1", {
-        target_type: "project" as any,
+        target_type: "project" as unknown as "task",
       })
     ).rejects.toThrow(ValidationError);
   });
 
   it("throws NotFoundError when inbox item does not exist", async () => {
     mockInboxRepo.findById.mockResolvedValue(null);
-    const useCase = new ProcessInboxItem(mockInboxRepo, mockTaskRepo);
+    const useCase = getUseCase();
 
     await expect(
       useCase.execute("user-1", "inbox-nonexistent", {
@@ -49,7 +57,7 @@ describe("ProcessInboxItem Use Case", () => {
       converted_entity_id: "task-existing-123",
     });
 
-    const useCase = new ProcessInboxItem(mockInboxRepo, mockTaskRepo);
+    const useCase = getUseCase();
     const result = await useCase.execute("user-1", "inbox-1", {
       target_type: "task",
     });
@@ -75,7 +83,7 @@ describe("ProcessInboxItem Use Case", () => {
       idempotent: false,
     });
 
-    const useCase = new ProcessInboxItem(mockInboxRepo, mockTaskRepo);
+    const useCase = getUseCase();
     const result = await useCase.execute("user-1", "inbox-1", {
       target_type: "task",
       priority: "high",
@@ -102,12 +110,15 @@ describe("ProcessInboxItem Use Case", () => {
         status: "unprocessed",
       }),
       markProcessed: vi.fn().mockRejectedValue(new Error("Database write failed")),
-    } as any;
+    } as unknown as IInboxRepository;
 
     mockTaskRepo.create.mockResolvedValue({ id: "task-temp-1" });
     mockTaskRepo.delete.mockResolvedValue(true);
 
-    const useCase = new ProcessInboxItem(nonAtomicInboxRepo, mockTaskRepo);
+    const useCase = new ProcessInboxItem(
+      nonAtomicInboxRepo,
+      mockTaskRepo as unknown as ITaskRepository
+    );
 
     await expect(
       useCase.execute("user-1", "inbox-1", { target_type: "task" })

@@ -10,7 +10,7 @@ import { CurrentFocusCard } from "./CurrentFocusCard";
 import { FocusTimerWidget } from "./FocusTimerWidget";
 import { TodayAgenda } from "./TodayAgenda";
 import { ActiveProjectsWidget } from "./ActiveProjectsWidget";
-import { QuickCaptureCard } from "./QuickCaptureCard";
+import { OutreachPulseWidget } from "./OutreachPulseWidget";
 import { TaskCreateDialog } from "@/components/tasks/TaskCreateDialog";
 import { MobileFocusedDashboard } from "./MobileFocusedDashboard";
 import { PlanMyDayModal } from "./PlanMyDayModal";
@@ -24,10 +24,19 @@ export function DashboardView({ initialOverview }: DashboardViewProps) {
   const [overview, setOverview] = React.useState<DashboardOverviewDTO>(initialOverview);
   const [isCreateOpen, setIsCreateOpen] = React.useState(false);
   const [isPlanDayOpen, setIsPlanDayOpen] = React.useState(false);
+  const [createInitialTitle, setCreateInitialTitle] = React.useState("");
 
   // Quick event listener for global quick-capture event
   React.useEffect(() => {
-    const handleGlobalCapture = () => setIsCreateOpen(true);
+    const handleGlobalCapture = (e: Event) => {
+      const customEvent = e as CustomEvent<{ text?: string }>;
+      if (customEvent.detail?.text) {
+        setCreateInitialTitle(customEvent.detail.text);
+      } else {
+        setCreateInitialTitle("");
+      }
+      setIsCreateOpen(true);
+    };
     window.addEventListener("personal-os:quick-capture", handleGlobalCapture);
     return () => window.removeEventListener("personal-os:quick-capture", handleGlobalCapture);
   }, []);
@@ -183,11 +192,12 @@ export function DashboardView({ initialOverview }: DashboardViewProps) {
             />
           </div>
 
-          <div className="col-span-12 lg:col-span-5 flex flex-col">
+          <div className="col-span-12 lg:col-span-5 flex flex-col gap-6">
             <ActiveProjectsWidget
               projects={overview.active_projects}
-              className="h-full flex flex-col justify-between"
+              className="flex flex-col justify-between"
             />
+            <OutreachPulseWidget />
           </div>
         </div>
       </div>
@@ -195,9 +205,13 @@ export function DashboardView({ initialOverview }: DashboardViewProps) {
       {/* Create Task Modal Dialog */}
       <TaskCreateDialog
         isOpen={isCreateOpen}
-        onClose={() => setIsCreateOpen(false)}
+        onClose={() => {
+          setIsCreateOpen(false);
+          setCreateInitialTitle("");
+        }}
         onCreateTask={handleCreateTask}
         initialDueDate={overview.date}
+        initialTitle={createInitialTitle}
       />
 
       {/* Plan My Day Rapid Docket Modal */}

@@ -152,12 +152,12 @@ export function InboxList({
       <QuickIngestBar onItemCreated={handleRefresh} />
 
       {/* Tab filter bar */}
-      <div className="flex items-center justify-between border-b border-[var(--border)] pb-3">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between gap-2 border-b border-[var(--border)] pb-3">
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
           <button
             type="button"
             onClick={() => setActiveTab("unprocessed")}
-            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+            className={`px-2.5 py-1.5 text-xs font-medium rounded-lg whitespace-nowrap transition-colors ${
               activeTab === "unprocessed"
                 ? "bg-[var(--card)] text-[var(--foreground)] shadow-xs border border-[var(--border)]"
                 : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
@@ -168,7 +168,7 @@ export function InboxList({
           <button
             type="button"
             onClick={() => setActiveTab("processed")}
-            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+            className={`px-2.5 py-1.5 text-xs font-medium rounded-lg whitespace-nowrap transition-colors ${
               activeTab === "processed"
                 ? "bg-[var(--card)] text-[var(--foreground)] shadow-xs border border-[var(--border)]"
                 : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
@@ -179,17 +179,17 @@ export function InboxList({
           <button
             type="button"
             onClick={() => setActiveTab("all")}
-            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+            className={`px-2.5 py-1.5 text-xs font-medium rounded-lg whitespace-nowrap transition-colors ${
               activeTab === "all"
                 ? "bg-[var(--card)] text-[var(--foreground)] shadow-xs border border-[var(--border)]"
                 : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
             }`}
           >
-            All Captures
+            All<span className="hidden sm:inline"> Captures</span>
           </button>
         </div>
 
-        <span className="text-[11px] font-mono text-[var(--muted-foreground)]">
+        <span className="hidden sm:inline-block text-[11px] font-mono text-[var(--muted-foreground)] whitespace-nowrap shrink-0">
           {filteredItems.length} {filteredItems.length === 1 ? "item" : "items"}
         </span>
       </div>

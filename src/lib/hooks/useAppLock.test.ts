@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useAppLock } from "./useAppLock";
 import * as passkeys from "@/lib/auth/passkeys";
@@ -27,8 +27,8 @@ describe("useAppLock Hook", () => {
 
   it("unlocks successfully via passkey authentication", async () => {
     vi.spyOn(passkeys, "signInWithPasskey").mockResolvedValue({
-      user: { id: "u1" } as any,
-      session: { access_token: "t1" } as any,
+      user: { id: "u1" } as unknown as passkeys.PasskeyAuthResult["user"],
+      session: { access_token: "t1" } as unknown as passkeys.PasskeyAuthResult["session"],
       error: null,
     });
 

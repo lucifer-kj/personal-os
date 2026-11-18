@@ -24,7 +24,7 @@ export function useSessionMonitor(options: SessionMonitorOptions = {}) {
   const [timeRemainingMs, setTimeRemainingMs] = React.useState<number>(0);
   const [isExtending, setIsExtending] = React.useState(false);
 
-  const lastActivityPingRef = React.useRef<number>(Date.now());
+  const lastActivityPingRef = React.useRef<number>(0);
   const countdownIntervalRef = React.useRef<NodeJS.Timeout | null>(null);
 
   // Extend the session by pinging the backend
@@ -66,10 +66,16 @@ export function useSessionMonitor(options: SessionMonitorOptions = {}) {
 
   // Periodic check against session endpoint
   const checkSessionStatus = React.useCallback(async () => {
+    if (typeof window !== "undefined" && (document.cookie.includes("dev_preview=true") || window.location.search.includes("preview=true"))) {
+      return;
+    }
     try {
       const res = await fetch("/api/v1/auth/session");
       if (!res.ok) {
         if (res.status === 401) {
+          if (typeof document !== "undefined" && document.cookie.includes("dev_preview=true")) {
+            return;
+          }
           router.push("/login?reason=expired_inactivity");
           router.refresh();
         }
@@ -83,6 +89,9 @@ export function useSessionMonitor(options: SessionMonitorOptions = {}) {
         setTimeRemainingMs(remaining);
 
         if (remaining <= 0) {
+          if (typeof document !== "undefined" && document.cookie.includes("dev_preview=true")) {
+            return;
+          }
           router.push("/login?reason=expired_inactivity");
           router.refresh();
         } else if (remaining <= warningThresholdMs) {
@@ -99,6 +108,9 @@ export function useSessionMonitor(options: SessionMonitorOptions = {}) {
   // Throttled keep-alive ping on active interaction
   React.useEffect(() => {
     if (!enabled || typeof window === "undefined") return;
+    if (lastActivityPingRef.current === 0) {
+      lastActivityPingRef.current = Date.now();
+    }
 
     const handleUserActivity = () => {
       const now = Date.now();
@@ -122,9 +134,18 @@ export function useSessionMonitor(options: SessionMonitorOptions = {}) {
   React.useEffect(() => {
     if (!enabled || typeof window === "undefined") return;
 
-    checkSessionStatus();
+    let isSubscribed = true;
+    Promise.resolve().then(() => {
+      if (isSubscribed) {
+        checkSessionStatus();
+      }
+    });
+
     const interval = setInterval(checkSessionStatus, checkIntervalMs);
-    return () => clearInterval(interval);
+    return () => {
+      isSubscribed = false;
+      clearInterval(interval);
+    };
   }, [enabled, checkIntervalMs, checkSessionStatus]);
 
   // Second-by-second countdown when warning is active

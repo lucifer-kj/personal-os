@@ -19,7 +19,7 @@ export function PageShell({
   className,
 }: PageShellProps) {
   return (
-    <div className={cn("app-content page-stack pb-20 lg:pb-12", className)}>
+    <div className={cn("app-content page-stack pb-32 lg:pb-12", className)}>
       {(title || eyebrow || actions) && (
         <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2 border-b border-[var(--border)]">
           <div className="flex flex-col space-y-1">

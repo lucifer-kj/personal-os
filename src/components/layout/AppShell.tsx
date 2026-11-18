@@ -9,6 +9,7 @@ import { CommandPalette } from "@/components/search/CommandPalette";
 import { StatePreviewModal } from "@/components/preview/StatePreviewModal";
 import { AppLockScreen } from "@/components/auth/AppLockScreen";
 import { SessionExpirationModal } from "@/components/auth/SessionExpirationModal";
+import { MobileDeepLinkBridge } from "@/components/mobile/MobileDeepLinkBridge";
 import { useAppLock } from "@/lib/hooks/useAppLock";
 import { useSessionMonitor } from "@/lib/hooks/useSessionMonitor";
 import { Toaster } from "sonner";
@@ -62,22 +63,22 @@ function AppShellContent({ children }: AppShellProps) {
   }
 
   return (
-    <div className="flex min-h-screen bg-[var(--background)] max-lg:bg-[#0D0B0A] text-[var(--foreground)] antialiased">
+    <div className="flex h-screen w-screen overflow-hidden bg-[var(--background)] text-[var(--foreground)] antialiased">
       {/* Desktop Persistent Left Sidebar (Hidden on Login) */}
       <React.Suspense fallback={<div className="hidden lg:flex w-64 border-r border-[var(--border)] bg-[var(--card)]" />}>
         <Sidebar />
       </React.Suspense>
 
       {/* Main Column */}
-      <div className="flex flex-1 flex-col min-w-0">
-        <React.Suspense fallback={<header className="pt-[env(safe-area-inset-top,0px)] h-[calc(var(--header-height)+env(safe-area-inset-top,0px))] border-b border-[var(--border)] bg-[var(--background)]" />}>
+      <div className="flex flex-1 flex-col h-full min-w-0 overflow-hidden">
+        <React.Suspense fallback={<header className="h-14 border-b border-[var(--border)] bg-[var(--background)]" />}>
           <Header
             onOpenMobileMenu={toggleMobileMenu}
             onQuickCapture={handleQuickCapture}
           />
         </React.Suspense>
 
-        <div className="flex-1 w-full overflow-y-auto">
+        <div className="flex-1 w-full overflow-y-auto gravitational-scroll">
           {children}
         </div>
 
@@ -120,6 +121,9 @@ function AppShellContent({ children }: AppShellProps) {
         onExtend={sessionMonitor.extendSession}
         onSignOut={sessionMonitor.signOut}
       />
+
+      {/* Mobile Native Deep Link & Android System Bridge */}
+      <MobileDeepLinkBridge />
 
       {/* Global Notifications */}
       <Toaster position="bottom-right" richColors closeButton />

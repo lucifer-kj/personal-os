@@ -1,5 +1,4 @@
 import {
-  InboxItem,
   CreateInboxItemDTO,
   UpdateInboxItemDTO,
   ProcessInboxItemDTO,

@@ -25,8 +25,25 @@ export function Sidebar({ className }: { className?: string }) {
   const [isCollapsed, setIsCollapsed] = React.useState(false);
   const [navPage, setNavPage] = React.useState<1 | 2>(1);
   const [showWorkspaceMenu, setShowWorkspaceMenu] = React.useState(false);
-  const [workbench, setWorkbench] = React.useState<WorkbenchConfig>(DEFAULT_WORKBENCH);
+  const [workbench, setWorkbench] = React.useState<WorkbenchConfig>(() => {
+    if (typeof window !== "undefined") {
+      return loadWorkbenchConfig();
+    }
+    return DEFAULT_WORKBENCH;
+  });
   const [isCustomizerOpen, setIsCustomizerOpen] = React.useState(false);
+
+  // Automatically switch pagination page if active route is in 'more' page
+  const [prevPathname, setPrevPathname] = React.useState(pathname);
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
+    const isMoreActive = workbench.more.some(
+      (i) => pathname === i.href || pathname?.startsWith(`${i.href}/`)
+    );
+    if (isMoreActive) {
+      setNavPage(2);
+    }
+  }
 
   // Long-press detection timer (600ms hold on any sidebar item)
   const longPressTimerRef = React.useRef<NodeJS.Timeout | null>(null);
@@ -44,10 +61,8 @@ export function Sidebar({ className }: { className?: string }) {
     }
   };
 
-  // Sync workbench config from localStorage on mount & on storage events
+  // Sync workbench config on storage events
   React.useEffect(() => {
-    setWorkbench(loadWorkbenchConfig());
-
     const handleUpdate = () => {
       setWorkbench(loadWorkbenchConfig());
     };
@@ -59,16 +74,6 @@ export function Sidebar({ className }: { className?: string }) {
       window.removeEventListener("storage", handleUpdate);
     };
   }, []);
-
-  // Automatically switch pagination page if active route is in 'more' page
-  React.useEffect(() => {
-    const isMoreActive = workbench.more.some(
-      (i) => pathname === i.href || pathname?.startsWith(`${i.href}/`)
-    );
-    if (isMoreActive) {
-      setNavPage(2);
-    }
-  }, [pathname, workbench.more]);
 
   const toggleCollapse = () => {
     setIsCollapsed((prev) => !prev);
