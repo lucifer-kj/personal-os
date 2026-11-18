@@ -2,8 +2,6 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { NextRequest } from 'next/server';
 import { POST as ingestHandler } from '../leads/ingest/route';
 import { GET as listNichesHandler, POST as createNicheHandler } from './niches/route';
-import { GET as listLocationsHandler, POST as createLocationHandler } from './locations/route';
-import { GET as queueHandler, POST as createQueueHandler } from './queue/route';
 import { POST as triggerHandler } from './trigger/route';
 import { GET as statusHandler } from './status/route';
 import { getInMemoryLeadRepository } from '@/modules/leads/lead.repository';
@@ -66,7 +64,7 @@ describe('Lead Engine Autonomous REST API Handlers (/api/v1/engine & /api/v1/lea
     const getRes = await listNichesHandler(getReq);
     expect(getRes.status).toBe(200);
     const body = await getRes.json();
-    expect(body.data.some((n: any) => n.name === 'Private Nursing Homes')).toBe(true);
+    expect(body.data.some((n: { name: string }) => n.name === 'Private Nursing Homes')).toBe(true);
   });
 
   it('GET /api/v1/engine/status returns live engine telemetry', async () => {

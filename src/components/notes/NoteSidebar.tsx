@@ -26,7 +26,6 @@ export function NoteSidebar({
   notes,
   selectedNoteId,
   onSelectNote,
-  onNewNote: _onNewNote,
   activeTag,
   onSelectTag,
   availableTags,

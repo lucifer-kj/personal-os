@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   enrollGoogleAuthenticator,
   verifyMfaChallenge,
@@ -67,7 +68,7 @@ describe("MFA and Google Authenticator Module", () => {
             }),
           },
         },
-      } as any;
+      } as unknown as SupabaseClient;
 
       const res = await enrollGoogleAuthenticator(mockSupabase);
       expect(mockSupabase.auth.mfa.enroll).toHaveBeenCalledWith({
@@ -90,7 +91,7 @@ describe("MFA and Google Authenticator Module", () => {
             }),
           },
         },
-      } as any;
+      } as unknown as SupabaseClient;
 
       const res = await enrollGoogleAuthenticator(mockSupabase);
       expect(res.data).toBeNull();
@@ -113,7 +114,7 @@ describe("MFA and Google Authenticator Module", () => {
             }),
           },
         },
-      } as any;
+      } as unknown as SupabaseClient;
 
       const res = await verifyMfaChallenge("factor-123", "123456", mockSupabase);
       expect(mockSupabase.auth.mfa.challenge).toHaveBeenCalledWith({ factorId: "factor-123" });
@@ -135,7 +136,7 @@ describe("MFA and Google Authenticator Module", () => {
             }),
           },
         },
-      } as any;
+      } as unknown as SupabaseClient;
 
       const res = await verifyMfaChallenge("factor-123", "123456", mockSupabase);
       expect(res.success).toBe(false);
@@ -156,7 +157,7 @@ describe("MFA and Google Authenticator Module", () => {
             }),
           },
         },
-      } as any;
+      } as unknown as SupabaseClient;
 
       const res = await verifyMfaChallenge("factor-123", "999999", mockSupabase);
       expect(res.success).toBe(false);
@@ -173,7 +174,7 @@ describe("MFA and Google Authenticator Module", () => {
           },
           updateUser: vi.fn().mockResolvedValue({ error: null }),
         },
-      } as any;
+      } as unknown as SupabaseClient;
 
       const res = await unenrollGoogleAuthenticator("factor-123", mockSupabase);
       expect(mockSupabase.auth.mfa.unenroll).toHaveBeenCalledWith({ factorId: "factor-123" });
@@ -210,7 +211,7 @@ describe("MFA and Google Authenticator Module", () => {
             }),
           },
         },
-      } as any;
+      } as unknown as SupabaseClient;
 
       const status = await getMfaStatus(mockSupabase);
       expect(status.enrolled).toBe(true);
@@ -230,7 +231,7 @@ describe("MFA and Google Authenticator Module", () => {
             }),
           },
         },
-      } as any;
+      } as unknown as SupabaseClient;
 
       const status = await getMfaStatus(mockSupabase);
       expect(status.enrolled).toBe(false);
@@ -240,7 +241,7 @@ describe("MFA and Google Authenticator Module", () => {
 
   describe("saveRecoveryCodes and verifyAndBurnRecoveryCode", () => {
     it("saves and burns valid recovery codes", async () => {
-      let storedMetadata: any = {};
+      let storedMetadata: Record<string, unknown> = {};
 
       const mockSupabase = {
         auth: {
@@ -257,7 +258,7 @@ describe("MFA and Google Authenticator Module", () => {
             });
           }),
         },
-      } as any;
+      } as unknown as SupabaseClient;
 
       const codes = ["CODE-1111", "CODE-2222"];
       const saveRes = await saveRecoveryCodes(codes, mockSupabase);

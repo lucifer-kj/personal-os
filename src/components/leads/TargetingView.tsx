@@ -9,12 +9,7 @@ import {
   MapPin,
   Plus,
   RefreshCw,
-  Power,
-  Sliders,
-  DollarSign,
   Tag,
-  CheckCircle2,
-  XCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -34,12 +29,12 @@ export function TargetingView() {
   const [isAddingLocation, setIsAddingLocation] = React.useState(false);
   const [locName, setLocName] = React.useState("");
   const [locCity, setLocCity] = React.useState("Kolkata");
-  const [locLat, setLocLat] = React.useState("22.5726");
-  const [locLon, setLocLon] = React.useState("88.3639");
+  const locLat = "22.5726";
+  const locLon = "88.3639";
   const [locRadius, setLocRadius] = React.useState("3.0");
 
-  const fetchData = React.useCallback(async () => {
-    setIsLoading(true);
+  const fetchData = React.useCallback(async (showLoading = false) => {
+    if (showLoading) setIsLoading(true);
     try {
       const [nichesRes, locsRes] = await Promise.all([
         fetch("/api/v1/engine/niches"),
@@ -62,7 +57,15 @@ export function TargetingView() {
   }, []);
 
   React.useEffect(() => {
-    fetchData();
+    let isSubscribed = true;
+    Promise.resolve().then(async () => {
+      if (isSubscribed) {
+        await fetchData();
+      }
+    });
+    return () => {
+      isSubscribed = false;
+    };
   }, [fetchData]);
 
   const handleCreateNiche = async (e: React.FormEvent) => {
@@ -132,7 +135,7 @@ export function TargetingView() {
             Configure target verticals, OSM tags, and geographic hubs dispatched to n8n workers.
           </p>
         </div>
-        <Button size="sm" variant="outline" onClick={fetchData} disabled={isLoading} className="gap-1.5 self-start">
+        <Button size="sm" variant="outline" onClick={() => fetchData(true)} disabled={isLoading} className="gap-1.5 self-start">
           <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? "animate-spin" : ""}`} />
           Refresh Parameters
         </Button>

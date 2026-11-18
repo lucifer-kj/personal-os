@@ -8,7 +8,6 @@ import {
   ArrowDown,
   ArrowLeftRight,
   Archive,
-  Plus,
   RotateCcw,
   Check,
   Sparkles,
@@ -40,11 +39,13 @@ export function SidebarCustomizerModal({
   const [activeTab, setActiveTab] = React.useState<"core" | "more">("core");
   const [editingId, setEditingId] = React.useState<string | null>(null);
 
-  React.useEffect(() => {
+  const [prevIsOpen, setPrevIsOpen] = React.useState(isOpen);
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen);
     if (isOpen) {
       setConfig(currentConfig);
     }
-  }, [isOpen, currentConfig]);
+  }
 
   if (!isOpen) return null;
 

@@ -223,7 +223,7 @@ export class LeadService {
           body: JSON.stringify({ userId, workflow, parameters, executionId }),
         });
         externalDispatched = true;
-      } catch (err: unknown) {
+      } catch {
         // Non-blocking fallback
       }
     }

@@ -6,16 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Play,
-  Activity,
   RefreshCw,
-  Cpu,
   Search,
   Filter,
   Lightbulb,
   Zap,
   Clock,
-  CheckCircle2,
-  AlertCircle,
   Terminal,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -27,7 +23,6 @@ export function EngineMonitorView() {
   const [triggeringWorkflow, setTriggeringWorkflow] = React.useState<string | null>(null);
 
   const fetchStatus = React.useCallback(async () => {
-    setIsLoading(true);
     try {
       const res = await fetch("/api/v1/engine/status");
       if (res.ok) {
@@ -43,7 +38,15 @@ export function EngineMonitorView() {
   }, []);
 
   React.useEffect(() => {
-    fetchStatus();
+    let isSubscribed = true;
+    Promise.resolve().then(async () => {
+      if (isSubscribed) {
+        await fetchStatus();
+      }
+    });
+    return () => {
+      isSubscribed = false;
+    };
   }, [fetchStatus]);
 
   const handleTrigger = async (workflow: "discovery" | "filter" | "audit" | "pitch" | "full_run") => {

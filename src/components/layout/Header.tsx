@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Search, Plus, Bell, Menu, LogOut, Settings, User, Sparkles } from "lucide-react";
+import { Search, Plus, Bell, Menu, LogOut, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import Image from "next/image";
@@ -37,12 +37,6 @@ export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
   const [showProfileMenu, setShowProfileMenu] = React.useState(false);
   const [showNotifications, setShowNotifications] = React.useState(false);
   const [hasUnread, setHasUnread] = React.useState(true);
-
-  const isAuthPage =
-    pathname === "/login" ||
-    pathname === "/signup" ||
-    pathname === "/forgot-password" ||
-    pathname === "/reset-password";
 
   const currentRoute = routeTitleMap[pathname] || {
     title: pathname?.replace("/", "") || "Dashboard",

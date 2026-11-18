@@ -14,7 +14,6 @@ import {
   RefreshCw,
   Loader2,
   CheckCircle2,
-  AlertTriangle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -38,8 +37,8 @@ export function DeviceManagementCard() {
   const [revokingId, setRevokingId] = React.useState<string | null>(null);
   const [isRevokingAll, setIsRevokingAll] = React.useState(false);
 
-  const fetchSessions = React.useCallback(async () => {
-    setLoading(true);
+  const fetchSessions = React.useCallback(async (showLoading = false) => {
+    if (showLoading) setLoading(true);
     try {
       const res = await fetch("/api/v1/auth/sessions");
       const json = await res.json();
@@ -54,7 +53,15 @@ export function DeviceManagementCard() {
   }, []);
 
   React.useEffect(() => {
-    fetchSessions();
+    let isSubscribed = true;
+    Promise.resolve().then(async () => {
+      if (isSubscribed) {
+        await fetchSessions();
+      }
+    });
+    return () => {
+      isSubscribed = false;
+    };
   }, [fetchSessions]);
 
   const handleRevokeSingle = async (sessionId: string) => {
@@ -150,7 +157,7 @@ export function DeviceManagementCard() {
             type="button"
             variant="ghost"
             size="sm"
-            onClick={fetchSessions}
+            onClick={() => fetchSessions(true)}
             disabled={loading}
             className="h-8 w-8 p-0 text-[#7A7269] hover:text-[#24211F] dark:hover:text-[#F3EFEA]"
             aria-label="Refresh sessions"

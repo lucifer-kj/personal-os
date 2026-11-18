@@ -53,7 +53,6 @@ describe('API Tokens Utility', () => {
 
   it('validates against mock supabase client when provided', async () => {
     const token = 'pos_live_customtoken999';
-    const expectedHash = hashApiToken(token);
 
     const mockClient = {
       from: vi.fn().mockReturnValue({
@@ -74,7 +73,7 @@ describe('API Tokens Utility', () => {
       }),
     };
 
-    const result = await validateApiToken(`Bearer ${token}`, mockClient as any);
+    const result = await validateApiToken(`Bearer ${token}`, mockClient as unknown as Parameters<typeof validateApiToken>[1]);
     expect(result.valid).toBe(true);
     expect(result.userId).toBe('user-uuid-1');
     expect(result.name).toBe('n8n Production Crawler');

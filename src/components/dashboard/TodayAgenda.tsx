@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Check, Plus, AlertCircle, Calendar, Clock, ArrowRight, Circle } from "lucide-react";
+import { Check, Plus, AlertCircle, Calendar, Clock, ArrowRight } from "lucide-react";
 import { Task } from "@/modules/tasks/types";
 import { fireCelebrationConfetti } from "@/lib/ui/confetti";
 import { Card } from "@/components/ui/card";

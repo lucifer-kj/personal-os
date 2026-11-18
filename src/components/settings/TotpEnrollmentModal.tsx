@@ -12,7 +12,6 @@ import {
 } from "@/lib/auth/mfa";
 import {
   ShieldCheck,
-  QrCode,
   Copy,
   Check,
   Download,
@@ -46,8 +45,10 @@ export function TotpEnrollmentModal({
   const [recoveryCodes, setRecoveryCodes] = React.useState<string[]>([]);
   const [savedCodesConfirmed, setSavedCodesConfirmed] = React.useState(false);
 
-  // Initialize enrollment on modal open
-  React.useEffect(() => {
+  // Reset state when modal closes
+  const [prevIsOpen, setPrevIsOpen] = React.useState(isOpen);
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen);
     if (!isOpen) {
       setStep("enroll");
       setEnrollData(null);
@@ -55,8 +56,12 @@ export function TotpEnrollmentModal({
       setError(null);
       setRecoveryCodes([]);
       setSavedCodesConfirmed(false);
-      return;
     }
+  }
+
+  // Initialize enrollment on modal open
+  React.useEffect(() => {
+    if (!isOpen) return;
 
     let isMounted = true;
     async function startEnrollment() {

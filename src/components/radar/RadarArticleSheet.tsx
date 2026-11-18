@@ -10,7 +10,6 @@ import {
   BookOpen,
   Share2,
   Sparkles,
-  Calendar,
   Loader2,
 } from "lucide-react";
 
@@ -37,9 +36,12 @@ export function RadarArticleSheet({
 }: RadarArticleSheetProps) {
   const [personalNotes, setPersonalNotes] = React.useState("");
 
-  React.useEffect(() => {
+  const [prevItemId, setPrevItemId] = React.useState<string | null>(item?.id ?? null);
+  const currentItemId = item?.id ?? null;
+  if (currentItemId !== prevItemId) {
+    setPrevItemId(currentItemId);
     setPersonalNotes("");
-  }, [item?.id]);
+  }
 
   if (!isOpen || !item) return null;
 

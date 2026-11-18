@@ -29,11 +29,10 @@ export function PasskeyButton({
   disabled = false,
 }: PasskeyButtonProps) {
   const [loading, setLoading] = React.useState(false);
-  const [supported, setSupported] = React.useState(true);
-
-  React.useEffect(() => {
-    setSupported(isWebAuthnSupported());
-  }, []);
+  const [supported] = React.useState<boolean>(() => {
+    if (typeof window === "undefined") return true;
+    return isWebAuthnSupported();
+  });
 
   const handleClick = async () => {
     if (disabled || loading) return;

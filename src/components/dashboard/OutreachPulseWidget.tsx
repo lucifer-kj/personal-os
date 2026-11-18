@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Users, ArrowRight, Sparkles, MessageCircle, Smartphone } from "lucide-react";
+import { Users, ArrowRight, Sparkles, MessageCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Lead } from "@/modules/leads/types";
 

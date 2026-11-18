@@ -7,6 +7,15 @@ import { ProjectWithStats } from "@/modules/projects/types";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
+interface FallbackProject {
+  id: string;
+  name: string;
+  subtitle: string;
+  progress_percent: number;
+  color: string;
+  barColor: string;
+}
+
 interface ActiveProjectsWidgetProps {
   projects: ProjectWithStats[];
   className?: string;
@@ -14,7 +23,7 @@ interface ActiveProjectsWidgetProps {
 
 export function ActiveProjectsWidget({ projects, className }: ActiveProjectsWidgetProps) {
   // If no projects exist in the DB, provide ongoing projects matching user directives
-  const displayProjects: (ProjectWithStats | { id: string; name: string; subtitle: string; progress_percent: number; color: string; barColor: string })[] =
+  const displayProjects: (ProjectWithStats | FallbackProject)[] =
     projects.length > 0
       ? projects
       : [
@@ -80,8 +89,8 @@ export function ActiveProjectsWidget({ projects, className }: ActiveProjectsWidg
         {displayProjects.map((item, idx) => {
           const isReal = "stats" in item;
           const name = item.name;
-          const subtitle = isReal ? (item as ProjectWithStats).description || "Deliverable" : (item as any).subtitle;
-          const progress = isReal ? (item as ProjectWithStats).stats.progress_percent : (item as any).progress_percent;
+          const subtitle = isReal ? (item as ProjectWithStats).description || "Deliverable" : (item as FallbackProject).subtitle;
+          const progress = isReal ? (item as ProjectWithStats).stats.progress_percent : (item as FallbackProject).progress_percent;
           const href = isReal ? `/projects/${item.id}` : "/projects";
           const color = isReal
             ? idx % 3 === 0
@@ -89,14 +98,14 @@ export function ActiveProjectsWidget({ projects, className }: ActiveProjectsWidg
               : idx % 3 === 1
               ? "bg-[#F0EEFF] text-[#7857ED] border-[#DDD7FD]"
               : "bg-[#ECFDF5] text-[#059669] border-[#A7F3D0]"
-            : (item as any).color;
+            : (item as FallbackProject).color;
           const barColor = isReal
             ? idx % 3 === 0
               ? "bg-[#B94A24]"
               : idx % 3 === 1
               ? "bg-[#D97706]"
               : "bg-[#287A4B]"
-            : (item as any).barColor;
+            : (item as FallbackProject).barColor;
 
           return (
             <Link key={item.id} href={href} className="block group">

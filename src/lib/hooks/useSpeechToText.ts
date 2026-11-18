@@ -47,26 +47,29 @@ export function useSpeechToText(options: UseSpeechToTextOptions = {}) {
   const [isListening, setIsListening] = React.useState(false);
   const [transcript, setTranscript] = React.useState("");
   const [error, setError] = React.useState<string | null>(null);
-  const [isSupported, setIsSupported] = React.useState(false);
-  const [isEdgeFallback, setIsEdgeFallback] = React.useState(false);
+  const [isSupported] = React.useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    const hasWebSpeech = !!(
+      (window as unknown as { SpeechRecognition?: unknown }).SpeechRecognition ||
+      (window as unknown as { webkitSpeechRecognition?: unknown }).webkitSpeechRecognition
+    );
+    const hasMediaDevices = !!(typeof navigator !== "undefined" && navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+    return hasWebSpeech || hasMediaDevices;
+  });
+
+  const [isEdgeFallback] = React.useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    const hasWebSpeech = !!(
+      (window as unknown as { SpeechRecognition?: unknown }).SpeechRecognition ||
+      (window as unknown as { webkitSpeechRecognition?: unknown }).webkitSpeechRecognition
+    );
+    const hasMediaDevices = !!(typeof navigator !== "undefined" && navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+    return !hasWebSpeech && hasMediaDevices;
+  });
 
   const recognitionRef = React.useRef<IWindowSpeechRecognition | null>(null);
   const mediaRecorderRef = React.useRef<MediaRecorder | null>(null);
   const audioChunksRef = React.useRef<Blob[]>([]);
-
-  React.useEffect(() => {
-    if (typeof window !== "undefined") {
-      const hasWebSpeech = !!(
-        (window as unknown as { SpeechRecognition?: unknown }).SpeechRecognition ||
-        (window as unknown as { webkitSpeechRecognition?: unknown }).webkitSpeechRecognition
-      );
-      const hasMediaDevices = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
-
-      // Supported if either Web Speech or getUserMedia is available
-      setIsSupported(hasWebSpeech || hasMediaDevices);
-      setIsEdgeFallback(!hasWebSpeech && hasMediaDevices);
-    }
-  }, []);
 
   // Initialize native Web Speech API if available
   React.useEffect(() => {

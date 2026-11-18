@@ -13,7 +13,6 @@ import {
   Share2,
   Plus,
   Search,
-  Calendar,
   Image as ImageIcon,
   Video,
   Mic,
@@ -24,7 +23,6 @@ import {
   Sparkles,
   Upload,
   X,
-  ExternalLink,
   PanelLeftClose,
   PanelLeftOpen,
   Eye,
@@ -67,48 +65,7 @@ export function SocialStudioView({ initialPosts = [] }: SocialStudioViewProps) {
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-  // STT Hook
-  const {
-    isListening,
-    transcript,
-    isSupported: isSttSupported,
-    startListening,
-    stopListening,
-    clearTranscript,
-  } = useSpeechToText();
-
-  // When speech transcript updates, append to editor content
-  React.useEffect(() => {
-    if (transcript) {
-      setEditorContent((prev) => {
-        const spacer = prev && !prev.endsWith(" ") && !prev.endsWith("\n") ? " " : "";
-        return `${prev}${spacer}${transcript}`;
-      });
-      clearTranscript();
-    }
-  }, [transcript, clearTranscript]);
-
-  // Sync editor when selected post changes
-  React.useEffect(() => {
-    if (!selectedPostId) {
-      resetEditor();
-      return;
-    }
-    const current = posts.find((p) => p.id === selectedPostId);
-    if (current) {
-      setEditorTitle(current.title || "");
-      setEditorContent(current.content || "");
-      setEditorPlatform(current.platform || "x");
-      setEditorStatus(current.status || "draft");
-      setEditorMediaUrls(current.media_urls || []);
-      setEditorScheduledAt(
-        current.scheduled_at ? current.scheduled_at.slice(0, 16) : ""
-      );
-      setEditorTags(current.tags || []);
-    }
-  }, [selectedPostId, posts]);
-
-  const resetEditor = () => {
+  const resetEditor = React.useCallback(() => {
     setSelectedPostId(null);
     setEditorTitle("");
     setEditorContent("");
@@ -117,7 +74,48 @@ export function SocialStudioView({ initialPosts = [] }: SocialStudioViewProps) {
     setEditorMediaUrls([]);
     setEditorScheduledAt("");
     setEditorTags([]);
-  };
+  }, []);
+
+  // STT Hook
+  const handleTranscriptChange = React.useCallback((text: string) => {
+    if (text) {
+      setEditorContent((prev) => {
+        const spacer = prev && !prev.endsWith(" ") && !prev.endsWith("\n") ? " " : "";
+        return `${prev}${spacer}${text}`;
+      });
+    }
+  }, []);
+
+  const {
+    isListening,
+    isSupported: isSttSupported,
+    startListening,
+    stopListening,
+  } = useSpeechToText({
+    onTranscriptChange: handleTranscriptChange,
+  });
+
+  // Sync editor when selected post changes
+  const [prevSelectedPostId, setPrevSelectedPostId] = React.useState<string | null>(null);
+  if (selectedPostId !== prevSelectedPostId) {
+    setPrevSelectedPostId(selectedPostId);
+    if (!selectedPostId) {
+      resetEditor();
+    } else {
+      const current = posts.find((p) => p.id === selectedPostId);
+      if (current) {
+        setEditorTitle(current.title || "");
+        setEditorContent(current.content || "");
+        setEditorPlatform(current.platform || "x");
+        setEditorStatus(current.status || "draft");
+        setEditorMediaUrls(current.media_urls || []);
+        setEditorScheduledAt(
+          current.scheduled_at ? current.scheduled_at.slice(0, 16) : ""
+        );
+        setEditorTags(current.tags || []);
+      }
+    }
+  }
 
   const handleCreateNew = () => {
     resetEditor();

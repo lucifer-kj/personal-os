@@ -36,7 +36,7 @@ export function MobileFocusedDashboard({
 }: MobileFocusedDashboardProps) {
   const [inputText, setInputText] = React.useState("");
 
-  const { isListening, transcript, isSupported, startListening, stopListening, clearTranscript } =
+  const { isListening, isSupported, startListening, stopListening, clearTranscript } =
     useSpeechToText({
       onTranscriptChange: (text) => setInputText(text),
     });

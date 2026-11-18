@@ -2,6 +2,7 @@ import { SupabaseClient } from '@supabase/supabase-js';
 import {
   Lead,
   LeadActivity,
+  LeadActivityType,
   CreateLeadDTO,
   UpdateLeadDTO,
   ConvertLeadDTO,
@@ -303,7 +304,7 @@ export class InMemoryLeadRepository implements ILeadRepository {
     return true;
   }
 
-  async convert(userId: string, id: string, data?: ConvertLeadDTO): Promise<ConvertLeadResult> {
+  async convert(userId: string, id: string): Promise<ConvertLeadResult> {
     const lead = await this.findById(userId, id);
     if (!lead) {
       throw new Error(`Lead ${id} not found or not owned by user`);
@@ -387,7 +388,7 @@ export class InMemoryLeadRepository implements ILeadRepository {
       id: `act-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
       user_id: userId,
       lead_id: leadId,
-      activity_type: activityType as any,
+      activity_type: activityType as LeadActivityType,
       summary,
       details,
       created_at: new Date().toISOString(),

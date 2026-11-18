@@ -21,7 +21,6 @@ import {
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { toast } from "sonner";
 
 interface NoteEditorProps {
   note: NoteWithLinks | null;
@@ -73,15 +72,13 @@ export function NoteEditor({
 
   // UI state
   const [saveStatus, setSaveStatus] = React.useState<"saved" | "saving" | "unsaved">("saved");
-  const [viewMode, setViewMode] = React.useState<"edit" | "preview" | "split">("split");
-  const [selectedLinkTargetId, setSelectedLinkTargetId] = React.useState("");
-
-  // On mobile screens, default viewMode to "edit" rather than "split"
-  React.useEffect(() => {
+  const [viewMode, setViewMode] = React.useState<"edit" | "preview" | "split">(() => {
     if (typeof window !== "undefined" && window.innerWidth < 768) {
-      setViewMode("edit");
+      return "edit";
     }
-  }, []);
+    return "split";
+  });
+  const [selectedLinkTargetId, setSelectedLinkTargetId] = React.useState("");
 
   // Sync state when note prop changes
   const [prevNoteId, setPrevNoteId] = React.useState<string | null>(null);

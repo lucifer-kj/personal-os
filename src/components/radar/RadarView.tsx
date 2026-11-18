@@ -13,8 +13,6 @@ import {
   BookOpen,
   Share2,
   Trash2,
-  Bookmark,
-  Calendar,
   Layers,
   Sparkles,
   X,
@@ -504,15 +502,6 @@ export function RadarView({
     }
   };
 
-  // Distinct Categories for Lens filtering
-  const categories = React.useMemo(() => {
-    const set = new Set<string>();
-    feeds.forEach((f) => {
-      if (f.category) set.add(f.category);
-    });
-    return ["all", ...Array.from(set)];
-  }, [feeds]);
-
   // Filter Items
   const filteredItems = items.filter((item) => {
     if (selectedFeedId && item.feed_id !== selectedFeedId) return false;
@@ -938,6 +927,7 @@ export function RadarView({
               <div className="flex-1 gravitational-scroll p-4 sm:p-5 font-sans text-xs sm:text-sm text-[var(--foreground)] leading-relaxed space-y-3.5">
                 {heroImage && (
                   <div className="relative w-full h-52 sm:h-60 rounded-2xl overflow-hidden border border-[var(--border)] bg-[#1A1715]">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={heroImage} alt="" className="w-full h-full object-cover" />
                   </div>
                 )}

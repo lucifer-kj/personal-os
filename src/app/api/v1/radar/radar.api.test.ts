@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { NextRequest } from "next/server";
-import { GET as listFeedsRoute, POST as createFeedRoute } from "./feeds/route";
+import { POST as createFeedRoute } from "./feeds/route";
 import { DELETE as deleteFeedRoute } from "./feeds/[id]/route";
 import { GET as listItemsRoute } from "./items/route";
 import { PATCH as updateItemRoute } from "./items/[id]/route";

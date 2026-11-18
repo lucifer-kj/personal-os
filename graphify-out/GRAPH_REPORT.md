@@ -1,80 +1,80 @@
-# Graph Report - personal-os  (2026-11-09)
+# Graph Report - productivity_os_architecture_analysis  (2026-11-18)
 
 ## Corpus Check
-- 338 files · ~166,103 words
+- 386 files · ~187,423 words
 - Verdict: corpus is large enough that graph structure adds value.
-- Unclassified: 5 file(s) not represented in the graph (top: (none) 2, .css 2, .ico 1)
+- Unclassified: 25 file(s) not represented in the graph (top: .xml 12, (none) 5, .properties 2)
 
 ## Summary
-- 2025 nodes · 6068 edges · 95 communities (87 shown, 8 thin omitted)
-- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 223 edges (avg confidence: 0.86)
+- 2373 nodes · 7018 edges · 116 communities (103 shown, 13 thin omitted)
+- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 254 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `704da40b`
+- Built from commit: `cbda50e4`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- apiSuccess
+- getRequestContext
 - HabitService
 - CalendarEvent
 - JournalEntry
-- SocialPost
+- PageShell
 - RadarItem
-- Note
+- apiSuccess
 - errors.ts
-- FocusSession
+- focus.repository.ts
 - search.repository.ts
-- CalendarService
-- createClient
+- events/[id]/route.ts
+- CalendarView.tsx
 - react
-- projects/types.ts
-- Card
-- package.json
-- Project
+- cn
+- lucide-react
+- devDependencies
+- project.repository.ts
 - dependencies
-- Task
+- @supabase/supabase-js
 - compilerOptions
 - Personal OS --- Supabase Database Architecture & Specification
-- AppShell.tsx
-- PageShell
-- InMemoryProjectRepository
+- @testing-library/react
+- CallReceiver.java
+- with
 - ProjectService
 - notes/schemas.ts
 - studio/schemas.ts
-- apiUnauthorized
-- DynamicScenery.tsx
 - createClient
+- DashboardHeader.tsx
+- next
 - scripts
-- day/schemas.ts
-- projects/schemas.ts
-- context.ts
+- response.ts
+- createProjectService
+- session-policy.ts
 - ResizeObserver
-- zod
+- InfrastructureError
 - tasks/schemas.ts
 - 3. Creative Thinking & Actionable Solutions
 - Personal OS — Frontend Pages & Experience Specification
 - allowBuilds
-- server.ts
-- mfa.ts
-- vitest
+- task.repository.ts
+- createClient
+- FocusView.tsx
 - Personal OS — Master System Design & Agent Development Specification
 - Personal OS — Design System (`design.md`)
 - 9.3 Table contracts
 - Sidebar.tsx
-- Button
-- InMemoryNoteRepository
+- vitest
+- note.repository.ts
 - passkeys.ts
 - 11.3 API endpoint inventory
 - Personal OS — Production Design System Specification
 - Personal OS — Backend Architecture & API Specification
 - 5. Feature Domain Specifications
 - 5. API endpoint inventory
-- INoteRepository
+- CalendarService
 - 10. Security Architecture
 - Personal OS — Production Engineering & Agent Direction
-- calendar/schemas.ts
+- InMemoryLeadRepository
 - Personal OS — Page Design Guidelines & Reference Architecture
 - 4. Code readability and design principles
 - 13. Execution and Background Work Model
@@ -100,8 +100,8 @@
 - 1. Product Vision and Definition
 - 6. Recommended Technology Stack
 - 2. Specification-driven execution
-- apple-icon.tsx
-- MockSpeechRecognition
+- ILeadRepository
+- api-tokens.ts
 - 11. Search and vector retrieval
 - 6. Dependency and library selection policy
 - 1. Purpose and Scope
@@ -109,18 +109,32 @@
 - 8.5 Knowledge graph tables
 - 17. Database Integrity and Ownership Rules
 - MILESTONE_TRACKER.md
+- leads/types.ts
+- package.json
+- Lead
+- LeadQueryQueue
+- LeadNiche
+- LeadLocation
+- ExampleInstrumentedTest.java
+- posts/[id]/route.ts
+- ProjectWithStats
+- lead.repository.ts
+- Personal OS
+- Personal OS — Project Status
+- eslint.config.mjs
+- @vitejs/plugin-react
 
 ## God Nodes (most connected - your core abstractions)
-1. `apiSuccess()` - 125 edges
-2. `next` - 121 edges
-3. `createClient()` - 116 edges
-4. `getAuthenticatedUser()` - 111 edges
-5. `react` - 107 edges
-6. `Button` - 82 edges
-7. `vitest` - 79 edges
-8. `apiError()` - 68 edges
-9. `lucide-react` - 67 edges
-10. `getRequestContext()` - 67 edges
+1. `apiSuccess()` - 154 edges
+2. `next` - 135 edges
+3. `react` - 117 edges
+4. `createClient()` - 117 edges
+5. `getAuthenticatedUser()` - 111 edges
+6. `apiError()` - 97 edges
+7. `Button` - 92 edges
+8. `vitest` - 85 edges
+9. `getRequestContext()` - 80 edges
+10. `lucide-react` - 74 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `17. Unconstrained Tablet Viewport Stretching (`MobileFocusedDashboard.tsx` at 768px)` --references--> `MobileFocusedDashboard()`  [INFERRED]
@@ -131,89 +145,89 @@
   docs/progress/PROJECT_STATUS.md → src/components/brand/AppOrb.tsx
 - `Core Workstation Modules` --references--> `AppOrb()`  [INFERRED]
   README.md → src/components/brand/AppOrb.tsx
-- `3. Core Module Map` --references--> `Sidebar()`  [INFERRED]
-  AGENTS.md → src/components/layout/Sidebar.tsx
+- `Architecture Decisions Record (ADR) Summary` --references--> `DynamicScenery()`  [INFERRED]
+  docs/progress/PROJECT_STATUS.md → src/components/dashboard/DynamicScenery.tsx
 
 ## Import Cycles
 - None detected.
 
-## Communities (95 total, 8 thin omitted)
+## Communities (116 total, 13 thin omitted)
 
-### Community 0 - "apiSuccess"
-Cohesion: 0.08
-Nodes (52): nextConfig, next, GET(), POST(), GET(), POST(), mockSelect, mockSessions (+44 more)
+### Community 0 - "getRequestContext"
+Cohesion: 0.11
+Nodes (26): GET(), POST(), GET(), POST(), mockSelect, mockSessions, mockUpdate, GET() (+18 more)
 
 ### Community 1 - "HabitService"
-Cohesion: 0.06
-Nodes (35): POST(), POST(), DELETE(), GET(), PATCH(), GET(), POST(), HabitCardProps (+27 more)
+Cohesion: 0.07
+Nodes (30): POST(), POST(), DELETE(), GET(), PATCH(), GET(), POST(), HabitsContent() (+22 more)
 
 ### Community 2 - "CalendarEvent"
-Cohesion: 0.07
-Nodes (40): AgendaView(), AgendaViewProps, CalendarHeader(), CalendarHeaderProps, CalendarView(), CalendarViewProps, DayView(), DayViewProps (+32 more)
+Cohesion: 0.12
+Nodes (14): AgendaViewProps, CalendarViewProps, EventModalProps, MonthViewProps, WeekViewProps, globalInMemoryCalendarRepo, InMemoryCalendarRepository, SupabaseCalendarRepository (+6 more)
 
 ### Community 3 - "JournalEntry"
-Cohesion: 0.09
-Nodes (27): DELETE(), GET(), PATCH(), GET(), POST(), GET(), JournalContent(), JournalPage() (+19 more)
+Cohesion: 0.07
+Nodes (34): date-fns, DELETE(), GET(), PATCH(), GET(), POST(), GET(), JournalContent() (+26 more)
 
-### Community 4 - "SocialPost"
-Cohesion: 0.10
-Nodes (21): PostPreviewCard(), PostPreviewCardProps, SocialStudioView(), SocialStudioViewProps, getInMemorySocialPostRepository(), getSocialPostRepository(), globalInMemorySocialRepo, InMemorySocialPostRepository (+13 more)
+### Community 4 - "PageShell"
+Cohesion: 0.06
+Nodes (36): LeadsPage(), metadata, DashboardContent(), HomePage(), metadata, metadata, ProjectsPage(), metadata (+28 more)
 
 ### Community 5 - "RadarItem"
-Cohesion: 0.06
-Nodes (24): ParsedLineItem, parseDocketLine(), PlanMyDayModal(), PlanMyDayModalProps, RadarArticleSheetProps, CleanArticleData, RadarFloatingReaderModal(), RadarFloatingReaderModalProps (+16 more)
+Cohesion: 0.07
+Nodes (17): RadarArticleSheetProps, CleanArticleData, RadarFloatingReaderModal(), RadarFloatingReaderModalProps, CleanArticleContent(), RadarView(), RadarViewProps, InMemoryRadarRepository (+9 more)
 
-### Community 6 - "Note"
-Cohesion: 0.19
-Nodes (13): MarkdownPreview(), NoteEditor(), NoteEditorProps, NoteCard(), NoteSidebar(), NoteSidebarProps, NotesView(), NotesViewProps (+5 more)
+### Community 6 - "apiSuccess"
+Cohesion: 0.09
+Nodes (51): GET(), POST(), GET(), POST(), PATCH(), GET(), POST(), GET() (+43 more)
 
 ### Community 7 - "errors.ts"
 Cohesion: 0.06
-Nodes (35): POST(), DELETE(), GET(), PATCH(), GET(), POST(), InboxListProps, InboxViewProps (+27 more)
+Nodes (39): POST(), DELETE(), GET(), PATCH(), GET(), POST(), InboxContent(), InboxPage() (+31 more)
 
-### Community 8 - "FocusSession"
-Cohesion: 0.10
-Nodes (12): FocusViewProps, InMemoryFocusRepository, SupabaseFocusRepository, ActiveFocusSession, CompleteFocusSessionDTO, EntryType, FocusSession, IFocusRepository (+4 more)
+### Community 8 - "focus.repository.ts"
+Cohesion: 0.09
+Nodes (13): FocusViewProps, globalInMemoryFocusRepo, InMemoryFocusRepository, SupabaseFocusRepository, ActiveFocusSession, CompleteFocusSessionDTO, EntryType, FocusSession (+5 more)
 
 ### Community 9 - "search.repository.ts"
 Cohesion: 0.13
 Nodes (17): GET(), CommandPaletteProps, SearchQueryInput, SearchQuerySchema, SearchResultTypeEnum, getSearchRepository(), InMemorySearchRepository, ISearchRepository (+9 more)
 
-### Community 10 - "CalendarService"
-Cohesion: 0.22
-Nodes (15): GET(), POST(), DELETE(), GET(), PATCH(), GET(), POST(), POST() (+7 more)
+### Community 10 - "events/[id]/route.ts"
+Cohesion: 0.19
+Nodes (15): zod, GET(), DELETE(), GET(), scheduleTaskSchema, getCalendarRepository(), calendarQuerySchema, conflictQuerySchema (+7 more)
 
-### Community 11 - "createClient"
-Cohesion: 0.20
-Nodes (14): ForgotPasswordPage(), LoginPage(), ResetPasswordPage(), SignupPage(), checkWorkspace(), AppOrb(), AppOrbProps, emptySubscribe() (+6 more)
+### Community 11 - "CalendarView.tsx"
+Cohesion: 0.16
+Nodes (29): CalendarContent(), CalendarPage(), metadata, AgendaView(), CalendarHeader(), CalendarHeaderProps, CalendarView(), DayView() (+21 more)
 
 ### Community 12 - "react"
-Cohesion: 0.11
-Nodes (36): date-fns, lucide-react, react, HabitCard(), colorOptions, HabitModal(), HabitModalProps, HabitsView() (+28 more)
+Cohesion: 0.09
+Nodes (39): react, sonner, InboxList(), InboxView(), QuickCaptureModal(), QuickCaptureModalProps, CreateLeadModal(), CreateLeadModalProps (+31 more)
 
-### Community 13 - "projects/types.ts"
-Cohesion: 0.19
-Nodes (16): ActiveProjectsWidgetProps, priorityBadgeVariant, ProjectCard(), ProjectCardProps, statusBadgeVariant, ProjectCreateDialog(), ProjectDetailViewProps, ProjectFilterBar() (+8 more)
+### Community 13 - "cn"
+Cohesion: 0.12
+Nodes (26): HabitCard(), colorOptions, HabitModal(), HabitModalProps, HabitsView(), HabitsViewProps, mockHabits, mockStats (+18 more)
 
-### Community 14 - "Card"
-Cohesion: 0.13
-Nodes (23): ActiveProjectsWidget(), CurrentFocusCard(), CurrentFocusCardProps, SubtaskItem, DashboardMetrics(), DashboardMetricsProps, DashboardView(), DashboardViewProps (+15 more)
+### Community 14 - "lucide-react"
+Cohesion: 0.17
+Nodes (20): lucide-react, ActiveProjectsWidget(), CurrentFocusCard(), CurrentFocusCardProps, SubtaskItem, DashboardMetrics(), DashboardView(), FocusTimerWidget() (+12 more)
 
-### Community 15 - "package.json"
-Cohesion: 0.08
-Nodes (30): eslintConfig, devDependencies, eslint@^9, eslint-config-next@16.4.5, jsdom@^31.0.0, tailwindcss@^4, @tailwindcss/turbopack@^4, @testing-library/react@^16.3.3 (+22 more)
+### Community 15 - "devDependencies"
+Cohesion: 0.09
+Nodes (22): config, devDependencies, @capacitor/cli@^8.6.0, jsdom@^31.0.0, tailwindcss@^4, @tailwindcss/turbopack@^4, @testing-library/react@^16.3.3, @types/canvas-confetti@^1.9.0 (+14 more)
 
-### Community 16 - "Project"
-Cohesion: 0.13
-Nodes (6): ProjectCreateDialogProps, SupabaseProjectRepository, CreateProjectDTO, Project, ProjectFilters, UpdateProjectDTO
+### Community 16 - "project.repository.ts"
+Cohesion: 0.12
+Nodes (12): NotesViewProps, ProjectCreateDialogProps, getInMemoryDayRepository(), getInMemoryProjectRepository(), globalInMemoryProjectRepo, InMemoryProjectRepository, CreateProjectDTO, Project (+4 more)
 
 ### Community 17 - "dependencies"
 Cohesion: 0.08
-Nodes (25): dependencies, canvas-confetti@^1.9.4, clsx@^2.1.1, cmdk@^1.1.1, date-fns@^4.4.0, lucide-react@^1.69.0, next@16.4.5, react@19.3.0 (+17 more)
+Nodes (24): dependencies, canvas-confetti@^1.9.4, @capacitor/app@^8.1.2, @capacitor/core@^8.6.0, clsx@^2.1.1, date-fns@^4.4.0, lucide-react@^1.69.0, next@16.4.5 (+16 more)
 
-### Community 18 - "Task"
-Cohesion: 0.06
-Nodes (28): @supabase/supabase-js, EventModalProps, TimeBlockDrawerProps, TodayAgendaProps, TaskCreateDialogProps, TaskItemProps, TaskListProps, DashboardService (+20 more)
+### Community 18 - "@supabase/supabase-js"
+Cohesion: 0.11
+Nodes (16): @supabase/supabase-js, BatchTaskInput, POST(), createDashboardService(), DashboardService, getDayRepository(), globalInMemoryDayRepo, IDayRepository (+8 more)
 
 ### Community 19 - "compilerOptions"
 Cohesion: 0.11
@@ -223,61 +237,65 @@ Nodes (18): compilerOptions, allowJs, esModuleInterop, incremental, isolatedModu
 Cohesion: 0.03
 Nodes (59): 10.1 `inbox_items`, 10. Inbox and Quick Capture, 11.1 `daily_reports`, 11. Reports and Analytics, 12.1 Architecture principles, 12.2 `ai_memories`, 12.3 `document_chunks`, 12.4 Search strategy (+51 more)
 
-### Community 21 - "AppShell.tsx"
-Cohesion: 0.08
-Nodes (30): 3. Core Module Map, 6. Missing Quick Capture Trigger in Mobile Dock (`MobileNav.tsx`), inter, metadata, newsreader, RootLayout(), viewport, AppLockScreen() (+22 more)
+### Community 21 - "@testing-library/react"
+Cohesion: 0.07
+Nodes (36): 3. Core Module Map, 6. Missing Quick Capture Trigger in Mobile Dock (`MobileNav.tsx`), @testing-library/react, inter, jetbrainsMono, metadata, newsreader, RootLayout() (+28 more)
 
-### Community 22 - "PageShell"
-Cohesion: 0.11
-Nodes (21): HabitsContent(), HabitsPage(), metadata, InboxContent(), InboxPage(), metadata, DashboardContent(), HomePage() (+13 more)
+### Community 22 - "CallReceiver.java"
+Cohesion: 0.10
+Nodes (4): MainActivity, CallReceiver, QuickCaptureTileService, PersonalOSWidgetProvider
 
-### Community 23 - "InMemoryProjectRepository"
-Cohesion: 0.26
-Nodes (3): InMemoryProjectRepository, CreateMilestoneDTO, ProjectMilestone
+### Community 23 - "with"
+Cohesion: 0.06
+Nodes (30): name, runs-on, steps, default, description, options, required, type (+22 more)
+
+### Community 24 - "ProjectService"
+Cohesion: 0.13
+Nodes (5): IProjectRepository, SupabaseProjectRepository, ProjectService, CreateMilestoneDTO, ProjectMilestone
 
 ### Community 26 - "notes/schemas.ts"
-Cohesion: 0.23
-Nodes (10): contentFormatSchema, CreateNoteInput, CreateNoteLinkInput, createNoteLinkSchema, createNoteSchema, linkTypeSchema, noteQuerySchema, noteTypeSchema (+2 more)
+Cohesion: 0.14
+Nodes (15): abandonFocusSessionSchema, completeFocusSessionSchema, sessionModeSchema, sessionStatusSchema, startFocusSessionSchema, contentFormatSchema, CreateNoteInput, CreateNoteLinkInput (+7 more)
 
 ### Community 27 - "studio/schemas.ts"
 Cohesion: 0.22
 Nodes (9): CreateSocialPostInput, CreateSocialPostSchema, MediaTypeEnum, PlatformTypeEnum, PostFilterInput, PostFilterSchema, PostStatusEnum, UpdateSocialPostInput (+1 more)
 
-### Community 28 - "apiUnauthorized"
-Cohesion: 0.14
-Nodes (28): GET(), PATCH(), GET(), POST(), DELETE(), GET(), POST(), POST() (+20 more)
+### Community 28 - "createClient"
+Cohesion: 0.15
+Nodes (39): POST(), PATCH(), POST(), PATCH(), POST(), POST(), POST(), POST() (+31 more)
 
-### Community 29 - "DynamicScenery.tsx"
-Cohesion: 0.11
-Nodes (17): Architecture Decisions Record (ADR) Summary, Key Verification Status, Milestones Summary, Overview, Personal OS — Project Status, Architecture & System Overview, Core Workstation Modules, Local Development (+9 more)
+### Community 29 - "DashboardHeader.tsx"
+Cohesion: 0.27
+Nodes (8): DashboardHeader(), DashboardHeaderProps, DynamicScenery(), DynamicSceneryProps, getTimeOfDay(), SceneryAsset, sceneryMap, TimeOfDay
 
-### Community 30 - "createClient"
-Cohesion: 0.13
-Nodes (32): POST(), DELETE(), RouteParams, GET(), POST(), POST(), RouteParams, PATCH() (+24 more)
+### Community 30 - "next"
+Cohesion: 0.09
+Nodes (27): nextConfig, next, POST(), POST(), DELETE(), RouteParams, GET(), POST() (+19 more)
 
 ### Community 31 - "scripts"
 Cohesion: 0.25
 Nodes (8): scripts, build, dev, lint, start, test, test:watch, typecheck
 
-### Community 32 - "day/schemas.ts"
-Cohesion: 0.36
-Nodes (6): DateQueryInput, dateQuerySchema, UpdateIntentionInput, updateIntentionSchema, UpdateShutdownNotesInput, updateShutdownNotesSchema
-
-### Community 33 - "projects/schemas.ts"
-Cohesion: 0.39
-Nodes (6): CreateMilestoneSchema, CreateProjectSchema, ProjectPriorityEnum, ProjectQuerySchema, ProjectStatusEnum, UpdateProjectSchema
-
-### Community 34 - "context.ts"
+### Community 32 - "response.ts"
 Cohesion: 0.12
-Nodes (32): DELETE(), GET(), POST(), DeviceInfo, getBrowserName(), getDeviceType(), getOsName(), parseUserAgent() (+24 more)
+Nodes (15): GET(), GET(), CleanArticleResponse, extractTextFromHtml(), GET(), ApiErrorDetail, ApiErrorEnvelope, ApiResponseMeta (+7 more)
+
+### Community 33 - "createProjectService"
+Cohesion: 0.12
+Nodes (24): DELETE(), PATCH(), RouteParams, GET(), POST(), RouteParams, DELETE(), GET() (+16 more)
+
+### Community 34 - "session-policy.ts"
+Cohesion: 0.16
+Nodes (28): DELETE(), GET(), POST(), DeviceInfo, getBrowserName(), getDeviceType(), getOsName(), parseUserAgent() (+20 more)
 
 ### Community 35 - "ResizeObserver"
 Cohesion: 0.29
 Nodes (3): @testing-library/jest-dom@^7.0.1, @testing-library/jest-dom, ResizeObserver
 
-### Community 36 - "zod"
-Cohesion: 0.31
-Nodes (7): zod@^4.6.7, zod, abandonFocusSessionSchema, completeFocusSessionSchema, sessionModeSchema, sessionStatusSchema, startFocusSessionSchema
+### Community 36 - "InfrastructureError"
+Cohesion: 0.14
+Nodes (3): InfrastructureError, getLeadRepository(), SupabaseLeadRepository
 
 ### Community 37 - "tasks/schemas.ts"
 Cohesion: 0.43
@@ -295,17 +313,17 @@ Nodes (35): 1. Frontend contract, 2. Global application shell, 3.10 Time Tracker
 Cohesion: 0.50
 Nodes (3): allowBuilds, sharp, unrs-resolver
 
-### Community 41 - "server.ts"
-Cohesion: 0.19
-Nodes (17): POST(), POST(), POST(), POST(), GET(), POST(), FocusContent(), FocusPage() (+9 more)
+### Community 41 - "task.repository.ts"
+Cohesion: 0.11
+Nodes (12): TimeBlockDrawerProps, TodayAgendaProps, globalInMemoryRepo, InMemoryTaskRepository, ITaskRepository, SupabaseTaskRepository, TaskService, CreateTaskDTO (+4 more)
 
-### Community 42 - "mfa.ts"
+### Community 42 - "createClient"
+Cohesion: 0.12
+Nodes (31): RFC-6238, ForgotPasswordPage(), LoginPage(), mockGetAuthenticatorAssuranceLevel, mockListFactors, mockPush, mockRefresh, mockSignInWithPassword (+23 more)
+
+### Community 44 - "FocusView.tsx"
 Cohesion: 0.15
-Nodes (22): RFC-6238, sonner, metadata, SettingsPage(), DeviceManagementCard(), DeviceSession, SecuritySettingsCard(), SettingsView() (+14 more)
-
-### Community 44 - "vitest"
-Cohesion: 0.10
-Nodes (17): @testing-library/react, vitest, mockGetAuthenticatorAssuranceLevel, mockListFactors, mockPush, mockRefresh, mockSignInWithPassword, FocusView() (+9 more)
+Nodes (10): OrbState, ParsedLineItem, parseDocketLine(), PlanMyDayModal(), PlanMyDayModalProps, FocusView(), StatePreviewModalProps, startAmbientNoise() (+2 more)
 
 ### Community 45 - "Personal OS — Master System Design & Agent Development Specification"
 Cohesion: 0.08
@@ -323,13 +341,13 @@ Nodes (24): 9.3 Table contracts, `audit_events`, `calendar_events`, `embeddings`
 Cohesion: 0.19
 Nodes (17): Logo(), LogoProps, LogoSize, LogoVariant, sizeMap, getSidebarIcon(), SIDEBAR_ICONS, Sidebar() (+9 more)
 
-### Community 49 - "Button"
+### Community 49 - "vitest"
 Cohesion: 0.17
-Nodes (15): EventModal(), InboxList(), InboxView(), QuickCaptureModal(), QuickCaptureModalProps, QuickIngestBar(), RadarArticleSheet(), Button (+7 more)
+Nodes (17): vitest, MobileFocusedDashboard(), QuickIngestBar(), QuickIngestBarProps, ISpeechRecognitionEvent, ISpeechRecognitionResult, IWindowSpeechRecognition, SpeechRecognitionConstructor (+9 more)
 
-### Community 50 - "InMemoryNoteRepository"
-Cohesion: 0.12
-Nodes (4): InMemoryNoteRepository, SupabaseNoteRepository, NoteLink, UpdateNoteDTO
+### Community 50 - "note.repository.ts"
+Cohesion: 0.07
+Nodes (20): MarkdownPreview(), NoteEditor(), NoteEditorProps, NoteCard(), NoteSidebar(), NoteSidebarProps, NotesView(), globalInMemoryNoteRepo (+12 more)
 
 ### Community 51 - "passkeys.ts"
 Cohesion: 0.23
@@ -355,6 +373,10 @@ Nodes (15): 5.10 Journal and reviews, 5.11 Search, 5.12 Reports and analytics, 5
 Cohesion: 0.14
 Nodes (14): 5. API endpoint inventory, Analytics and reports, Automations, jobs, reminders, and notifications, Calendar and scheduling, Content studio and publishing queue, Dashboard and day view, Focus and time tracking, Goals (+6 more)
 
+### Community 57 - "CalendarService"
+Cohesion: 0.19
+Nodes (5): GET(), POST(), CalendarService, ConflictAdvisory, ICalendarRepository
+
 ### Community 58 - "10. Security Architecture"
 Cohesion: 0.18
 Nodes (11): 10.10 Production security gates, 10.1 Threats, 10.2 Authentication, 10.3 Authorization, 10.4 Supabase client boundaries, 10.5 API boundary, 10.6 Storage security, 10.7 AI security (later phases) (+3 more)
@@ -363,9 +385,9 @@ Nodes (11): 10.10 Production security gates, 10.1 Threats, 10.2 Authentication, 
 Cohesion: 0.18
 Nodes (10): 10. AI and agent behavior rules, 11. Security, privacy, and data integrity, 12. Performance and reliability, 13. Documentation and Graphify context discipline, 14. Definition of Done (per spec), 15. Required completion report format, 16. Master instruction for Antigravity agents, 1. Mission and non-negotiable product direction (+2 more)
 
-### Community 60 - "calendar/schemas.ts"
-Cohesion: 0.27
-Nodes (9): calendarQuerySchema, conflictQuerySchema, CreateCalendarEventInput, createCalendarEventSchema, eventTypeSchema, MoveCalendarEventInput, moveCalendarEventSchema, UpdateCalendarEventInput (+1 more)
+### Community 60 - "InMemoryLeadRepository"
+Cohesion: 0.15
+Nodes (3): InMemoryLeadRepository, LeadActivity, LeadEngineLog
 
 ### Community 61 - "Personal OS — Page Design Guidelines & Reference Architecture"
 Cohesion: 0.22
@@ -467,6 +489,14 @@ Nodes (4): 6.1 Frontend, 6.2 Backend and platform, 6.3 Architectural choices and
 Cohesion: 0.50
 Nodes (4): 2. Specification-driven execution, After coding each spec, Before coding each spec, During coding
 
+### Community 86 - "ILeadRepository"
+Cohesion: 0.15
+Nodes (4): ILeadRepository, LeadService, BatchIngestLeadsDTO, LeadEngineStats
+
+### Community 87 - "api-tokens.ts"
+Cohesion: 0.24
+Nodes (7): API_TOKEN_PREFIX, extractBearerToken(), generateApiTokenPair(), hashApiToken(), validateApiToken(), ValidatedToken, MockSpeechRecognition
+
 ### Community 88 - "11. Search and vector retrieval"
 Cohesion: 0.67
 Nodes (3): 11. Search and vector retrieval, Initial search, Semantic search (AI phase)
@@ -487,25 +517,73 @@ Nodes (3): 20. Triggers and Database Functions, Transactional operations, `updat
 Cohesion: 0.67
 Nodes (3): 8.5 Knowledge graph tables, `knowledge_entities`, `knowledge_relations`
 
+### Community 95 - "leads/types.ts"
+Cohesion: 0.16
+Nodes (9): ContactAuthority, CreateLeadCoveragePlanDTO, EmailReachability, EngineStatus, LeadActivityType, LeadCoveragePlan, LeadSource, ScoreTier (+1 more)
+
+### Community 96 - "package.json"
+Cohesion: 0.12
+Nodes (16): @capacitor/android@^8.6.0, @capacitor/haptics@^8.0.2, @capacitor/status-bar@^8.0.4, cmdk@^1.1.1, tailwind-merge@^3.7.0, thinking-orbs@^0.3.2, name, packageManager (+8 more)
+
+### Community 97 - "Lead"
+Cohesion: 0.23
+Nodes (4): CreateLeadDTO, Lead, LeadFilter, UpdateLeadDTO
+
+### Community 98 - "LeadQueryQueue"
+Cohesion: 0.19
+Nodes (3): CreateLeadQueryQueueDTO, LeadQueryQueue, UpdateLeadQueryQueueDTO
+
+### Community 99 - "LeadNiche"
+Cohesion: 0.26
+Nodes (3): CreateLeadNicheDTO, LeadNiche, UpdateLeadNicheDTO
+
+### Community 100 - "LeadLocation"
+Cohesion: 0.27
+Nodes (3): CreateLeadLocationDTO, LeadLocation, UpdateLeadLocationDTO
+
+### Community 102 - "posts/[id]/route.ts"
+Cohesion: 0.38
+Nodes (8): DELETE(), GET(), PATCH(), RouteParams, GET(), POST(), getInMemorySocialPostRepository(), getSocialStudioService()
+
+### Community 103 - "ProjectWithStats"
+Cohesion: 0.20
+Nodes (10): ActiveProjectsWidgetProps, DashboardMetricsProps, DashboardViewProps, MobileFocusedDashboardProps, ProjectCardProps, ProjectDetailViewProps, ProjectListProps, DashboardMetrics (+2 more)
+
+### Community 104 - "lead.repository.ts"
+Cohesion: 0.33
+Nodes (4): getInMemoryLeadRepository(), globalInMemoryLeadRepo, ConvertLeadDTO, ConvertLeadResult
+
+### Community 105 - "Personal OS"
+Cohesion: 0.29
+Nodes (6): Architecture & System Overview, Core Workstation Modules, Local Development, Personal OS, Structural Knowledge Graph, Technology Stack
+
+### Community 106 - "Personal OS — Project Status"
+Cohesion: 0.33
+Nodes (5): Architecture Decisions Record (ADR) Summary, Key Verification Status, Milestones Summary, Overview, Personal OS — Project Status
+
+### Community 107 - "eslint.config.mjs"
+Cohesion: 0.33
+Nodes (5): eslintConfig, eslint@^9, eslint-config-next@16.4.5, eslint, eslint-config-next
+
 ## Knowledge Gaps
 - **1 isolated node(s):** `RFC-6238`
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 688 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **8 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 761 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **13 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `next` connect `apiSuccess` to `HabitService`, `JournalEntry`, `RadarItem`, `errors.ts`, `search.repository.ts`, `CalendarService`, `createClient`, `react`, `projects/types.ts`, `Card`, `package.json`, `dependencies`, `AppShell.tsx`, `PageShell`, `apiUnauthorized`, `DynamicScenery.tsx`, `createClient`, `context.ts`, `server.ts`, `mfa.ts`, `Sidebar.tsx`, `apple-icon.tsx`?**
-  _High betweenness centrality (0.116) - this node is a cross-community bridge._
+- **Why does `next` connect `next` to `getRequestContext`, `HabitService`, `JournalEntry`, `PageShell`, `RadarItem`, `apiSuccess`, `errors.ts`, `search.repository.ts`, `events/[id]/route.ts`, `CalendarView.tsx`, `react`, `cn`, `lucide-react`, `project.repository.ts`, `dependencies`, `@supabase/supabase-js`, `@testing-library/react`, `createClient`, `DashboardHeader.tsx`, `response.ts`, `createProjectService`, `session-policy.ts`, `createClient`, `FocusView.tsx`, `Sidebar.tsx`, `vitest`, `package.json`, `posts/[id]/route.ts`?**
+  _High betweenness centrality (0.114) - this node is a cross-community bridge._
 - **What connects `RFC-6238` to the rest of the system?**
   _1 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `apiSuccess` be split into smaller, more focused modules?**
-  _Cohesion score 0.08461306835290575 - nodes in this community are weakly interconnected._
-- **Why does `react` connect `react` to `HabitService`, `CalendarEvent`, `JournalEntry`, `SocialPost`, `RadarItem`, `Note`, `search.repository.ts`, `CalendarService`, `createClient`, `projects/types.ts`, `Card`, `package.json`, `dependencies`, `AppShell.tsx`, `PageShell`, `apiUnauthorized`, `DynamicScenery.tsx`, `createClient`, `context.ts`, `server.ts`, `mfa.ts`, `vitest`, `Sidebar.tsx`, `Button`, `passkeys.ts`?**
-  _High betweenness centrality (0.079) - this node is a cross-community bridge._
+- **Should `getRequestContext` be split into smaller, more focused modules?**
+  _Cohesion score 0.10685249709639953 - nodes in this community are weakly interconnected._
+- **Why does `react` connect `react` to `HabitService`, `CalendarEvent`, `JournalEntry`, `PageShell`, `RadarItem`, `errors.ts`, `search.repository.ts`, `CalendarView.tsx`, `cn`, `lucide-react`, `dependencies`, `@testing-library/react`, `createClient`, `DashboardHeader.tsx`, `next`, `createProjectService`, `createClient`, `FocusView.tsx`, `Sidebar.tsx`, `vitest`, `note.repository.ts`, `passkeys.ts`, `package.json`?**
+  _High betweenness centrality (0.092) - this node is a cross-community bridge._
 - **Should `HabitService` be split into smaller, more focused modules?**
-  _Cohesion score 0.06016929764355983 - nodes in this community are weakly interconnected._
-- **Why does `vitest` connect `vitest` to `apiSuccess`, `HabitService`, `CalendarEvent`, `JournalEntry`, `SocialPost`, `RadarItem`, `Note`, `errors.ts`, `search.repository.ts`, `CalendarService`, `createClient`, `react`, `projects/types.ts`, `package.json`, `Task`, `AppShell.tsx`, `notes/schemas.ts`, `studio/schemas.ts`, `apiUnauthorized`, `createClient`, `day/schemas.ts`, `projects/schemas.ts`, `context.ts`, `zod`, `tasks/schemas.ts`, `server.ts`, `mfa.ts`, `Button`, `passkeys.ts`, `calendar/schemas.ts`?**
-  _High betweenness centrality (0.064) - this node is a cross-community bridge._
+  _Cohesion score 0.06526610644257703 - nodes in this community are weakly interconnected._
+- **Why does `vitest` connect `vitest` to `getRequestContext`, `HabitService`, `CalendarEvent`, `JournalEntry`, `PageShell`, `RadarItem`, `apiSuccess`, `errors.ts`, `focus.repository.ts`, `search.repository.ts`, `events/[id]/route.ts`, `CalendarView.tsx`, `react`, `cn`, `devDependencies`, `project.repository.ts`, `@supabase/supabase-js`, `@testing-library/react`, `notes/schemas.ts`, `studio/schemas.ts`, `createClient`, `DashboardHeader.tsx`, `next`, `response.ts`, `createProjectService`, `session-policy.ts`, `tasks/schemas.ts`, `task.repository.ts`, `createClient`, `FocusView.tsx`, `note.repository.ts`, `passkeys.ts`, `api-tokens.ts`, `package.json`, `posts/[id]/route.ts`, `lead.repository.ts`, `@vitejs/plugin-react`?**
+  _High betweenness centrality (0.079) - this node is a cross-community bridge._
 - **Should `CalendarEvent` be split into smaller, more focused modules?**
-  _Cohesion score 0.06744956338452274 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.11904761904761904 - nodes in this community are weakly interconnected._

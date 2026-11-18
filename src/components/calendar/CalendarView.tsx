@@ -31,17 +31,15 @@ export function CalendarView({
   initialTasks = [],
 }: CalendarViewProps) {
   const [currentDate, setCurrentDate] = React.useState<Date>(() => new Date());
-  const [viewType, setViewType] = React.useState<CalendarViewType>("month");
+  const [viewType, setViewType] = React.useState<CalendarViewType>(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 640) {
+      return "agenda";
+    }
+    return "month";
+  });
   const [events, setEvents] = React.useState<CalendarEvent[]>(initialEvents);
   const [tasks, setTasks] = React.useState<Task[]>(initialTasks);
   const [isLoading, setIsLoading] = React.useState(false);
-
-  // Auto-switch to Agenda view on mobile viewport for clarity
-  React.useEffect(() => {
-    if (typeof window !== "undefined" && window.innerWidth < 640) {
-      setViewType("agenda");
-    }
-  }, []);
 
   // Modals & Panels state
   const [isEventModalOpen, setIsEventModalOpen] = React.useState(false);

@@ -5,7 +5,6 @@ import { Lead, LeadStatus } from "@/modules/leads/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Building2,
   Mail,
   Phone,
   Globe,

@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { getAuthOrTokenContext } from '@/lib/supabase/context';
 import { createLeadService } from '@/modules/leads/lead.service';
-import { BatchIngestLeadsSchema, CreateLeadSchema } from '@/modules/leads/schemas';
+import { BatchIngestLeadsSchema } from '@/modules/leads/schemas';
 import { apiSuccess, apiError } from '@/lib/api/response';
 
 /**

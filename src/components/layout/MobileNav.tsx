@@ -8,7 +8,6 @@ import {
   CheckSquare,
   Plus,
   Calendar,
-  MoreHorizontal,
   X,
   Inbox,
   FolderKanban,
@@ -26,14 +25,26 @@ import { loadWorkbenchConfig, WORKBENCH_CHANGE_EVENT } from "@/lib/sidebar-workb
 
 interface MobileNavProps {
   isMenuOpen: boolean;
-  onToggleMenu: () => void;
+  onToggleMenu?: () => void;
   onCloseMenu: () => void;
   onQuickCapture?: () => void;
 }
 
+const DEFAULT_DRAWER_ITEMS = [
+  { title: "Projects", href: "/projects", icon: FolderKanban },
+  { title: "Leads & CRM", href: "/leads", icon: Users },
+  { title: "Focus Mode", href: "/focus", icon: Timer },
+  { title: "Inbox", href: "/inbox", icon: Inbox },
+  { title: "Notes", href: "/notes", icon: FileText },
+  { title: "Habits", href: "/habits", icon: Flame },
+  { title: "Journal", href: "/journal", icon: BookOpen },
+  { title: "Social Studio", href: "/studio", icon: Share2 },
+  { title: "The Radar", href: "/radar", icon: Radio },
+  { title: "Settings", href: "/settings", icon: Settings },
+];
+
 export function MobileNav({
   isMenuOpen,
-  onToggleMenu,
   onCloseMenu,
   onQuickCapture,
 }: MobileNavProps) {
@@ -47,20 +58,7 @@ export function MobileNav({
     { title: "Habits", href: "/habits", icon: Flame },
   ];
 
-  const initialDrawerItems = [
-    { title: "Projects", href: "/projects", icon: FolderKanban },
-    { title: "Leads & CRM", href: "/leads", icon: Users },
-    { title: "Focus Mode", href: "/focus", icon: Timer },
-    { title: "Inbox", href: "/inbox", icon: Inbox },
-    { title: "Notes", href: "/notes", icon: FileText },
-    { title: "Habits", href: "/habits", icon: Flame },
-    { title: "Journal", href: "/journal", icon: BookOpen },
-    { title: "Social Studio", href: "/studio", icon: Share2 },
-    { title: "The Radar", href: "/radar", icon: Radio },
-    { title: "Settings", href: "/settings", icon: Settings },
-  ];
-
-  const [drawerItems, setDrawerItems] = React.useState(initialDrawerItems);
+  const [drawerItems, setDrawerItems] = React.useState(DEFAULT_DRAWER_ITEMS);
 
   React.useEffect(() => {
     const updateTitles = () => {
@@ -69,7 +67,7 @@ export function MobileNav({
       const nameMap = new Map(allTools.map((t) => [t.href, t.title]));
 
       setDrawerItems(
-        initialDrawerItems.map((item) => ({
+        DEFAULT_DRAWER_ITEMS.map((item) => ({
           ...item,
           title: nameMap.get(item.href) || item.title,
         }))

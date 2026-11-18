@@ -12,7 +12,6 @@ import {
   Plus,
   Loader2,
   CheckCircle2,
-  AlertCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { getMfaStatus, unenrollGoogleAuthenticator, MfaStatus } from "@/lib/auth/mfa";
@@ -26,8 +25,8 @@ export function SecuritySettingsCard() {
   const [isRemoving, setIsRemoving] = React.useState(false);
   const [isRegisteringPasskey, setIsRegisteringPasskey] = React.useState(false);
 
-  const loadStatus = React.useCallback(async () => {
-    setLoading(true);
+  const loadStatus = React.useCallback(async (showLoading = false) => {
+    if (showLoading) setLoading(true);
     try {
       const status = await getMfaStatus();
       setMfaStatus(status);
@@ -39,7 +38,15 @@ export function SecuritySettingsCard() {
   }, []);
 
   React.useEffect(() => {
-    loadStatus();
+    let isSubscribed = true;
+    Promise.resolve().then(async () => {
+      if (isSubscribed) {
+        await loadStatus();
+      }
+    });
+    return () => {
+      isSubscribed = false;
+    };
   }, [loadStatus]);
 
   const handleRemoveMfa = async (factorId: string) => {

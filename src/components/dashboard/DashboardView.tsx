@@ -11,7 +11,6 @@ import { FocusTimerWidget } from "./FocusTimerWidget";
 import { TodayAgenda } from "./TodayAgenda";
 import { ActiveProjectsWidget } from "./ActiveProjectsWidget";
 import { OutreachPulseWidget } from "./OutreachPulseWidget";
-import { QuickCaptureCard } from "./QuickCaptureCard";
 import { TaskCreateDialog } from "@/components/tasks/TaskCreateDialog";
 import { MobileFocusedDashboard } from "./MobileFocusedDashboard";
 import { PlanMyDayModal } from "./PlanMyDayModal";

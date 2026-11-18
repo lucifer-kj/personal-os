@@ -11,8 +11,6 @@ import {
   Plus,
   RefreshCw,
   Sparkles,
-  TrendingUp,
-  Award,
   CheckCircle2,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -24,8 +22,8 @@ export function LeadList() {
   const [statusFilter, setStatusFilter] = React.useState<string>("all");
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
-  const fetchLeads = React.useCallback(async () => {
-    setIsLoading(true);
+  const fetchLeads = React.useCallback(async (showLoading = false) => {
+    if (showLoading) setIsLoading(true);
     try {
       const params = new URLSearchParams();
       if (statusFilter !== "all") params.set("status", statusFilter);
@@ -43,7 +41,15 @@ export function LeadList() {
   }, [statusFilter, search]);
 
   React.useEffect(() => {
-    fetchLeads();
+    let isSubscribed = true;
+    Promise.resolve().then(async () => {
+      if (isSubscribed) {
+        await fetchLeads();
+      }
+    });
+    return () => {
+      isSubscribed = false;
+    };
   }, [fetchLeads]);
 
   const handleStatusChange = async (id: string, newStatus: LeadStatus) => {
@@ -159,7 +165,7 @@ export function LeadList() {
           <Button
             variant="outline"
             size="sm"
-            onClick={fetchLeads}
+            onClick={() => fetchLeads(true)}
             disabled={isLoading}
             className="h-8 w-8 p-0"
             title="Refresh Leads"
