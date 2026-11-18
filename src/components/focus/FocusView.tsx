@@ -18,6 +18,11 @@ import {
 } from "lucide-react";
 import { ActiveFocusSession } from "@/modules/focus/types";
 import { startAmbientNoise, stopAmbientNoise } from "@/lib/audio/ambientAudio";
+import {
+  scheduleFocusNotification,
+  cancelFocusNotification,
+  notifyFocusSessionComplete,
+} from "@/lib/notifications/mobileNotifications";
 
 interface FocusViewProps {
   initialActiveSession?: ActiveFocusSession | null;
@@ -103,6 +108,7 @@ export function FocusView({
       setSessionSecondsRemaining((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
+          notifyFocusSessionComplete();
           return 0;
         }
         return prev - 1;
@@ -134,7 +140,9 @@ export function FocusView({
       if (res.ok) {
         const json = await res.json();
         setActiveSession(json.data);
-        setSessionSecondsRemaining(json.data.remaining_seconds ?? durationSeconds);
+        const remaining = json.data.remaining_seconds ?? durationSeconds;
+        setSessionSecondsRemaining(remaining);
+        await scheduleFocusNotification(remaining);
       }
     } catch (err) {
       console.error("Failed to start session:", err);
@@ -152,6 +160,7 @@ export function FocusView({
       if (res.ok) {
         const json = await res.json();
         setActiveSession(json.data);
+        await cancelFocusNotification();
       }
     } catch (err) {
       console.error("Failed to pause:", err);
@@ -167,6 +176,8 @@ export function FocusView({
       if (res.ok) {
         const json = await res.json();
         setActiveSession(json.data);
+        const remaining = json.data.remaining_seconds ?? sessionSecondsRemaining;
+        await scheduleFocusNotification(remaining);
       }
     } catch (err) {
       console.error("Failed to resume:", err);
@@ -176,6 +187,7 @@ export function FocusView({
   const handleComplete = async () => {
     if (!activeSession) return;
     try {
+      await cancelFocusNotification();
       const res = await fetch(`/api/v1/focus/${activeSession.session.id}/complete`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -198,6 +210,7 @@ export function FocusView({
   const handleAbandon = async () => {
     if (!activeSession) return;
     try {
+      await cancelFocusNotification();
       const res = await fetch(`/api/v1/focus/${activeSession.session.id}/abandon`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

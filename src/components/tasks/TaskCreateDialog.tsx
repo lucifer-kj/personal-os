@@ -12,6 +12,7 @@ interface TaskCreateDialogProps {
   onSubmit?: (dto: CreateTaskDTO) => Promise<boolean>;
   onCreateTask?: (dto: CreateTaskDTO) => Promise<void | boolean>;
   initialDueDate?: string;
+  initialTitle?: string;
 }
 
 export function TaskCreateDialog({
@@ -20,18 +21,25 @@ export function TaskCreateDialog({
   onSubmit,
   onCreateTask,
   initialDueDate,
+  initialTitle = "",
 }: TaskCreateDialogProps) {
-  const [title, setTitle] = React.useState("");
+  const [title, setTitle] = React.useState(initialTitle);
   const [description, setDescription] = React.useState("");
   const [priority, setPriority] = React.useState<TaskPriority>("medium");
   const [dueDate, setDueDate] = React.useState(initialDueDate || "");
   const [prevInitialDueDate, setPrevInitialDueDate] = React.useState(initialDueDate);
+  const [prevInitialTitle, setPrevInitialTitle] = React.useState(initialTitle);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
 
   if (initialDueDate !== prevInitialDueDate) {
     setPrevInitialDueDate(initialDueDate);
     setDueDate(initialDueDate || "");
+  }
+
+  if (initialTitle !== prevInitialTitle) {
+    setPrevInitialTitle(initialTitle);
+    setTitle(initialTitle || "");
   }
 
   if (!isOpen) return null;

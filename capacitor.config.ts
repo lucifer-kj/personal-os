@@ -14,7 +14,7 @@ const config: CapacitorConfig = {
   plugins: {
     StatusBar: {
       style: "DARK",
-      backgroundColor: "#0E0C0B",
+      backgroundColor: "#141413",
     },
   },
   android: {

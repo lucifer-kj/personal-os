@@ -2,6 +2,9 @@
 
 import * as React from "react";
 import { signInWithPasskey } from "@/lib/auth/passkeys";
+import { Capacitor } from "@capacitor/core";
+import { BiometricAuth, AndroidBiometryStrength } from "@aparajita/capacitor-biometric-auth";
+import { Haptics, NotificationType } from "@capacitor/haptics";
 
 export interface AppLockOptions {
   gracePeriodMs?: number;
@@ -34,6 +37,35 @@ export function useAppLock(options: AppLockOptions = {}) {
     setError(null);
 
     try {
+      // Native Android biometric prompt (POCO C61 side-mounted fingerprint sensor)
+      if (Capacitor.isNativePlatform()) {
+        try {
+          const info = await BiometricAuth.checkBiometry();
+          if (info.isAvailable) {
+            await BiometricAuth.authenticate({
+              reason: "Unlock Personal OS Enclave",
+              cancelTitle: "Cancel",
+              allowDeviceCredential: true,
+              androidBiometryStrength: AndroidBiometryStrength.strong,
+            });
+            await Haptics.notification({ type: NotificationType.Success });
+            setIsLocked(false);
+            setIsShielded(false);
+            lastBackgroundedAtRef.current = null;
+            setUnlocking(false);
+            return true;
+          }
+        } catch (nativeErr: unknown) {
+          await Haptics.notification({ type: NotificationType.Error });
+          const message =
+            nativeErr instanceof Error ? nativeErr.message : "Biometric authentication failed";
+          setError(message);
+          setUnlocking(false);
+          return false;
+        }
+      }
+
+      // Web platform fallback (Passkeys / WebAuthn)
       const res = await signInWithPasskey();
       if (res.error) {
         setError(res.error.message || "Biometric authentication failed");

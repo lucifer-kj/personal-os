@@ -9,6 +9,7 @@ import { CommandPalette } from "@/components/search/CommandPalette";
 import { StatePreviewModal } from "@/components/preview/StatePreviewModal";
 import { AppLockScreen } from "@/components/auth/AppLockScreen";
 import { SessionExpirationModal } from "@/components/auth/SessionExpirationModal";
+import { MobileDeepLinkBridge } from "@/components/mobile/MobileDeepLinkBridge";
 import { useAppLock } from "@/lib/hooks/useAppLock";
 import { useSessionMonitor } from "@/lib/hooks/useSessionMonitor";
 import { Toaster } from "sonner";
@@ -120,6 +121,9 @@ function AppShellContent({ children }: AppShellProps) {
         onExtend={sessionMonitor.extendSession}
         onSignOut={sessionMonitor.signOut}
       />
+
+      {/* Mobile Native Deep Link & Android System Bridge */}
+      <MobileDeepLinkBridge />
 
       {/* Global Notifications */}
       <Toaster position="bottom-right" richColors closeButton />
