@@ -3,6 +3,10 @@
 import * as React from "react";
 import { Lead, LeadStatus } from "@/modules/leads/types";
 import { LeadCard } from "./LeadCard";
+import { LeadGridView } from "./LeadGridView";
+import { LeadStackCarousel } from "./LeadStackCarousel";
+import { LeadKanbanView } from "./LeadKanbanView";
+import { LeadDetailModal } from "./LeadDetailModal";
 import { CreateLeadModal } from "./CreateLeadModal";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,15 +16,24 @@ import {
   RefreshCw,
   Sparkles,
   CheckCircle2,
+  LayoutGrid,
+  Layers,
+  Kanban,
+  List as ListIcon,
 } from "lucide-react";
 import { toast } from "sonner";
+
+type ViewMode = "grid" | "stack" | "kanban" | "list";
 
 export function LeadList() {
   const [leads, setLeads] = React.useState<Lead[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [search, setSearch] = React.useState("");
   const [statusFilter, setStatusFilter] = React.useState<string>("all");
+  const [viewMode, setViewMode] = React.useState<ViewMode>("grid");
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [selectedLead, setSelectedLead] = React.useState<Lead | null>(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = React.useState(false);
 
   const fetchLeads = React.useCallback(async (showLoading = false) => {
     if (showLoading) setIsLoading(true);
@@ -72,6 +85,25 @@ export function LeadList() {
 
     if (!res.ok) throw new Error("Failed to convert lead");
     await fetchLeads();
+  };
+
+  const handleOpenDetail = (lead: Lead) => {
+    setSelectedLead(lead);
+    setIsDetailModalOpen(true);
+  };
+
+  const handleCloseDetail = () => {
+    setIsDetailModalOpen(false);
+  };
+
+  const handleModalStatusChange = async (id: string, newStatus: LeadStatus) => {
+    await handleStatusChange(id, newStatus);
+    setSelectedLead((prev) => (prev && prev.id === id ? { ...prev, status: newStatus } : prev));
+  };
+
+  const handleModalConvert = async (id: string) => {
+    await handleConvert(id);
+    setSelectedLead((prev) => (prev && prev.id === id ? { ...prev, status: "converted" as LeadStatus } : prev));
   };
 
   // Metrics
@@ -129,39 +161,97 @@ export function LeadList() {
         </div>
       </div>
 
-      {/* Filter & Action Bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-[var(--card)] border border-[var(--border)] rounded-xl p-3 shadow-xs">
-        {/* Search */}
-        <div className="relative flex-1">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
-          <input
-            type="text"
-            placeholder="Search by name, company, email..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 text-sm bg-[var(--background)] border border-[var(--border)] rounded-lg text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)] transition-all"
-          />
+      {/* Filter & View Mode Controls Bar */}
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 bg-[var(--card)] border border-[var(--border)] rounded-xl p-3 shadow-xs">
+        {/* Left: Search & Filter */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 flex-1">
+          {/* Search */}
+          <div className="relative flex-1 min-w-[180px]">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
+            <input
+              type="text"
+              placeholder="Search leads, niche, decision maker..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-9 pr-3 py-1.5 text-xs sm:text-sm bg-[var(--background)] border border-[var(--border)] rounded-lg text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)] transition-all"
+            />
+          </div>
+
+          {/* Status Pills */}
+          <div className="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5">
+            {["all", "lead", "contacted", "qualified", "converted", "lost"].map((st) => (
+              <button
+                key={st}
+                onClick={() => setStatusFilter(st)}
+                className={`px-2.5 py-1 rounded-lg text-xs font-medium capitalize whitespace-nowrap transition-all active:scale-95 cursor-pointer ${
+                  statusFilter === st
+                    ? "bg-[var(--primary)] text-[var(--primary-foreground)] shadow-xs"
+                    : "bg-[var(--background)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] border border-[var(--border)]"
+                }`}
+              >
+                {st}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Status Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1">
-          {["all", "lead", "contacted", "qualified", "converted", "lost"].map((st) => (
+        {/* Right: View Mode Toggle & Primary Actions */}
+        <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-[var(--border)]/60">
+          {/* View Mode Switcher */}
+          <div className="flex items-center gap-1 p-0.5 bg-[var(--muted)]/60 border border-[var(--border)] rounded-lg">
             <button
-              key={st}
-              onClick={() => setStatusFilter(st)}
-              className={`px-3 py-1 rounded-lg text-xs font-medium capitalize whitespace-nowrap transition-all active:scale-95 cursor-pointer ${
-                statusFilter === st
-                  ? "bg-[var(--primary)] text-[var(--primary-foreground)] shadow-xs"
-                  : "bg-[var(--background)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] border border-[var(--border)] hover:border-[var(--primary)]/20"
+              type="button"
+              onClick={() => setViewMode("grid")}
+              className={`p-1.5 rounded-md text-xs font-medium transition-all cursor-pointer ${
+                viewMode === "grid"
+                  ? "bg-[var(--card)] text-[var(--foreground)] shadow-xs font-semibold"
+                  : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
               }`}
+              title="Grid View (Desktop)"
             >
-              {st}
+              <LayoutGrid className="w-3.5 h-3.5" />
             </button>
-          ))}
-        </div>
 
-        {/* Action Buttons */}
-        <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => setViewMode("stack")}
+              className={`p-1.5 rounded-md text-xs font-medium transition-all cursor-pointer ${
+                viewMode === "stack"
+                  ? "bg-[var(--card)] text-[var(--foreground)] shadow-xs font-semibold"
+                  : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+              }`}
+              title="Stacked Deck Carousel (Swipeable Pile)"
+            >
+              <Layers className="w-3.5 h-3.5" />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setViewMode("kanban")}
+              className={`p-1.5 rounded-md text-xs font-medium transition-all cursor-pointer ${
+                viewMode === "kanban"
+                  ? "bg-[var(--card)] text-[var(--foreground)] shadow-xs font-semibold"
+                  : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+              }`}
+              title="Kanban Pipeline Board"
+            >
+              <Kanban className="w-3.5 h-3.5" />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setViewMode("list")}
+              className={`p-1.5 rounded-md text-xs font-medium transition-all cursor-pointer ${
+                viewMode === "list"
+                  ? "bg-[var(--card)] text-[var(--foreground)] shadow-xs font-semibold"
+                  : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+              }`}
+              title="Compact Tactile List"
+            >
+              <ListIcon className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
           <Button
             variant="outline"
             size="sm"
@@ -177,21 +267,21 @@ export function LeadList() {
             variant="default"
             size="sm"
             onClick={() => setIsModalOpen(true)}
-            className="flex-1 sm:flex-none h-8 text-xs font-medium gap-1.5"
+            className="h-8 text-xs font-medium gap-1.5 px-3"
           >
-            <Plus className="w-3.5 h-3.5 mr-1" />
+            <Plus className="w-3.5 h-3.5" />
             New Lead
           </Button>
         </div>
       </div>
 
-      {/* Leads Grid / List */}
+      {/* Leads Views */}
       {isLoading ? (
-        <div className="grid grid-cols-1 gap-3">
-          {[1, 2, 3].map((i) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
             <div
               key={i}
-              className="h-28 rounded-xl border border-[var(--border)] bg-[var(--card)] animate-pulse"
+              className="h-44 rounded-2xl border border-[var(--border)] bg-[var(--card)] animate-pulse"
             />
           ))}
         </div>
@@ -211,18 +301,49 @@ export function LeadList() {
             Add First Lead
           </Button>
         </div>
+      ) : viewMode === "stack" ? (
+        <LeadStackCarousel
+          leads={leads}
+          onSelectLead={handleOpenDetail}
+          onStatusChange={handleStatusChange}
+          onConvert={handleConvert}
+        />
+      ) : viewMode === "grid" ? (
+        <LeadGridView
+          leads={leads}
+          onSelectLead={handleOpenDetail}
+          onStatusChange={handleStatusChange}
+          onConvert={handleConvert}
+        />
+      ) : viewMode === "kanban" ? (
+        <LeadKanbanView
+          leads={leads}
+          onSelectLead={handleOpenDetail}
+          onStatusChange={handleStatusChange}
+          onConvert={handleConvert}
+        />
       ) : (
-        <div className="grid grid-cols-1 gap-3">
+        <div className="grid grid-cols-1 gap-2.5">
           {leads.map((lead) => (
-            <LeadCard
-              key={lead.id}
-              lead={lead}
-              onStatusChange={handleStatusChange}
-              onConvert={handleConvert}
-            />
+            <div key={lead.id} onClick={() => handleOpenDetail(lead)} className="cursor-pointer">
+              <LeadCard
+                lead={lead}
+                onStatusChange={handleStatusChange}
+                onConvert={handleConvert}
+              />
+            </div>
           ))}
         </div>
       )}
+
+      {/* Floating Detailed Intelligence Modal (Blurred Backdrop) */}
+      <LeadDetailModal
+        lead={selectedLead}
+        isOpen={isDetailModalOpen}
+        onClose={handleCloseDetail}
+        onStatusChange={handleModalStatusChange}
+        onConvert={handleModalConvert}
+      />
 
       {/* Creation Modal */}
       <CreateLeadModal

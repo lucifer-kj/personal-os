@@ -28,9 +28,10 @@ interface LeadCardProps {
   lead: Lead;
   onStatusChange: (id: string, newStatus: LeadStatus) => Promise<void>;
   onConvert: (id: string) => Promise<void>;
+  onSelectLead?: (lead: Lead) => void;
 }
 
-export function LeadCard({ lead, onStatusChange, onConvert }: LeadCardProps) {
+export function LeadCard({ lead, onStatusChange, onConvert, onSelectLead }: LeadCardProps) {
   const [isConverting, setIsConverting] = React.useState(false);
   const [isUpdatingStatus, setIsUpdatingStatus] = React.useState(false);
   const [showPitch, setShowPitch] = React.useState(false);
@@ -123,7 +124,12 @@ export function LeadCard({ lead, onStatusChange, onConvert }: LeadCardProps) {
         {/* Left Section: Title & Inline Badges */}
         <div className="flex-1 min-w-0 space-y-1">
           <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-            <h3 className="font-serif font-medium text-sm sm:text-base text-[var(--foreground)] tracking-tight truncate max-w-xs sm:max-w-md">
+            <h3
+              onClick={() => onSelectLead?.(lead)}
+              className={`font-serif font-medium text-sm sm:text-base text-[var(--foreground)] tracking-tight truncate max-w-xs sm:max-w-md ${
+                onSelectLead ? "cursor-pointer hover:text-[var(--primary)] transition-colors" : ""
+              }`}
+            >
               {displayName}
             </h3>
 
