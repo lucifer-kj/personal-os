@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { X, Calendar as CalendarIcon, Flag } from "lucide-react";
+import { X, Calendar as CalendarIcon, Flag, ChevronDown } from "lucide-react";
 import { CreateTaskDTO, TaskPriority } from "@/modules/tasks/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -154,17 +154,22 @@ export function TaskCreateDialog({
                 <Flag className="h-3.5 w-3.5 inline mr-1 text-[var(--muted-foreground)]" />
                 Priority
               </label>
-              <select
-                id="task-priority"
-                value={priority}
-                onChange={(e) => setPriority(e.target.value as TaskPriority)}
-                className="w-full h-10 rounded-[var(--radius-control)] border border-[var(--input)] bg-[var(--card)] px-3 py-2 text-sm text-[var(--foreground)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)]"
-              >
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-                <option value="urgent">Urgent</option>
-              </select>
+              <div className="relative flex items-center">
+                <select
+                  id="task-priority"
+                  value={priority}
+                  onChange={(e) => setPriority(e.target.value as TaskPriority)}
+                  data-custom-select
+                  style={{ WebkitAppearance: "none", MozAppearance: "none", appearance: "none" }}
+                  className="w-full h-10 rounded-[var(--radius-control)] border border-[var(--input)] bg-[var(--card)] pl-3 pr-8 py-2 text-sm text-[var(--foreground)] appearance-none cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)]"
+                >
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                  <option value="urgent">Urgent</option>
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--muted-foreground)]" />
+              </div>
             </div>
 
             <div>

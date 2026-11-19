@@ -177,8 +177,8 @@ export function LeadList() {
             />
           </div>
 
-          {/* Status Pills */}
-          <div className="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5">
+          {/* Status Pills with graceful horizontal scroll */}
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 scroll-smooth touch-pan-x -mx-1 px-1">
             {["all", "lead", "contacted", "qualified", "converted", "lost"].map((st) => (
               <button
                 key={st}

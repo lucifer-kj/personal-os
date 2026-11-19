@@ -41,9 +41,9 @@ export function TodayAgenda({
   };
 
   return (
-    <Card className={cn("p-5 sm:p-6 bg-white dark:bg-[#161413] border-[#EDE7DE] dark:border-[#2A2624] shadow-[0_2px_12px_rgba(0,0,0,0.03)] rounded-2xl flex flex-col justify-between min-h-[380px] h-full transition-all", className)}>
+    <Card className={cn("p-5 sm:p-6 bg-white dark:bg-[#161413] border-[#EDE7DE] dark:border-[#2A2624] shadow-[0_2px_12px_rgba(0,0,0,0.03)] rounded-2xl flex flex-col w-full transition-all", className)}>
       {/* Header with Segmented Toggle */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-[#EDE7DE]/60 dark:border-[#2A2624]/60 shrink-0">
         <div className="flex items-center gap-2">
           <Calendar className="h-4 w-4 text-[#B94A24] dark:text-[#E07A50]" />
           <h2 className="text-base sm:text-lg font-serif font-medium tracking-tight text-[#24211F] dark:text-[#F3EFEA]">
@@ -93,64 +93,66 @@ export function TodayAgenda({
         </div>
       </div>
 
-      {/* Overdue Warning Callout */}
-      {overdueTasks.length > 0 && (
-        <div className="rounded-xl border border-amber-200 bg-amber-50/70 dark:border-amber-900/50 dark:bg-amber-950/20 p-3.5 text-xs">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-amber-900 dark:text-amber-200 font-medium">
-              <AlertCircle className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
-              <span>
-                {overdueTasks.length} overdue task{overdueTasks.length > 1 ? "s" : ""}
-              </span>
+      {/* Agenda Body Container with consistent vertical spacing */}
+      <div className="w-full flex-1 flex flex-col justify-center space-y-4 py-4">
+        {/* Overdue Warning Callout */}
+        {overdueTasks.length > 0 && (
+          <div className="w-full rounded-xl border border-amber-200 bg-amber-50/70 dark:border-amber-900/50 dark:bg-amber-950/20 p-3.5 text-xs shadow-xs">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-amber-900 dark:text-amber-200 font-medium">
+                <AlertCircle className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
+                <span>
+                  {overdueTasks.length} overdue task{overdueTasks.length > 1 ? "s" : ""}
+                </span>
+              </div>
+              <button
+                onClick={() => setShowOverdue(!showOverdue)}
+                className="text-[11px] underline text-amber-800 dark:text-amber-300 hover:text-amber-950 transition-colors"
+              >
+                {showOverdue ? "Hide" : "Show"}
+              </button>
             </div>
-            <button
-              onClick={() => setShowOverdue(!showOverdue)}
-              className="text-[11px] underline text-amber-800 dark:text-amber-300 hover:text-amber-950 transition-colors"
-            >
-              {showOverdue ? "Hide" : "Show"}
-            </button>
-          </div>
 
-          {showOverdue && (
-            <div className="mt-2.5 space-y-1.5 pt-2 border-t border-amber-200/60 dark:border-amber-900/40">
-              {overdueTasks.map((task) => (
-                <div key={task.id} className="flex items-center justify-between text-xs py-1">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <button
-                      onClick={() => onToggleTask(task)}
-                      className="h-4 w-4 rounded border border-amber-300 flex items-center justify-center bg-white dark:bg-black/30 text-amber-600 hover:border-amber-500 transition-colors"
-                    >
-                      {task.status === "completed" && <Check className="h-2.5 w-2.5" />}
-                    </button>
-                    <span className="truncate text-amber-950 dark:text-amber-100">{task.title}</span>
+            {showOverdue && (
+              <div className="mt-2.5 space-y-1.5 pt-2 border-t border-amber-200/60 dark:border-amber-900/40">
+                {overdueTasks.map((task) => (
+                  <div key={task.id} className="flex items-center justify-between text-xs py-1">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <button
+                        onClick={() => onToggleTask(task)}
+                        className="h-4 w-4 rounded border border-amber-300 flex items-center justify-center bg-white dark:bg-black/30 text-amber-600 hover:border-amber-500 transition-colors"
+                      >
+                        {task.status === "completed" && <Check className="h-2.5 w-2.5" />}
+                      </button>
+                      <span className="truncate text-amber-950 dark:text-amber-100">{task.title}</span>
+                    </div>
+                    <span className="font-mono text-[10px] text-amber-700 dark:text-amber-400 shrink-0 ml-2">
+                      Due {task.due_date}
+                    </span>
                   </div>
-                  <span className="font-mono text-[10px] text-amber-700 dark:text-amber-400 shrink-0 ml-2">
-                    Due {task.due_date}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
-      {/* Main Agenda Tasks Container */}
-      {todayTasks.length === 0 ? (
-        <div className="p-8 text-center rounded-xl border border-dashed border-[#EDE7DE] dark:border-[#2A2624] bg-[#FAF8F5] dark:bg-[#161413]">
-          <p className="text-xs sm:text-sm text-[#7A7269] dark:text-[#A69E94]">
-            No tasks scheduled for today. Take time to focus, plan upcoming priorities, or add a new task.
-          </p>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={onOpenCreateTask}
-            className="mt-3 text-xs rounded-full border-[#E2DAD1]"
-          >
-            <Plus className="h-3 w-3 mr-1 text-[#B94A24]" />
-            Schedule a task
-          </Button>
-        </div>
-      ) : viewMode === "timeline" ? (
+        {/* Main Agenda Tasks Container */}
+        {todayTasks.length === 0 ? (
+          <div className="w-full py-8 px-6 sm:py-10 sm:px-8 text-center flex flex-col items-center justify-center rounded-xl border border-dashed border-[#EDE7DE] dark:border-[#2A2624] bg-[#FAF8F5]/80 dark:bg-[#161413]/50">
+            <p className="text-xs sm:text-sm text-[#7A7269] dark:text-[#A69E94] max-w-sm text-center leading-relaxed">
+              No tasks scheduled for today. Take time to focus, plan upcoming priorities, or add a new task.
+            </p>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={onOpenCreateTask}
+              className="mt-4 text-xs rounded-full border-[#E2DAD1] hover:bg-[#F7F4EF] dark:hover:bg-[#201D1A]"
+            >
+              <Plus className="h-3.5 w-3.5 mr-1 text-[#B94A24]" />
+              Schedule a task
+            </Button>
+          </div>
+        ) : viewMode === "timeline" ? (
         /* Connected Vertical Timeline View */
         <div className="relative space-y-3 before:absolute before:left-[11px] before:top-4 before:bottom-4 before:w-0.5 before:bg-[#EAE4DC] dark:before:bg-[#2E2824]">
           {todayTasks.map((task, idx) => {
@@ -321,6 +323,7 @@ export function TodayAgenda({
           })}
         </div>
       )}
+      </div>
 
       {/* Footer link to full tasks */}
       <div className="mt-auto pt-3 border-t border-[#EDE7DE] dark:border-[#2A2624] flex justify-end">

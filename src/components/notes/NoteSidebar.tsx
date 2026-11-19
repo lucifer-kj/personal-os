@@ -46,15 +46,15 @@ export function NoteSidebar({
 
   return (
     <aside className="w-full flex flex-col space-y-3 shrink-0">
-      {/* 1. Filter Mode Tabs matching Reference Image 1 */}
+      {/* 1. Filter Mode Tabs */}
       <div className="flex items-center gap-1 border-b border-[var(--border)] pb-2 text-xs">
         <button
           type="button"
           onClick={() => onFilterModeChange("all")}
           className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
             filterMode === "all"
-              ? "bg-[#241C18] text-[#F4EFEA] border border-[#3D261C] font-semibold shadow-2xs"
-              : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+              ? "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold shadow-2xs"
+              : "text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]"
           }`}
         >
           All ({notes.length})
@@ -64,8 +64,8 @@ export function NoteSidebar({
           onClick={() => onFilterModeChange("pinned")}
           className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
             filterMode === "pinned"
-              ? "bg-[#241C18] text-[#F4EFEA] border border-[#3D261C] font-semibold shadow-2xs"
-              : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+              ? "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold shadow-2xs"
+              : "text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]"
           }`}
         >
           Pinned ({pinnedNotes.length})
@@ -75,8 +75,8 @@ export function NoteSidebar({
           onClick={() => onFilterModeChange("archived")}
           className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
             filterMode === "archived"
-              ? "bg-[#241C18] text-[#F4EFEA] border border-[#3D261C] font-semibold shadow-2xs"
-              : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+              ? "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold shadow-2xs"
+              : "text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]"
           }`}
         >
           Archive

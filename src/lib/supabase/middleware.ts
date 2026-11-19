@@ -49,13 +49,13 @@ export async function updateSession(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
 
-  // Check development preview mode first
+  // Check development preview mode first (auto-enabled in local dev unless explicitly opted out)
   const cookieHeader = request.headers.get("cookie") || "";
+  const isExplicitNonDev =
+    cookieHeader.includes("dev_preview=false") ||
+    request.nextUrl.searchParams.get("preview") === "false";
   const hasDevPreview =
-    process.env.NODE_ENV === "development" &&
-    (request.nextUrl.searchParams.get("preview") === "true" ||
-      cookieHeader.includes("dev_preview=true") ||
-      request.cookies.get("dev_preview")?.value === "true");
+    process.env.NODE_ENV === "development" && !isExplicitNonDev;
 
   if (hasDevPreview) {
     supabaseResponse.cookies.set("dev_preview", "true", {

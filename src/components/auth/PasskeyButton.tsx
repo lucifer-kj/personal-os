@@ -18,6 +18,7 @@ export interface PasskeyButtonProps {
   className?: string;
   variant?: "default" | "secondary" | "outline" | "ghost";
   disabled?: boolean;
+  dividerLabel?: string;
 }
 
 export function PasskeyButton({
@@ -27,6 +28,7 @@ export function PasskeyButton({
   className = "",
   variant = "outline",
   disabled = false,
+  dividerLabel,
 }: PasskeyButtonProps) {
   const [loading, setLoading] = React.useState(false);
   const [supported] = React.useState<boolean>(() => {
@@ -83,7 +85,7 @@ export function PasskeyButton({
       ? "Sign in with Passkey / Biometrics"
       : "Register New Passkey";
 
-  return (
+  const buttonElement = (
     <Button
       type="button"
       variant={variant}
@@ -101,5 +103,21 @@ export function PasskeyButton({
       )}
       <span>{label}</span>
     </Button>
+  );
+
+  if (!dividerLabel) {
+    return buttonElement;
+  }
+
+  return (
+    <div className="space-y-3">
+      {buttonElement}
+      <div className="relative flex items-center justify-center">
+        <div className="border-t border-[var(--border)] w-full" />
+        <span className="bg-[var(--card)] px-2.5 text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] font-mono">
+          {dividerLabel}
+        </span>
+      </div>
+    </div>
   );
 }

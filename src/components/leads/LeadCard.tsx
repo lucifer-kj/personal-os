@@ -122,41 +122,43 @@ export function LeadCard({ lead, onStatusChange, onConvert, onSelectLead }: Lead
       {/* Primary Row: Identity, Badges, and Quick Controls */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-3">
         {/* Left Section: Title & Inline Badges */}
-        <div className="flex-1 min-w-0 space-y-1">
-          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+        <div className="flex-1 min-w-0 space-y-1.5">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2">
             <h3
               onClick={() => onSelectLead?.(lead)}
-              className={`font-serif font-medium text-sm sm:text-base text-[var(--foreground)] tracking-tight truncate max-w-xs sm:max-w-md ${
+              className={`font-serif font-medium text-sm sm:text-base text-[var(--foreground)] tracking-tight truncate max-w-full ${
                 onSelectLead ? "cursor-pointer hover:text-[var(--primary)] transition-colors" : ""
               }`}
             >
               {displayName}
             </h3>
 
-            {getStatusBadge(lead.status)}
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 shrink-0">
+              {getStatusBadge(lead.status)}
 
-            <span
-              className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-mono tabular-nums font-semibold border ${getScoreColor(
-                lead.score
-              )}`}
-              title="Calculated Lead Quality Score"
-            >
-              <Sparkles className="w-2.5 h-2.5" />
-              {lead.score}/100
-            </span>
-
-            {/* Lighthouse Mobile Gauge */}
-            {lead.lighthouse_mobile !== undefined && lead.lighthouse_mobile !== null && (
               <span
-                className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-mono tabular-nums font-medium border ${getLighthouseColor(
-                  lead.lighthouse_mobile
+                className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-mono tabular-nums font-semibold border ${getScoreColor(
+                  lead.score
                 )}`}
-                title="Google Lighthouse Mobile Performance Score"
+                title="Calculated Lead Quality Score"
               >
-                <Smartphone className="w-2.5 h-2.5" />
-                Mobile: {lead.lighthouse_mobile}/100
+                <Sparkles className="w-2.5 h-2.5" />
+                {lead.score}/100
               </span>
-            )}
+
+              {/* Lighthouse Mobile Gauge */}
+              {lead.lighthouse_mobile !== undefined && lead.lighthouse_mobile !== null && (
+                <span
+                  className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-mono tabular-nums font-medium border ${getLighthouseColor(
+                    lead.lighthouse_mobile
+                  )}`}
+                  title="Google Lighthouse Mobile Performance Score"
+                >
+                  <Smartphone className="w-2.5 h-2.5" />
+                  Mobile: {lead.lighthouse_mobile}/100
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Secondary Metadata Row */}
@@ -206,18 +208,23 @@ export function LeadCard({ lead, onStatusChange, onConvert, onSelectLead }: Lead
             </a>
           )}
 
-          <select
-            value={lead.status}
-            onChange={handleStatusSelect}
-            disabled={isUpdatingStatus}
-            className="text-xs rounded-lg border border-[var(--border)] bg-[var(--background)] px-2 py-1 font-medium text-[var(--foreground)] shadow-2xs hover:border-[var(--primary)]/40 focus:outline-none focus:ring-1 focus:ring-[var(--primary)] transition-all cursor-pointer h-7"
-          >
-            <option value="lead">Pitch Ready</option>
-            <option value="contacted">Contacted</option>
-            <option value="qualified">Qualified</option>
-            <option value="converted">Converted</option>
-            <option value="lost">Lost</option>
-          </select>
+          <div className="relative inline-flex items-center">
+            <select
+              value={lead.status}
+              onChange={handleStatusSelect}
+              disabled={isUpdatingStatus}
+              data-custom-select
+              style={{ WebkitAppearance: "none", MozAppearance: "none", appearance: "none" }}
+              className="text-xs rounded-lg border border-[var(--border)] bg-[var(--background)] pl-2 pr-6 py-1 font-medium text-[var(--foreground)] shadow-2xs hover:border-[var(--primary)]/40 focus:outline-none focus:ring-1 focus:ring-[var(--primary)] transition-all cursor-pointer h-7 appearance-none"
+            >
+              <option value="lead">Pitch Ready</option>
+              <option value="contacted">Contacted</option>
+              <option value="qualified">Qualified</option>
+              <option value="converted">Converted</option>
+              <option value="lost">Lost</option>
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 text-[var(--muted-foreground)]" />
+          </div>
 
           {lead.status !== "converted" ? (
             <Button
@@ -290,21 +297,21 @@ export function LeadCard({ lead, onStatusChange, onConvert, onSelectLead }: Lead
       {/* Consultative Pitch Drawer */}
       {showPitch && lead.tailored_pitch && (
         <div className="mt-2 p-2.5 rounded-lg border border-[var(--border)] bg-[var(--muted)]/50 space-y-1.5 animate-in fade-in slide-in-from-top-1 duration-150">
-          <div className="flex items-center justify-between text-xs text-[var(--muted-foreground)] font-medium">
-            <span className="flex items-center gap-1.5 font-mono text-[11px]">
-              <Sparkles className="w-3 h-3 text-amber-500" />
-              Tailored Consultative Copy ({lead.recommended_service || "Automated Solution"})
+          <div className="flex items-center justify-between text-xs text-[var(--muted-foreground)] font-medium gap-2">
+            <span className="flex items-center gap-1.5 font-mono text-[11px] truncate min-w-0">
+              <Sparkles className="w-3 h-3 text-amber-500 shrink-0" />
+              <span className="truncate">Tailored Consultative Copy ({lead.recommended_service || "Automated Solution"})</span>
             </span>
             <button
               type="button"
               onClick={handleCopyPitch}
-              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded hover:bg-[var(--card)] border border-transparent hover:border-[var(--border)] text-[11px] text-[var(--foreground)] active:scale-95 transition-all cursor-pointer font-medium"
+              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded hover:bg-[var(--card)] border border-transparent hover:border-[var(--border)] text-[11px] text-[var(--foreground)] active:scale-95 transition-all cursor-pointer font-medium shrink-0"
             >
               {copiedPitch ? <Check className="w-2.5 h-2.5 text-emerald-500" /> : <Copy className="w-2.5 h-2.5" />}
               {copiedPitch ? "Copied" : "Copy"}
             </button>
           </div>
-          <p className="text-xs text-[var(--foreground)] italic font-serif leading-relaxed">
+          <p className="text-xs text-[var(--foreground)] italic font-serif leading-relaxed break-words">
             &ldquo;{lead.tailored_pitch}&rdquo;
           </p>
         </div>

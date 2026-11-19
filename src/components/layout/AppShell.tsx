@@ -71,14 +71,14 @@ function AppShellContent({ children }: AppShellProps) {
 
       {/* Main Column */}
       <div className="flex flex-1 flex-col h-full min-w-0 overflow-hidden">
-        <React.Suspense fallback={<header className="h-14 border-b border-[var(--border)] bg-[var(--background)]" />}>
+        <React.Suspense fallback={<header className="h-[calc(var(--header-height)+env(safe-area-inset-top,0px))] pt-[env(safe-area-inset-top,0px)] border-b border-[var(--border)] bg-[var(--background)]" />}>
           <Header
             onOpenMobileMenu={toggleMobileMenu}
             onQuickCapture={handleQuickCapture}
           />
         </React.Suspense>
 
-        <div className="flex-1 w-full overflow-y-auto gravitational-scroll">
+        <div className="flex-1 w-full overflow-y-auto gravitational-scroll pb-24 lg:pb-0">
           {children}
         </div>
 
@@ -125,8 +125,13 @@ function AppShellContent({ children }: AppShellProps) {
       {/* Mobile Native Deep Link & Android System Bridge */}
       <MobileDeepLinkBridge />
 
-      {/* Global Notifications */}
-      <Toaster position="bottom-right" richColors closeButton />
+      {/* Global Notifications with Mobile Dock Offset */}
+      <Toaster
+        position="bottom-right"
+        richColors
+        closeButton
+        toastOptions={{ className: "mb-20 lg:mb-0" }}
+      />
     </div>
   );
 }

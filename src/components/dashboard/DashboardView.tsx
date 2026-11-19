@@ -181,21 +181,19 @@ export function DashboardView({ initialOverview }: DashboardViewProps) {
         </div>
 
         {/* Bottom Section: Today's Flow & Active Projects */}
-        <div className="grid grid-cols-12 gap-6 items-stretch">
+        <div className="grid grid-cols-12 gap-6 items-start">
           <div className="col-span-12 lg:col-span-7 flex flex-col">
             <TodayAgenda
               todayTasks={overview.today_agenda}
               overdueTasks={overview.overdue_tasks}
               onToggleTask={handleToggleTask}
               onOpenCreateTask={() => setIsCreateOpen(true)}
-              className="h-full flex flex-col justify-between"
             />
           </div>
 
           <div className="col-span-12 lg:col-span-5 flex flex-col gap-6">
             <ActiveProjectsWidget
               projects={overview.active_projects}
-              className="flex flex-col justify-between"
             />
             <OutreachPulseWidget />
           </div>
