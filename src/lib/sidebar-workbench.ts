@@ -30,7 +30,6 @@ export const DEFAULT_WORKBENCH: WorkbenchConfig = {
       defaultTitle: "Tasks",
       href: "/tasks",
       iconName: "CheckSquare",
-      badge: 12,
       description: "Sprint task manager & priority queues",
     },
     {
@@ -47,7 +46,6 @@ export const DEFAULT_WORKBENCH: WorkbenchConfig = {
       defaultTitle: "Inbox",
       href: "/inbox",
       iconName: "Inbox",
-      badge: 3,
       description: "Frictionless capture & triage workstation",
     },
     {
@@ -140,10 +138,21 @@ export function loadWorkbenchConfig(): WorkbenchConfig {
     if (!raw) return DEFAULT_WORKBENCH;
     const parsed = JSON.parse(raw);
     if (parsed && Array.isArray(parsed.core) && Array.isArray(parsed.more)) {
+      // Strip legacy static mock badges (12, 3) from cached configurations
+      const cleanBadges = (items: WorkbenchTool[]) =>
+        items.map((item) => {
+          if (item.badge === 12 || item.badge === 3) {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { badge: _discarded, ...rest } = item;
+            return rest;
+          }
+          return item;
+        });
+
       return {
-        core: parsed.core,
-        more: parsed.more,
-        vault: Array.isArray(parsed.vault) ? parsed.vault : [],
+        core: cleanBadges(parsed.core),
+        more: cleanBadges(parsed.more),
+        vault: Array.isArray(parsed.vault) ? cleanBadges(parsed.vault) : [],
       };
     }
   } catch {

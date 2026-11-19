@@ -32,6 +32,34 @@ export function Sidebar({ className }: { className?: string }) {
     return DEFAULT_WORKBENCH;
   });
   const [isCustomizerOpen, setIsCustomizerOpen] = React.useState(false);
+  const [liveCounts, setLiveCounts] = React.useState<{ tasks?: number; inbox?: number }>({});
+
+  // Fetch real-time active counts for dynamic badges (no mock numbers)
+  React.useEffect(() => {
+    let mounted = true;
+    async function fetchLiveCounts() {
+      try {
+        const [tasksRes, inboxRes] = await Promise.allSettled([
+          fetch("/api/v1/tasks?status=pending&limit=1").then((r) => (r.ok ? r.json() : null)),
+          fetch("/api/v1/inbox?status=captured&limit=1").then((r) => (r.ok ? r.json() : null)),
+        ]);
+
+        if (!mounted) return;
+        const counts: { tasks?: number; inbox?: number } = {};
+        if (tasksRes.status === "fulfilled" && tasksRes.value?.meta?.total_count !== undefined) {
+          counts.tasks = tasksRes.value.meta.total_count;
+        }
+        if (inboxRes.status === "fulfilled" && inboxRes.value?.meta?.total_count !== undefined) {
+          counts.inbox = inboxRes.value.meta.total_count;
+        }
+        setLiveCounts(counts);
+      } catch {
+        // Silent catch for network or auth redirects
+      }
+    }
+
+    fetchLiveCounts();
+  }, [pathname]);
 
   // Automatically switch pagination page if active route is in 'more' page
   const [prevPathname, setPrevPathname] = React.useState(pathname);
@@ -232,18 +260,30 @@ export function Sidebar({ className }: { className?: string }) {
                   {!isCollapsed && <span className="truncate">{item.title}</span>}
                 </div>
 
-                {!isCollapsed && item.badge !== undefined && (
-                  <span
-                    className={cn(
-                      "px-1.5 py-0.2 rounded-full font-mono text-[10px] font-semibold",
-                      isActive
-                        ? "bg-[#EBD6C7] text-[#A84A28] dark:bg-[#42291E] dark:text-[#E87A54]"
-                        : "bg-[#EAE4DC] text-[#7A7269] dark:bg-[#24201D] dark:text-[#8E867C]"
-                    )}
-                  >
-                    {item.badge}
-                  </span>
-                )}
+                {(() => {
+                  const rawBadge =
+                    item.id === "tasks"
+                      ? liveCounts.tasks
+                      : item.id === "inbox"
+                      ? liveCounts.inbox
+                      : item.badge;
+                  const hasValidBadge = typeof rawBadge === "number" && rawBadge > 0;
+
+                  if (isCollapsed || !hasValidBadge) return null;
+
+                  return (
+                    <span
+                      className={cn(
+                        "px-1.5 py-0.2 rounded-full font-mono text-[10px] font-semibold",
+                        isActive
+                          ? "bg-[#EBD6C7] text-[#A84A28] dark:bg-[#42291E] dark:text-[#E87A54]"
+                          : "bg-[#EAE4DC] text-[#7A7269] dark:bg-[#24201D] dark:text-[#8E867C]"
+                      )}
+                    >
+                      {rawBadge}
+                    </span>
+                  );
+                })()}
               </Link>
             );
           })}

@@ -26,6 +26,7 @@ import {
   TrendingUp,
   Cpu,
   CheckCircle2,
+  ChevronDown,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -190,18 +191,21 @@ export function LeadDetailModal({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl border border-[var(--border)] bg-[var(--muted)]/40">
             <div className="flex items-center gap-2">
               <span className="text-xs font-mono uppercase text-[var(--muted-foreground)] shrink-0">Pipeline Stage:</span>
-              <select
-                value={lead.status}
-                onChange={handleStatusSelect}
-                disabled={isUpdatingStatus}
-                className="text-xs rounded-lg border border-[var(--border)] bg-[var(--background)] px-2.5 py-1 font-medium text-[var(--foreground)] shadow-2xs hover:border-[var(--primary)]/40 focus:outline-none focus:ring-1 focus:ring-[var(--primary)] transition-all cursor-pointer h-8"
-              >
-                <option value="lead">Pitch Ready</option>
-                <option value="contacted">Contacted</option>
-                <option value="qualified">Qualified</option>
-                <option value="converted">Converted</option>
-                <option value="lost">Lost</option>
-              </select>
+              <div className="relative inline-flex items-center">
+                <select
+                  value={lead.status}
+                  onChange={handleStatusSelect}
+                  disabled={isUpdatingStatus}
+                  className="text-xs rounded-lg border border-[var(--border)] bg-[var(--background)] pl-2.5 pr-7 py-1 font-medium text-[var(--foreground)] shadow-2xs hover:border-[var(--primary)]/40 focus:outline-none focus:ring-1 focus:ring-[var(--primary)] transition-all cursor-pointer h-8 appearance-none"
+                >
+                  <option value="lead">Pitch Ready</option>
+                  <option value="contacted">Contacted</option>
+                  <option value="qualified">Qualified</option>
+                  <option value="converted">Converted</option>
+                  <option value="lost">Lost</option>
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--muted-foreground)]" />
+              </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-2">

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Search } from "lucide-react";
+import { Search, ChevronDown } from "lucide-react";
 import { ProjectPriority } from "@/modules/projects/types";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -68,12 +68,12 @@ export function ProjectFilterBar({
           />
         </div>
 
-        <div className="relative shrink-0">
+        <div className="relative shrink-0 flex items-center">
           <select
             value={priorityFilter}
             onChange={(e) => onPriorityFilterChange(e.target.value as ProjectPriority | "all")}
             aria-label="Filter by priority"
-            className="h-9 rounded-lg border border-[var(--input)] bg-[var(--card)] px-3 text-xs text-[var(--foreground)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)] flex items-center"
+            className="h-9 rounded-lg border border-[var(--input)] bg-[var(--card)] pl-3 pr-8 text-xs text-[var(--foreground)] appearance-none cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)] transition-colors hover:border-[var(--ring)]/50"
           >
             <option value="all">All Priorities</option>
             <option value="urgent">Urgent</option>
@@ -81,6 +81,7 @@ export function ProjectFilterBar({
             <option value="medium">Medium</option>
             <option value="low">Low</option>
           </select>
+          <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--muted-foreground)]" />
         </div>
       </div>
     </div>

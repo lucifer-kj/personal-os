@@ -204,36 +204,48 @@ export function TargetingView() {
           </form>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
-          {niches.map((niche) => (
-            <div key={niche.id} className="p-3.5 rounded-xl border border-[var(--border)] bg-[var(--card)] space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-sm text-[var(--foreground)]">{niche.name}</span>
-                <Badge variant={niche.is_active ? "success" : "secondary"}>
-                  {niche.is_active ? "Active" : "Paused"}
-                </Badge>
-              </div>
-              <div className="text-xs text-[var(--muted-foreground)] flex items-center gap-1.5">
-                <Tag className="w-3 h-3" />
-                {niche.vertical}
-              </div>
-              {niche.osm_tags && niche.osm_tags.length > 0 && (
-                <div className="flex flex-wrap gap-1">
-                  {niche.osm_tags.map((tag) => (
-                    <span key={tag} className="text-[11px] font-mono px-1.5 py-0.5 rounded bg-[var(--muted)] text-[var(--muted-foreground)]">
-                      {tag}
-                    </span>
-                  ))}
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-28 rounded-xl border border-[var(--border)] bg-[var(--card)]/50 animate-pulse" />
+            ))}
+          </div>
+        ) : niches.length === 0 ? (
+          <div className="p-8 text-center rounded-xl border border-dashed border-[var(--border)] bg-[var(--card)]/40">
+            <p className="text-xs text-[var(--muted-foreground)]">No targeting verticals configured. Add your first niche above or click Refresh Parameters.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            {niches.map((niche) => (
+              <div key={niche.id} className="p-3.5 rounded-xl border border-[var(--border)] bg-[var(--card)] space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-sm text-[var(--foreground)]">{niche.name}</span>
+                  <Badge variant={niche.is_active ? "success" : "secondary"}>
+                    {niche.is_active ? "Active" : "Paused"}
+                  </Badge>
                 </div>
-              )}
-              {niche.default_pitch_angle && (
-                <p className="text-xs text-[var(--foreground)] italic line-clamp-2">
-                  &ldquo;{niche.default_pitch_angle}&rdquo;
-                </p>
-              )}
-            </div>
-          ))}
-        </div>
+                <div className="text-xs text-[var(--muted-foreground)] flex items-center gap-1.5">
+                  <Tag className="w-3 h-3" />
+                  {niche.vertical}
+                </div>
+                {niche.osm_tags && niche.osm_tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {niche.osm_tags.map((tag) => (
+                      <span key={tag} className="text-[11px] font-mono px-1.5 py-0.5 rounded bg-[var(--muted)] text-[var(--muted-foreground)]">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                {niche.default_pitch_angle && (
+                  <p className="text-xs text-[var(--foreground)] italic line-clamp-2">
+                    &ldquo;{niche.default_pitch_angle}&rdquo;
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Locations Master Section */}
@@ -289,25 +301,37 @@ export function TargetingView() {
           </form>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
-          {locations.map((loc) => (
-            <div key={loc.id} className="p-3.5 rounded-xl border border-[var(--border)] bg-[var(--card)] space-y-1.5">
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-sm text-[var(--foreground)]">{loc.name}</span>
-                <span className="text-xs font-mono text-[var(--muted-foreground)]">
-                  {loc.radius_km} km radius
-                </span>
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-24 rounded-xl border border-[var(--border)] bg-[var(--card)]/50 animate-pulse" />
+            ))}
+          </div>
+        ) : locations.length === 0 ? (
+          <div className="p-8 text-center rounded-xl border border-dashed border-[var(--border)] bg-[var(--card)]/40">
+            <p className="text-xs text-[var(--muted-foreground)]">No commercial hubs configured. Add your first territory above or click Refresh Parameters.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            {locations.map((loc) => (
+              <div key={loc.id} className="p-3.5 rounded-xl border border-[var(--border)] bg-[var(--card)] space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-sm text-[var(--foreground)]">{loc.name}</span>
+                  <span className="text-xs font-mono text-[var(--muted-foreground)]">
+                    {loc.radius_km} km radius
+                  </span>
+                </div>
+                <div className="text-xs text-[var(--muted-foreground)] flex items-center gap-1">
+                  <MapPin className="w-3 h-3 text-sky-500" />
+                  {loc.city}
+                  {loc.latitude !== undefined && loc.longitude !== undefined && (
+                    <span>({Number(loc.latitude).toFixed(4)}, {Number(loc.longitude).toFixed(4)})</span>
+                  )}
+                </div>
               </div>
-              <div className="text-xs text-[var(--muted-foreground)] flex items-center gap-1">
-                <MapPin className="w-3 h-3 text-sky-500" />
-                {loc.city}
-                {loc.latitude !== undefined && loc.longitude !== undefined && (
-                  <span>({Number(loc.latitude).toFixed(4)}, {Number(loc.longitude).toFixed(4)})</span>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

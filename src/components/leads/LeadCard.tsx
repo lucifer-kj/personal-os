@@ -208,18 +208,21 @@ export function LeadCard({ lead, onStatusChange, onConvert, onSelectLead }: Lead
             </a>
           )}
 
-          <select
-            value={lead.status}
-            onChange={handleStatusSelect}
-            disabled={isUpdatingStatus}
-            className="text-xs rounded-lg border border-[var(--border)] bg-[var(--background)] px-2 py-1 font-medium text-[var(--foreground)] shadow-2xs hover:border-[var(--primary)]/40 focus:outline-none focus:ring-1 focus:ring-[var(--primary)] transition-all cursor-pointer h-7"
-          >
-            <option value="lead">Pitch Ready</option>
-            <option value="contacted">Contacted</option>
-            <option value="qualified">Qualified</option>
-            <option value="converted">Converted</option>
-            <option value="lost">Lost</option>
-          </select>
+          <div className="relative inline-flex items-center">
+            <select
+              value={lead.status}
+              onChange={handleStatusSelect}
+              disabled={isUpdatingStatus}
+              className="text-xs rounded-lg border border-[var(--border)] bg-[var(--background)] pl-2 pr-6 py-1 font-medium text-[var(--foreground)] shadow-2xs hover:border-[var(--primary)]/40 focus:outline-none focus:ring-1 focus:ring-[var(--primary)] transition-all cursor-pointer h-7 appearance-none"
+            >
+              <option value="lead">Pitch Ready</option>
+              <option value="contacted">Contacted</option>
+              <option value="qualified">Qualified</option>
+              <option value="converted">Converted</option>
+              <option value="lost">Lost</option>
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 text-[var(--muted-foreground)]" />
+          </div>
 
           {lead.status !== "converted" ? (
             <Button

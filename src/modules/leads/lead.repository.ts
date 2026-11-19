@@ -788,7 +788,32 @@ export class SupabaseLeadRepository implements ILeadRepository {
       .order('name');
 
     if (error) throw new InfrastructureError(`Failed to fetch niches: ${error.message}`);
-    return (data as LeadNiche[]) || [];
+    if (data && data.length > 0) return data as LeadNiche[];
+
+    // Fallback: Check engine_niches catalog if user-specific lead_niches is empty
+    const { data: engineData } = await this.client
+      .from('engine_niches')
+      .select('*')
+      .order('display_name');
+
+    if (engineData && engineData.length > 0) {
+      return engineData.map((e) => ({
+        id: e.id,
+        user_id: userId,
+        name: e.display_name || e.niche_id,
+        vertical: e.category
+          ? e.category.charAt(0).toUpperCase() + e.category.slice(1).replace('_', ' ')
+          : 'General',
+        osm_tags: typeof e.osm_tags === 'string' ? e.osm_tags.split(',') : (e.osm_tags || []),
+        default_pitch_angle: e.default_pitch_angle,
+        avg_deal_value_cents: 50000,
+        is_active: e.is_active ?? true,
+        created_at: e.created_at,
+        updated_at: e.created_at,
+      })) as LeadNiche[];
+    }
+
+    return [];
   }
 
   async createNiche(userId: string, data: CreateLeadNicheDTO): Promise<LeadNiche> {
@@ -835,7 +860,30 @@ export class SupabaseLeadRepository implements ILeadRepository {
       .order('name');
 
     if (error) throw new InfrastructureError(`Failed to fetch locations: ${error.message}`);
-    return (data as LeadLocation[]) || [];
+    if (data && data.length > 0) return data as LeadLocation[];
+
+    // Fallback: Check engine_locations catalog if user-specific lead_locations is empty
+    const { data: engineData } = await this.client
+      .from('engine_locations')
+      .select('*')
+      .order('area');
+
+    if (engineData && engineData.length > 0) {
+      return engineData.map((l) => ({
+        id: l.id,
+        user_id: userId,
+        name: l.area || l.location_id,
+        city: l.city,
+        latitude: Number(l.latitude),
+        longitude: Number(l.longitude),
+        radius_km: Number(l.boundary_radius_km),
+        status: (l.status as 'active' | 'paused' | 'completed') || 'active',
+        created_at: l.created_at,
+        updated_at: l.created_at,
+      })) as LeadLocation[];
+    }
+
+    return [];
   }
 
   async createLocation(userId: string, data: CreateLeadLocationDTO): Promise<LeadLocation> {
