@@ -41,7 +41,7 @@ export function TodayAgenda({
   };
 
   return (
-    <Card className={cn("p-5 sm:p-6 bg-white dark:bg-[#161413] border-[#EDE7DE] dark:border-[#2A2624] shadow-[0_2px_12px_rgba(0,0,0,0.03)] rounded-2xl flex flex-col min-h-[380px] h-full transition-all", className)}>
+    <Card className={cn("p-5 sm:p-6 bg-white dark:bg-[#161413] border-[#EDE7DE] dark:border-[#2A2624] shadow-[0_2px_12px_rgba(0,0,0,0.03)] rounded-2xl flex flex-col w-full transition-all", className)}>
       {/* Header with Segmented Toggle */}
       <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-[#EDE7DE]/60 dark:border-[#2A2624]/60 shrink-0">
         <div className="flex items-center gap-2">
@@ -94,10 +94,10 @@ export function TodayAgenda({
       </div>
 
       {/* Agenda Body Container with consistent vertical spacing */}
-      <div className="flex-1 flex flex-col justify-center space-y-4 py-3 sm:py-4">
+      <div className="w-full flex-1 flex flex-col justify-center space-y-4 py-4">
         {/* Overdue Warning Callout */}
         {overdueTasks.length > 0 && (
-          <div className="rounded-xl border border-amber-200 bg-amber-50/70 dark:border-amber-900/50 dark:bg-amber-950/20 p-3.5 text-xs shadow-xs">
+          <div className="w-full rounded-xl border border-amber-200 bg-amber-50/70 dark:border-amber-900/50 dark:bg-amber-950/20 p-3.5 text-xs shadow-xs">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-amber-900 dark:text-amber-200 font-medium">
                 <AlertCircle className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
@@ -138,15 +138,15 @@ export function TodayAgenda({
 
         {/* Main Agenda Tasks Container */}
         {todayTasks.length === 0 ? (
-          <div className="p-6 sm:p-7 text-center rounded-xl border border-dashed border-[#EDE7DE] dark:border-[#2A2624] bg-[#FAF8F5]/80 dark:bg-[#161413]/50">
-            <p className="text-xs sm:text-sm text-[#7A7269] dark:text-[#A69E94] max-w-sm mx-auto leading-relaxed">
+          <div className="w-full py-8 px-6 sm:py-10 sm:px-8 text-center flex flex-col items-center justify-center rounded-xl border border-dashed border-[#EDE7DE] dark:border-[#2A2624] bg-[#FAF8F5]/80 dark:bg-[#161413]/50">
+            <p className="text-xs sm:text-sm text-[#7A7269] dark:text-[#A69E94] max-w-sm text-center leading-relaxed">
               No tasks scheduled for today. Take time to focus, plan upcoming priorities, or add a new task.
             </p>
             <Button
               size="sm"
               variant="outline"
               onClick={onOpenCreateTask}
-              className="mt-3.5 text-xs rounded-full border-[#E2DAD1] hover:bg-[#F7F4EF] dark:hover:bg-[#201D1A]"
+              className="mt-4 text-xs rounded-full border-[#E2DAD1] hover:bg-[#F7F4EF] dark:hover:bg-[#201D1A]"
             >
               <Plus className="h-3.5 w-3.5 mr-1 text-[#B94A24]" />
               Schedule a task

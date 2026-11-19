@@ -196,6 +196,8 @@ export function LeadDetailModal({
                   value={lead.status}
                   onChange={handleStatusSelect}
                   disabled={isUpdatingStatus}
+                  data-custom-select
+                  style={{ WebkitAppearance: "none", MozAppearance: "none", appearance: "none" }}
                   className="text-xs rounded-lg border border-[var(--border)] bg-[var(--background)] pl-2.5 pr-7 py-1 font-medium text-[var(--foreground)] shadow-2xs hover:border-[var(--primary)]/40 focus:outline-none focus:ring-1 focus:ring-[var(--primary)] transition-all cursor-pointer h-8 appearance-none"
                 >
                   <option value="lead">Pitch Ready</option>

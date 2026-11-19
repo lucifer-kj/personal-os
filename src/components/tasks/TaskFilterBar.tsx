@@ -69,6 +69,8 @@ export function TaskFilterBar({
             value={priorityFilter}
             onChange={(e) => onPriorityFilterChange(e.target.value as TaskPriority | "all")}
             aria-label="Filter by priority"
+            data-custom-select
+            style={{ WebkitAppearance: "none", MozAppearance: "none", appearance: "none" }}
             className="h-9 rounded-lg border border-[var(--input)] bg-[var(--card)] pl-3 pr-8 text-xs text-[var(--foreground)] appearance-none cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)] transition-colors hover:border-[var(--ring)]/50"
           >
             <option value="all">All Priorities</option>

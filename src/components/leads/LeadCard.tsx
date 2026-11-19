@@ -213,6 +213,8 @@ export function LeadCard({ lead, onStatusChange, onConvert, onSelectLead }: Lead
               value={lead.status}
               onChange={handleStatusSelect}
               disabled={isUpdatingStatus}
+              data-custom-select
+              style={{ WebkitAppearance: "none", MozAppearance: "none", appearance: "none" }}
               className="text-xs rounded-lg border border-[var(--border)] bg-[var(--background)] pl-2 pr-6 py-1 font-medium text-[var(--foreground)] shadow-2xs hover:border-[var(--primary)]/40 focus:outline-none focus:ring-1 focus:ring-[var(--primary)] transition-all cursor-pointer h-7 appearance-none"
             >
               <option value="lead">Pitch Ready</option>

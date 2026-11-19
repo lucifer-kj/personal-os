@@ -159,6 +159,8 @@ export function TaskCreateDialog({
                   id="task-priority"
                   value={priority}
                   onChange={(e) => setPriority(e.target.value as TaskPriority)}
+                  data-custom-select
+                  style={{ WebkitAppearance: "none", MozAppearance: "none", appearance: "none" }}
                   className="w-full h-10 rounded-[var(--radius-control)] border border-[var(--input)] bg-[var(--card)] pl-3 pr-8 py-2 text-sm text-[var(--foreground)] appearance-none cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)]"
                 >
                   <option value="low">Low</option>
