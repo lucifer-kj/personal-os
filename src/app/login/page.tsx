@@ -173,25 +173,17 @@ export default function LoginPage() {
           {/* VIEW MODE 1: Standard Credentials & Passkey */}
           {viewMode === "credentials" && (
             <>
-              {/* Primary Passwordless Passkey Action */}
-              <div className="space-y-3">
-                <PasskeyButton
-                  mode="signin"
-                  onSuccess={async () => {
-                    await establishSession(isTrusted);
-                    router.push("/");
-                    router.refresh();
-                  }}
-                  onError={(err) => setError(err.message)}
-                />
-
-                <div className="relative flex items-center justify-center">
-                  <div className="border-t border-[var(--border)] w-full" />
-                  <span className="bg-[var(--card)] px-2.5 text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] font-mono">
-                    or password
-                  </span>
-                </div>
-              </div>
+              {/* Primary Passwordless Passkey Action (self-contained with divider only when supported) */}
+              <PasskeyButton
+                mode="signin"
+                dividerLabel="or password"
+                onSuccess={async () => {
+                  await establishSession(isTrusted);
+                  router.push("/");
+                  router.refresh();
+                }}
+                onError={(err) => setError(err.message)}
+              />
 
               <form onSubmit={handleLogin} className="space-y-4">
                 <div className="space-y-1.5">

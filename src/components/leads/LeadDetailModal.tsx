@@ -187,9 +187,9 @@ export function LeadDetailModal({
         {/* Modal Body */}
         <div className="p-5 sm:p-6 space-y-6">
           {/* Action Ribbon */}
-          <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl border border-[var(--border)] bg-[var(--muted)]/40">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl border border-[var(--border)] bg-[var(--muted)]/40">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-mono uppercase text-[var(--muted-foreground)]">Pipeline Stage:</span>
+              <span className="text-xs font-mono uppercase text-[var(--muted-foreground)] shrink-0">Pipeline Stage:</span>
               <select
                 value={lead.status}
                 onChange={handleStatusSelect}
@@ -204,7 +204,7 @@ export function LeadDetailModal({
               </select>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               {whatsappHref && (
                 <a
                   href={whatsappHref}
@@ -284,7 +284,7 @@ export function LeadDetailModal({
               {weaknesses.map((item, idx) => (
                 <li key={idx} className="flex items-start gap-2">
                   <span className="text-rose-500 font-bold shrink-0">•</span>
-                  <span>{item}</span>
+                  <span className="break-words leading-relaxed">{item}</span>
                 </li>
               ))}
             </ul>
@@ -308,7 +308,7 @@ export function LeadDetailModal({
                 </button>
               </div>
 
-              <blockquote className="p-3 rounded-lg border border-[var(--border)]/60 bg-[var(--background)]/80 text-xs sm:text-sm text-[var(--foreground)] font-serif italic leading-relaxed">
+              <blockquote className="p-3 rounded-lg border border-[var(--border)]/60 bg-[var(--background)]/80 text-xs sm:text-sm text-[var(--foreground)] font-serif italic leading-relaxed break-words">
                 &ldquo;{lead.tailored_pitch}&rdquo;
               </blockquote>
             </div>
@@ -324,7 +324,7 @@ export function LeadDetailModal({
               {opportunities.map((opp, idx) => (
                 <li key={idx} className="flex items-start gap-2">
                   <TrendingUp className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
-                  <span>{opp}</span>
+                  <span className="break-words leading-relaxed">{opp}</span>
                 </li>
               ))}
             </ul>

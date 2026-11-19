@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { Layers, MoreVertical, Check, Circle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Layers, MoreVertical, Check, Circle, ExternalLink, RotateCcw } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
@@ -34,13 +35,31 @@ export function CurrentFocusCard({
   onOpenDetails,
   className,
 }: CurrentFocusCardProps) {
+  const router = useRouter();
   const [subtasks, setSubtasks] = React.useState<SubtaskItem[]>(initialSubtasks);
+  const [showMenu, setShowMenu] = React.useState(false);
+  const menuRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setShowMenu(false);
+      }
+    };
+    if (showMenu) document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, [showMenu]);
 
   const handleToggle = (id: string) => {
     setSubtasks((prev) =>
       prev.map((item) => (item.id === id ? { ...item, completed: !item.completed } : item))
     );
     if (onToggleSubtask) onToggleSubtask(id);
+  };
+
+  const handleResetSubtasks = () => {
+    setSubtasks((prev) => prev.map((item) => ({ ...item, completed: false })));
+    setShowMenu(false);
   };
 
   const completedCount = subtasks.filter((t) => t.completed).length;
@@ -54,14 +73,41 @@ export function CurrentFocusCard({
         <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-[#F7EBE1] text-[#A84A28] dark:bg-[#341F16] dark:text-[#E87A54]">
           Current Focus
         </span>
-        <button
-          type="button"
-          onClick={onOpenDetails}
-          className="text-[#968E85] hover:text-[#24211F] dark:hover:text-[#EDE7DE] p-1 rounded-md transition-colors"
-          aria-label="Focus options"
-        >
-          <MoreVertical className="h-4 w-4" />
-        </button>
+        <div className="relative" ref={menuRef}>
+          <button
+            type="button"
+            onClick={() => setShowMenu((prev) => !prev)}
+            className="text-[#968E85] hover:text-[#24211F] dark:hover:text-[#EDE7DE] p-1 rounded-md transition-colors cursor-pointer"
+            aria-label="Focus options"
+          >
+            <MoreVertical className="h-4 w-4" />
+          </button>
+
+          {showMenu && (
+            <div className="absolute right-0 top-full mt-1.5 w-48 rounded-xl bg-white dark:bg-[#1C1917] border border-[#EDE7DE] dark:border-[#2C2724] shadow-xl p-1 z-50 animate-in fade-in zoom-in-95 duration-100">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowMenu(false);
+                  if (onOpenDetails) onOpenDetails();
+                  else router.push("/focus");
+                }}
+                className="w-full text-left px-2.5 py-1.5 text-xs rounded-lg hover:bg-[#F7F4EF] dark:hover:bg-[#25211E] text-[#24211F] dark:text-[#F3EFEA] flex items-center gap-1.5 font-medium"
+              >
+                <ExternalLink className="h-3 w-3 text-[#B94A24] dark:text-[#E07A50]" />
+                <span>Open Focus Session</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleResetSubtasks}
+                className="w-full text-left px-2.5 py-1.5 text-xs rounded-lg hover:bg-[#F7F4EF] dark:hover:bg-[#25211E] text-[#7A7269] dark:text-[#A69E94] flex items-center gap-1.5"
+              >
+                <RotateCcw className="h-3 w-3" />
+                <span>Reset Subtasks</span>
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Main Focus Outcome */}

@@ -86,7 +86,7 @@ export function MobileNav({
   return (
     <>
       {/* Floating Apple-Style Mobile Dock (< 1024px) */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 px-4 pb-3 pt-1 pointer-events-none flex flex-col items-center">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 px-4 pb-[calc(env(safe-area-inset-bottom,0px)+0.75rem)] pt-1 pointer-events-none flex flex-col items-center">
         <nav
           aria-label="Mobile Navigation"
           className="pointer-events-auto w-full max-w-md flex items-center justify-between rounded-full border border-[var(--border)]/80 bg-[var(--card)]/92 dark:bg-[#161311]/92 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-3 py-1.5 transition-all text-[var(--muted-foreground)]"
@@ -130,9 +130,6 @@ export function MobileNav({
             );
           })}
         </nav>
-
-        {/* iOS Home Indicator Bar */}
-        <div className="w-32 h-1 rounded-full bg-[var(--border)] mt-2 opacity-60" />
       </div>
 
       {/* Secondary Drawer Sheet for "More" */}

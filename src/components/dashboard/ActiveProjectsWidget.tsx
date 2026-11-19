@@ -128,7 +128,13 @@ export function ActiveProjectsWidget({ projects, className }: ActiveProjectsWidg
                 </div>
 
                 <span className="font-mono text-xs font-semibold text-[#24211F] dark:text-[#F3EFEA] shrink-0">
-                  {progress}%
+                  {progress > 0 ? (
+                    `${progress}%`
+                  ) : (
+                    <span className="text-[10px] font-sans font-normal text-[#968E85] dark:text-[#7A7269] bg-[#F2EDE6] dark:bg-[#25211E] px-1.5 py-0.5 rounded-md">
+                      0% • Planned
+                    </span>
+                  )}
                 </span>
               </div>
 

@@ -61,7 +61,7 @@ export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-[var(--header-height)] items-center justify-between border-b border-[var(--border)] bg-[var(--card)]/80 backdrop-blur-xl px-4 sm:px-6 lg:px-8 transition-colors">
+    <header className="sticky top-0 z-30 flex h-[calc(var(--header-height)+env(safe-area-inset-top,0px))] pt-[env(safe-area-inset-top,0px)] items-center justify-between border-b border-[var(--border)] bg-[var(--card)]/80 backdrop-blur-xl px-4 sm:px-6 lg:px-8 transition-colors">
       {/* Mobile Top Bar (< lg) */}
       <div className="flex lg:hidden items-center justify-between w-full">
         {/* Left Mobile Actions (Theme, Search, Notifications) */}
@@ -116,7 +116,7 @@ export function Header({ onOpenMobileMenu, onQuickCapture }: HeaderProps) {
 
         {/* Mobile Notification Popover */}
         {showNotifications && (
-          <div className="absolute left-4 top-[calc(var(--header-height)+4px)] w-[calc(100vw-32px)] max-w-sm rounded-2xl bg-[var(--popover)] border border-[var(--border)] shadow-2xl p-3 z-50 animate-in fade-in zoom-in-95 duration-150">
+          <div className="absolute left-4 top-[calc(var(--header-height)+env(safe-area-inset-top,0px)+4px)] w-[calc(100vw-32px)] max-w-sm rounded-2xl bg-[var(--popover)] border border-[var(--border)] shadow-2xl p-3 z-50 animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between pb-2 border-b border-[var(--border)]">
               <p className="text-xs font-semibold text-[var(--foreground)]">Signals & Alerts</p>
               {hasUnread && (

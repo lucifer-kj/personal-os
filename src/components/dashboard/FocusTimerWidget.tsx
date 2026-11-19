@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { Clock, Play, Pause, Square, MoreVertical } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Clock, Play, Pause, Square, MoreVertical, RotateCcw, ExternalLink } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
@@ -18,9 +19,22 @@ export function FocusTimerWidget({
   onSessionComplete,
   className,
 }: FocusTimerWidgetProps) {
+  const router = useRouter();
   const [totalSeconds, setTotalSeconds] = React.useState(initialSeconds);
   const [secondsRemaining, setSecondsRemaining] = React.useState(initialSeconds);
   const [isActive, setIsActive] = React.useState(false);
+  const [showMenu, setShowMenu] = React.useState(false);
+  const menuRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setShowMenu(false);
+      }
+    };
+    if (showMenu) document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, [showMenu]);
 
   React.useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -48,6 +62,13 @@ export function FocusTimerWidget({
     setSecondsRemaining(totalSeconds);
   };
 
+  const handleSetDuration = (mins: number) => {
+    setIsActive(false);
+    setTotalSeconds(mins * 60);
+    setSecondsRemaining(mins * 60);
+    setShowMenu(false);
+  };
+
   const minutes = Math.floor(secondsRemaining / 60);
   const seconds = secondsRemaining % 60;
   const formattedTime = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
@@ -66,13 +87,57 @@ export function FocusTimerWidget({
           <Clock className="h-4 w-4 text-[#B94A24] dark:text-[#E07A50]" />
           <span>Focus Timer</span>
         </div>
-        <button
-          type="button"
-          className="text-[#968E85] hover:text-[#24211F] dark:hover:text-[#EDE7DE] p-1 rounded-md transition-colors"
-          aria-label="Timer settings"
-        >
-          <MoreVertical className="h-4 w-4" />
-        </button>
+        <div className="relative" ref={menuRef}>
+          <button
+            type="button"
+            onClick={() => setShowMenu((prev) => !prev)}
+            className="text-[#968E85] hover:text-[#24211F] dark:hover:text-[#EDE7DE] p-1 rounded-md transition-colors cursor-pointer"
+            aria-label="Timer settings"
+          >
+            <MoreVertical className="h-4 w-4" />
+          </button>
+
+          {showMenu && (
+            <div className="absolute right-0 top-full mt-1.5 w-48 rounded-xl bg-white dark:bg-[#1C1917] border border-[#EDE7DE] dark:border-[#2C2724] shadow-xl p-1 z-50 animate-in fade-in zoom-in-95 duration-100">
+              <button
+                type="button"
+                onClick={() => handleSetDuration(45)}
+                className="w-full text-left px-2.5 py-1.5 text-xs rounded-lg hover:bg-[#F7F4EF] dark:hover:bg-[#25211E] text-[#24211F] dark:text-[#F3EFEA] flex items-center justify-between"
+              >
+                <span>Deep Work</span>
+                <span className="font-mono text-[10px] text-[#968E85]">45m</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSetDuration(25)}
+                className="w-full text-left px-2.5 py-1.5 text-xs rounded-lg hover:bg-[#F7F4EF] dark:hover:bg-[#25211E] text-[#24211F] dark:text-[#F3EFEA] flex items-center justify-between"
+              >
+                <span>Pomodoro</span>
+                <span className="font-mono text-[10px] text-[#968E85]">25m</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSetDuration(15)}
+                className="w-full text-left px-2.5 py-1.5 text-xs rounded-lg hover:bg-[#F7F4EF] dark:hover:bg-[#25211E] text-[#24211F] dark:text-[#F3EFEA] flex items-center justify-between"
+              >
+                <span>Sprint</span>
+                <span className="font-mono text-[10px] text-[#968E85]">15m</span>
+              </button>
+              <div className="my-1 border-t border-[#EDE7DE] dark:border-[#2A2624]" />
+              <button
+                type="button"
+                onClick={() => {
+                  setShowMenu(false);
+                  router.push("/focus");
+                }}
+                className="w-full text-left px-2.5 py-1.5 text-xs rounded-lg hover:bg-[#F7F4EF] dark:hover:bg-[#25211E] text-[#B94A24] dark:text-[#E07A50] font-medium flex items-center gap-1.5"
+              >
+                <ExternalLink className="h-3 w-3" />
+                <span>Open Workstation</span>
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Radial Timer Ring + Controls */}
