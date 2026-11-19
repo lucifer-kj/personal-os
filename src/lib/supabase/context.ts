@@ -129,36 +129,18 @@ export async function getRequestContext(
     return null;
   }
 
-  // 4. Local dev preview when running in development mode with dev_preview cookie
+  // 4. Local dev preview when running in development mode (auto-authenticated as owner)
   if (isDev) {
-    if (request) {
-      const cookieHeader = request.headers.get("cookie") || "";
-      if (cookieHeader.includes("dev_preview=true")) {
-        return {
-          user: {
-            id: "40dd9499-53c2-48d9-9749-a061ac72ad7a",
-            email: "321arifali@gmail.com",
-          },
-          supabase,
-        };
-      }
+    const cookieHeader = request ? request.headers.get("cookie") || "" : "";
+    if (!cookieHeader.includes("dev_preview=false")) {
+      return {
+        user: {
+          id: "40dd9499-53c2-48d9-9749-a061ac72ad7a",
+          email: "321arifali@gmail.com",
+        },
+        supabase,
+      };
     }
-    try {
-      const { cookies } = await import("next/headers");
-      const cookieStore = await cookies();
-      if (cookieStore.get("dev_preview")?.value === "true") {
-        return {
-          user: {
-            id: "40dd9499-53c2-48d9-9749-a061ac72ad7a",
-            email: "321arifali@gmail.com",
-          },
-          supabase,
-        };
-      }
-    } catch {
-      // Outside request context
-    }
-    return null;
   }
 
   // 5. Isolated test mode fallback when running unit tests without headers or Supabase
